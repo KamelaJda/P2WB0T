@@ -24,6 +24,7 @@ public class Ustawienia {
     public PostgresSettings postgres = new PostgresSettings();
     public WebhookConfig webhook = new WebhookConfig();
     public Channel channel = new Channel();
+    public Inne inne = new Inne();
 
     public static class Roles {
         public String helperRole = def;
@@ -67,6 +68,10 @@ public class Ustawienia {
         public String liczek = def;
         public String wiadomosci = def;
         public String moddc = def;
+    }
+
+    public static class Inne {
+        public String kategoriaArchiwum = def;
     }
 
 }

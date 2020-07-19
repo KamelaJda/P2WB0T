@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.entities.TextChannel;
+import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
 import pl.kamil0024.core.command.enums.PermLevel;
@@ -13,8 +14,6 @@ import java.util.Date;
 
 public class ArchiwizujCommand extends Command {
 
-    private final static String CATEGORY = "573855098250461185";
-
     public ArchiwizujCommand() {
         name = "archiwizuj";
         permLevel = PermLevel.DEVELOPER;
@@ -23,7 +22,7 @@ public class ArchiwizujCommand extends Command {
     @Override
     public boolean execute(CommandContext context) {
         TextChannel txt = context.getParsed().getTextChannel(context.getArgs().get(0));
-        Category cate = context.getGuild().getCategoryById(CATEGORY);
+        Category cate = context.getGuild().getCategoryById(Ustawienia.instance.inne.kategoriaArchiwum);
         if (cate == null) throw new NullPointerException("Kategoria do archiwum jest nullem");
 
         if (txt == null) {
