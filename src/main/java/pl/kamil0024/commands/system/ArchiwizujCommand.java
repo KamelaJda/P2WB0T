@@ -8,6 +8,7 @@ import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
 import pl.kamil0024.core.command.enums.PermLevel;
+import pl.kamil0024.core.logger.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -35,9 +36,12 @@ public class ArchiwizujCommand extends Command {
             return false;
         }
 
+        Log.debug("1");
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yy");
-        txt.getManager().setName(sdf.format(new Date()) + txt.getName()).complete();
         txt.getManager().setParent(cate).complete();
+        Log.debug("2");
+        txt.getManager().setName(sdf.format(new Date()) + txt.getName()).complete();
+        Log.debug("3");
 
 //        for (PermissionOverride permissionOverride : cate.getPermissionOverrides()) {
 //            if (permissionOverride.getPermissionHolder() != null) {
