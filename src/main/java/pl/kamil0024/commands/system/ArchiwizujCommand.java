@@ -39,11 +39,9 @@ public class ArchiwizujCommand extends Command {
         Log.debug("1");
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yy");
         String name = sdf.format(new Date()) + "-" + txt.getName();
-        
-        txt.getManager().setParent(cate).complete();
+
+        txt.getManager().setParent(cate).setName(name).complete();
         Log.debug("2");
-        txt.getManager().setName(name).complete();
-        Log.debug("3");
 
         for (PermissionOverride permissionOverride : cate.getPermissionOverrides()) {
             if (permissionOverride.getPermissionHolder() != null) {
@@ -51,8 +49,7 @@ public class ArchiwizujCommand extends Command {
                 txt.getManager().putPermissionOverride(permissionOverride.getPermissionHolder(), permissionOverride.getAllowed(), permissionOverride.getDenied()).complete();
             }
         }
-
-        Log.debug("4");
+        Log.debug("3");
 
         context.send("Pomyślnie zarchiwizowano!").queue();
         return true;
