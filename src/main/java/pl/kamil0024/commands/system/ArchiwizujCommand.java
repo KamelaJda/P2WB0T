@@ -38,9 +38,11 @@ public class ArchiwizujCommand extends Command {
 
         Log.debug("1");
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yy");
+        String name = sdf.format(new Date()) + "-" + txt.getName();
+        
         txt.getManager().setParent(cate).complete();
         Log.debug("2");
-        txt.getManager().setName(sdf.format(new Date()) + "-" + txt.getName()).complete();
+        txt.getManager().setName(name).complete();
         Log.debug("3");
 
         for (PermissionOverride permissionOverride : cate.getPermissionOverrides()) {
