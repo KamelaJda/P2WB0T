@@ -40,7 +40,9 @@ public class ArchiwizujCommand extends Command {
         txt.getManager().setParent(cate).complete();
 
         for (PermissionOverride permissionOverride : cate.getPermissionOverrides()) {
-            txt.getManager().putPermissionOverride(permissionOverride.getPermissionHolder(), permissionOverride.getAllowedRaw(),permissionOverride.getDeniedRaw()).queue();
+            if (permissionOverride.getPermissionHolder() != null) {
+                txt.getManager().putPermissionOverride(permissionOverride.getPermissionHolder(), permissionOverride.getAllowedRaw(),permissionOverride.getDeniedRaw()).queue();
+            }
         }
 
         context.send("Pomyślnie zarchiwizowano!").queue();
