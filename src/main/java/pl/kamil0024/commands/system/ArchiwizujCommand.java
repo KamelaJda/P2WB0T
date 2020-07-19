@@ -41,13 +41,13 @@ public class ArchiwizujCommand extends Command {
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yy");
         String name = sdf.format(new Date()) + "-" + txt.getName();
 
-        ChannelManager manager = txt.getManager().setParent(cate).setName(name).clearOverridesAdded().clearOverridesRemoved();
+        ChannelManager manager = txt.getManager().clearOverridesAdded().clearOverridesRemoved().setParent(cate).setName(name);
         Log.debug("2");
 
         for (PermissionOverride permissionOverride : cate.getPermissionOverrides()) {
             if (permissionOverride.getPermissionHolder() != null) {
                 Log.debug("nie jest nullem");
-                manager.putPermissionOverride(permissionOverride.getPermissionHolder(), permissionOverride.getAllowed(), permissionOverride.getDenied()).complete();
+                manager = manager.putPermissionOverride(permissionOverride.getPermissionHolder(), permissionOverride.getAllowed(), permissionOverride.getDenied());
             }
         }
         Log.debug("3");
