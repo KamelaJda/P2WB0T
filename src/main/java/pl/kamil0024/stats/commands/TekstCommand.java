@@ -41,7 +41,7 @@ public class TekstCommand extends Command {
             arg = track.getInfo().title;
         } else {
             arg = context.getArgsToString(0);
-            if (arg0 == null) throw new NullPointerException();
+            if (arg0 == null) throw new UsageException();
         }
 
         try {

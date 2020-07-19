@@ -80,8 +80,14 @@ public class CommandExecute extends ListenerAdapter {
         PermLevel jegoPerm = UserUtil.getPermLevel(e.getAuthor());
 
         if (Ustawienia.instance.disabledCommand.contains(e.getChannel().getId())) {
-            if (jegoPerm.getNumer() == PermLevel.MEMBER.getNumer() && c.getPermLevel().getNumer() < jegoPerm.getNumer()) {
+            if (jegoPerm.getNumer() == PermLevel.MEMBER.getNumer()) {
                 zareaguj(e.getMessage(), e.getAuthor(), false);
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(3000);
+                        e.getMessage().clearReactions().complete();
+                    } catch (Exception ignored) { }
+                }).start();
                 return;
             }
         }

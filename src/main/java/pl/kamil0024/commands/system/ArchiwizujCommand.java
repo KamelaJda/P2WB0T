@@ -9,7 +9,6 @@ import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
 import pl.kamil0024.core.command.enums.PermLevel;
-import pl.kamil0024.core.logger.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -18,6 +17,7 @@ public class ArchiwizujCommand extends Command {
 
     public ArchiwizujCommand() {
         name = "archiwizuj";
+        aliases.add("archiwum");
         permLevel = PermLevel.DEVELOPER;
     }
 
@@ -30,6 +30,11 @@ public class ArchiwizujCommand extends Command {
         if (txt == null) {
             context.send("Nie ma takiego kanału!").queue();
             return true;
+        }
+
+        if (txt.getParent() == cate) {
+            context.send("Ten kanał jest już w archiwum!").queue();
+            return false;
         }
 
         if (!context.getGuild().getSelfMember().hasPermission(txt, Permission.MANAGE_CHANNEL)) {
