@@ -41,7 +41,7 @@ public class ArchiwizujCommand extends Command {
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yy");
         String name = sdf.format(new Date()) + "-" + txt.getName();
 
-        ChannelManager manager = txt.getManager().setParent(cate).setName(name);
+        ChannelManager manager = txt.getManager().setParent(cate).setName(name).clearOverridesAdded().clearOverridesRemoved();
         Log.debug("2");
 
         for (PermissionOverride permissionOverride : cate.getPermissionOverrides()) {
