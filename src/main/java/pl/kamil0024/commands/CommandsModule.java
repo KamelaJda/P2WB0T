@@ -91,6 +91,7 @@ implements Modul {
             cmd.add(new GiveawayCommand(giveawayDao, eventWaiter, giveawayListener));
             cmd.add(new StopCommand(modulManager, statsModule, eventWaiter, musicModule));
             cmd.add(new ShellCommand());
+            cmd.add(new ArchiwizujCommand());
 
             // Moderacyjne:
             cmd.add(new StatusCommand(eventWaiter));
