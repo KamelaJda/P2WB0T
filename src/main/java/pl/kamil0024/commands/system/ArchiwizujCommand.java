@@ -37,22 +37,17 @@ public class ArchiwizujCommand extends Command {
             return false;
         }
 
-        Log.debug("1");
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yy");
         String name = sdf.format(new Date()) + "-" + txt.getName();
 
         ChannelManager manager = txt.getManager().clearOverridesAdded().clearOverridesRemoved().setParent(cate).setName(name);
-        Log.debug("2");
 
         for (PermissionOverride permissionOverride : cate.getPermissionOverrides()) {
             if (permissionOverride.getPermissionHolder() != null) {
-                Log.debug("nie jest nullem");
                 manager = manager.putPermissionOverride(permissionOverride.getPermissionHolder(), permissionOverride.getAllowed(), permissionOverride.getDenied());
             }
         }
-        Log.debug("3");
         manager.queue();
-        Log.debug("4");
 
         context.send("Pomyślnie zarchiwizowano!").queue();
         return true;
