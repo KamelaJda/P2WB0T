@@ -37,17 +37,18 @@ public class ArchiwizujCommand extends Command {
         }
 
         Log.debug("1");
-        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yy");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yy");
         txt.getManager().setParent(cate).complete();
         Log.debug("2");
-        txt.getManager().setName(sdf.format(new Date()) + txt.getName()).complete();
+        txt.getManager().setName(sdf.format(new Date()) + "-" + txt.getName()).complete();
         Log.debug("3");
 
-//        for (PermissionOverride permissionOverride : cate.getPermissionOverrides()) {
-//            if (permissionOverride.getPermissionHolder() != null) {
-//                txt.getManager().putPermissionOverride(permissionOverride.getPermissionHolder(), permissionOverride.getAllowedRaw(),permissionOverride.getDeniedRaw()).queue();
-//            }
-//        }
+        for (PermissionOverride permissionOverride : cate.getPermissionOverrides()) {
+            if (permissionOverride.getPermissionHolder() != null) {
+                txt.getManager().putPermissionOverride(permissionOverride.getPermissionHolder(), permissionOverride.getAllowedRaw(),permissionOverride.getDeniedRaw()).queue();
+            }
+        }
+        Log.debug("4");
 
         context.send("Pomyślnie zarchiwizowano!").queue();
         return true;
