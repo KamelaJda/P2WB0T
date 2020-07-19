@@ -51,7 +51,7 @@ public class ArchiwizujCommand extends Command {
             }
         }
         Log.debug("3");
-        manager.complete();
+        manager.queue();
         Log.debug("4");
 
         context.send("Pomyślnie zarchiwizowano!").queue();
