@@ -45,9 +45,11 @@ public class ArchiwizujCommand extends Command {
 
         for (PermissionOverride permissionOverride : cate.getPermissionOverrides()) {
             if (permissionOverride.getPermissionHolder() != null) {
-                txt.getManager().putPermissionOverride(permissionOverride.getPermissionHolder(), permissionOverride.getAllowedRaw(),permissionOverride.getDeniedRaw()).queue();
+                Log.debug("nie jest nullem");
+                txt.getManager().putPermissionOverride(permissionOverride.getPermissionHolder(), permissionOverride.getAllowed(), permissionOverride.getDenied()).complete();
             }
         }
+
         Log.debug("4");
 
         context.send("Pomyślnie zarchiwizowano!").queue();
