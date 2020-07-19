@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.managers.ChannelManager;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
@@ -40,16 +41,18 @@ public class ArchiwizujCommand extends Command {
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yy");
         String name = sdf.format(new Date()) + "-" + txt.getName();
 
-        txt.getManager().setParent(cate).setName(name).complete();
+        ChannelManager manager = txt.getManager().setParent(cate).setName(name);
         Log.debug("2");
 
         for (PermissionOverride permissionOverride : cate.getPermissionOverrides()) {
             if (permissionOverride.getPermissionHolder() != null) {
                 Log.debug("nie jest nullem");
-                txt.getManager().putPermissionOverride(permissionOverride.getPermissionHolder(), permissionOverride.getAllowed(), permissionOverride.getDenied()).complete();
+                manager.putPermissionOverride(permissionOverride.getPermissionHolder(), permissionOverride.getAllowed(), permissionOverride.getDenied()).complete();
             }
         }
         Log.debug("3");
+        manager.complete();
+        Log.debug("4");
 
         context.send("Pomyślnie zarchiwizowano!").queue();
         return true;
