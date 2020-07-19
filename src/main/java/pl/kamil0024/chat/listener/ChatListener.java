@@ -179,14 +179,19 @@ public class ChatListener extends ListenerAdapter {
             action.send();
         }
 
-        if (skrotyCount(msgRaw.toLowerCase().split(" "))
-                || skrotyCount(msgRaw.toLowerCase().replaceAll("[^\\w\\s]*", "").split(" "))
-                || skrotyCount(new String[] {msgRaw.toLowerCase()})
-                || skrotyCount(new String[] {msgRaw.replaceAll("[^\\w\\s]*", "").toLowerCase()})) {
-            action.setKara(Action.ListaKar.SKROTY);
-            action.send();
+        if (member.getId().equals("415266870275342379")) {
+            Log.debug("1");
+            if (skrotyCount(msgRaw.toLowerCase().split(" "))) {
+                action.setKara(Action.ListaKar.SKROTY);
+                action.send();
+            }
+            Log.debug("2");
+            if (skrotyCount(new String[] {msgRaw.toLowerCase()})) {
+                action.setKara(Action.ListaKar.SKROTY);
+                action.send();
+            }
+        
         }
-
     }
 
     @Nullable
@@ -283,9 +288,14 @@ public class ChatListener extends ListenerAdapter {
             if (whiteList.contains(s.toLowerCase())) {
                 continue;
             }
-            String pat = s.replaceAll("[^\\u0020\\u0030-\\u0039\\u0041-\\u005A\\u0061-\\u007A\\u00C0-\\u1D99]", "").replaceAll(EMOJI.toString(), "").replaceAll("[jJ][ ]?[a-z-A-Z]{1,2}", "kurwa");
-            if (pat.equals("kurwa")) return true;
+            String pat = s.replaceAll("[^\\u0020\\u0030-\\u0039\\u0041-\\u005A\\u0061-\\u007A\\u00C0-\\u1D99]", "").replaceAll(EMOJI.toString(), "");
+            Log.debug(" = chatlistener = ");
+            Log.debug("Wiadomosc: " + s);
+            Log.debug("Po replace: " + pat);
+            Log.debug(" = chatlistener = ");
+            if (pat.replaceAll("[jJ][ ]?[a-z-A-Z]{1,2}", "kurwa").equals("kurwa")) return true;
         }
+
         return false;
     }
 
