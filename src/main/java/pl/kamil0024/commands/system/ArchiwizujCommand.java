@@ -39,11 +39,11 @@ public class ArchiwizujCommand extends Command {
         txt.getManager().setName(sdf.format(new Date()) + txt.getName()).complete();
         txt.getManager().setParent(cate).complete();
 
-        for (PermissionOverride permissionOverride : cate.getPermissionOverrides()) {
-            if (permissionOverride.getPermissionHolder() != null) {
-                txt.getManager().putPermissionOverride(permissionOverride.getPermissionHolder(), permissionOverride.getAllowedRaw(),permissionOverride.getDeniedRaw()).queue();
-            }
-        }
+//        for (PermissionOverride permissionOverride : cate.getPermissionOverrides()) {
+//            if (permissionOverride.getPermissionHolder() != null) {
+//                txt.getManager().putPermissionOverride(permissionOverride.getPermissionHolder(), permissionOverride.getAllowedRaw(),permissionOverride.getDeniedRaw()).queue();
+//            }
+//        }
 
         context.send("Pomyślnie zarchiwizowano!").queue();
         return true;
