@@ -6,11 +6,13 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.bdate.BDate;
 import pl.kamil0024.commands.kolkoikrzyzyk.entites.Zaproszenie;
 import pl.kamil0024.core.util.EventWaiter;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @Data
 public class KolkoIKrzyzykManager {
@@ -58,6 +60,14 @@ public class KolkoIKrzyzykManager {
 
     public boolean hasInvite(String id) {
         return zaproszenia.get(id) != null;
+    }
+
+    @Nullable
+    public Zaproszenie getZaproById(int id) {
+        for (Map.Entry<String, Zaproszenie> zapro : getZaproszenia().entrySet()) {
+            if (zapro.getValue().getId() == id) return zapro.getValue();
+        }
+        return null;
     }
 
     public void nowaGra(Zaproszenie zapro) {
