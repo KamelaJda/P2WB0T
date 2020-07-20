@@ -65,6 +65,7 @@ public class Gra {
         eb.addField("Kogo ruch?", getKogoRuch().getAsMention(), false);
 
         eb.addField("Plansza", getPlansza(), false);
+        eb.addField("Tipy", "Aby się ruszyć trzeba napisać `gra: <nr. planszy>`. np. `gra: 1b`", false);
 
         return eb;
     }
