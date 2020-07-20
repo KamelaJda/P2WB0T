@@ -1,6 +1,5 @@
 package pl.kamil0024.commands.zabawa;
 
-import com.sun.prism.Texture;
 import net.dv8tion.jda.api.entities.Member;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
