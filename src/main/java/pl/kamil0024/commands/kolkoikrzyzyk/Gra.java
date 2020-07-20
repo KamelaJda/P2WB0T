@@ -49,10 +49,11 @@ public class Gra {
         Message msg = getChannel().sendMessage("Ładuje...").complete();
 
         MessageBuilder mb = new MessageBuilder();
-        mb.setContent(null);
+        mb.setContent(" ");
         mb.setEmbed(getEmbed().build());
 
         msg.editMessage(mb.build()).complete();
+        setBotMsg(msg);
         waitForRuch();
     }
 
@@ -83,9 +84,9 @@ public class Gra {
 
     private boolean checkRuch(GuildMessageReceivedEvent event) {
         String msg = event.getMessage().getContentRaw();
-        if (msg.isEmpty() || !msg.toLowerCase().startsWith("gra:")
-                || !event.getAuthor().getId().equals(getKogoRuch().getId())
-                || !event.getChannel().getId().equals(getChannel().getId())) return false;
+//        if (msg.isEmpty() || !msg.toLowerCase().startsWith("gra:")
+//                || !event.getAuthor().getId().equals(getKogoRuch().getId())
+//                || !event.getChannel().getId().equals(getChannel().getId())) return false;
         return true;
     }
 
