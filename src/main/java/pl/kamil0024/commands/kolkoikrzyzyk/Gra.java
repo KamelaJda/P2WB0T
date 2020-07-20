@@ -85,9 +85,7 @@ public class Gra {
     private boolean checkRuch(GuildMessageReceivedEvent event) {
         Log.debug("check1");
         String msg = event.getMessage().getContentRaw();
-        if (msg.isEmpty() || !msg.toLowerCase().startsWith("gra:")
-                || !event.getAuthor().getId().equals(getKogoRuch().getId())
-                || !event.getChannel().getId().equals(getChannel().getId())) return false;
+        if (msg.isEmpty() || !msg.toLowerCase().startsWith("gra:")) return false;
         Log.debug("check2");
         return true;
     }
