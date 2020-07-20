@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import pl.kamil0024.commands.kolkoikrzyzyk.KolkoIKrzyzykManager;
 import pl.kamil0024.commands.listener.GiveawayListener;
 import pl.kamil0024.commands.listener.MultiListener;
 import pl.kamil0024.commands.zabawa.PogodaCommand;
@@ -54,6 +55,7 @@ implements Modul {
         // Listeners
 
         MultiListener multiListener;
+        KolkoIKrzyzykManager kolkoIKrzyzykManager;
 
     public CommandsModule(CommandManager commandManager, Tlumaczenia tlumaczenia, ShardManager api, EventWaiter eventWaiter, KaryJSON karyJSON, CaseDao caseDao, ModulManager modulManager, CommandExecute commandExecute, UserDao userDao, ModLog modLog, NieobecnosciDao nieobecnosciDao, RemindDao remindDao, GiveawayDao giveawayDao, StatsModule statsModule, MusicModule musicModule, MultiDao multiDao) {
             this.commandManager = commandManager;
@@ -80,6 +82,8 @@ implements Modul {
         @Override
         public boolean startUp() {
             GiveawayListener giveawayListener = new GiveawayListener(giveawayDao, api);
+            kolkoIKrzyzykManager = new KolkoIKrzyzykManager(api, eventWaiter);
+
             multiListener = new MultiListener(multiDao);
             api.addEventListener(multiListener);
 

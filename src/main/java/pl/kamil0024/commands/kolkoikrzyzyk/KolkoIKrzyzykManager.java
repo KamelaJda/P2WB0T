@@ -5,6 +5,7 @@ import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import pl.kamil0024.bdate.BDate;
 import pl.kamil0024.commands.kolkoikrzyzyk.entites.Zaproszenie;
 import pl.kamil0024.core.util.EventWaiter;
@@ -16,10 +17,10 @@ public class KolkoIKrzyzykManager {
     
     public HashMap<String, Zaproszenie> zaproszenia;
 
-    private JDA api;
+    private ShardManager api;
     private EventWaiter eventWaiter;
 
-    public KolkoIKrzyzykManager(JDA api, EventWaiter eventWaiter) {
+    public KolkoIKrzyzykManager(ShardManager api, EventWaiter eventWaiter) {
         zaproszenia = new HashMap<>();
 
         this.api = api;
