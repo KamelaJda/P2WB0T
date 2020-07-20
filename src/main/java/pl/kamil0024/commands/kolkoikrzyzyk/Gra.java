@@ -91,9 +91,10 @@ public class Gra {
     }
 
     private void ruch(GuildMessageReceivedEvent event) {
+        Log.debug("nowy ruch");
         String msg = event.getMessage().getContentRaw();
         setKogoRuch(event.getMember());
-        getBotMsg().editMessage(getEmbed().build()).queue();
+        getBotMsg().editMessage(getEmbed().build()).complete();
     }
 
     public void waitForRuch() {
