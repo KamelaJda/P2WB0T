@@ -60,8 +60,8 @@ public class Gra {
     private EmbedBuilder getEmbed() {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(Color.cyan);
-
-        eb.setDescription(getOsoba1().getAsMention() + " vs " + getOsoba2());
+        eb.setTitle("Gra w Kółko i Krzyżyk");
+        eb.setDescription(getOsoba1().getAsMention() + " vs " + getOsoba2().getAsMention());
         eb.addField("Kogo ruch?", getKogoRuch().getAsMention(), false);
 
         eb.addField("Plansza", getPlansza(), false);
@@ -84,9 +84,9 @@ public class Gra {
 
     private boolean checkRuch(GuildMessageReceivedEvent event) {
         String msg = event.getMessage().getContentRaw();
-//        if (msg.isEmpty() || !msg.toLowerCase().startsWith("gra:")
-//                || !event.getAuthor().getId().equals(getKogoRuch().getId())
-//                || !event.getChannel().getId().equals(getChannel().getId())) return false;
+        if (msg.isEmpty() || !msg.toLowerCase().startsWith("gra:")
+                || !event.getAuthor().getId().equals(getKogoRuch().getId())
+                || !event.getChannel().getId().equals(getChannel().getId())) return false;
         return true;
     }
 
