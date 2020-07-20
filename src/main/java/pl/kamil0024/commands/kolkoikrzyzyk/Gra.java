@@ -83,15 +83,14 @@ public class Gra {
     }
 
     private boolean checkRuch(GuildMessageReceivedEvent event) {
-        Log.debug("check1");
         String msg = event.getMessage().getContentRaw();
-        if (msg.isEmpty() || !msg.toLowerCase().startsWith("gra:")) return false;
-        Log.debug("check2");
+        if (msg.isEmpty() || !msg.toLowerCase().startsWith("gra:")
+                || !getKogoRuch().getId().equals(event.getAuthor().getId())
+                || !getChannel().getId().equals(event.getChannel().getId())) return false;
         return true;
     }
 
     private void ruch(GuildMessageReceivedEvent event) {
-        Log.debug("nowy ruch");
         String msg = event.getMessage().getContentRaw();
         setKogoRuch(getKogoRuch().getId().equals(osoba1.getId()) ? osoba2 : osoba1);
         getBotMsg().editMessage(getEmbed().build()).complete();
@@ -104,7 +103,6 @@ public class Gra {
     }
 
     private void stopGame() {
-        Log.debug("koniec gry");
         getBotMsg().editMessage("koniec").complete();
     }
 
