@@ -56,8 +56,8 @@ public class Slot {
         int slot = Integer.parseInt(s[0]);
 
         if (s[1].equals("a")) return jebacMatme(slot, 1, 4, 7);
-        if (s[1].equals("b")) return jebacMatme(slot, 3, 5, 8);
-        if (s[1].equals("c")) return jebacMatme(slot, 4, 6, 9);
+        if (s[1].equals("b")) return jebacMatme(slot, 2, 5, 8);
+        if (s[1].equals("c")) return jebacMatme(slot, 3, 6, 9);
         return slot + 3;
     }
 
