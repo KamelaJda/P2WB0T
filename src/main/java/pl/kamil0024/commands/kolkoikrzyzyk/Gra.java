@@ -95,6 +95,7 @@ public class Gra {
         String msg = event.getMessage().getContentRaw();
         setKogoRuch(getKogoRuch().getId().equals(osoba1.getId()) ? osoba2 : osoba1);
         getBotMsg().editMessage(getEmbed().build()).complete();
+        waitForRuch();
     }
 
     public void waitForRuch() {
