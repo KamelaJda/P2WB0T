@@ -92,13 +92,11 @@ public class Gra {
 
     private boolean checkRuch(GuildMessageReceivedEvent event) {
         String msg = event.getMessage().getContentRaw();
-        Log.debug("tak1");
         if (msg.isEmpty() || !msg.toLowerCase().startsWith("gra:")
                 || !getKogoRuch().getId().equals(event.getAuthor().getId())
                 || !getChannel().getId().equals(event.getChannel().getId())) return false;
         event.getMessage().delete().queue();
-        Log.debug("tak2");
-        msg = msg.replaceAll(" ", "");
+        msg = msg.replaceAll(" ", "").replaceAll("gra:", "");
 
         if (!getSlot().check(msg,this, event.getMember())) {
             event.getChannel().sendMessage(event.getAuthor().getAsMention() + ", zły format planszy (lub chcesz zając zajęte już pole)! Użycie: `gra: <nr. planszy>`. np. `gra: 1b`")
