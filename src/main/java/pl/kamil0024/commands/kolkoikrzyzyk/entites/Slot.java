@@ -68,14 +68,31 @@ public class Slot {
         if (s[1].equals("a")) return jebacMatme(slot, 1, 4, 7);
         if (s[1].equals("b")) return jebacMatme(slot, 2, 5, 8);
         if (s[1].equals("c")) return jebacMatme(slot, 3, 6, 9);
+
+//        if (s[1].equals("a")) {
+//            if (slot == 1) return 1;
+//            if (slot == 2) return 4;
+//            if (slot == 3) return 7;
+//        }
+//        if (s[1].equals("b")) {
+//            if (slot == 1) return 2;
+//            if (slot == 2) return 5;
+//            if (slot == 3) return 8;
+//        }
+//        if (s[1].equals("c")) {
+//            if (slot == 1) return 3;
+//            if (slot == 2) return 6;
+//            if (slot == 3) return 9;
+//        }
+
         Log.debug("kurwa " + s[1]);
         return 0;
     }
 
     private int jebacMatme(int slot, int moze1, int moze2, int moze3) {
-        if (slot == moze1) return moze1;
-        if (slot == moze2) return moze2;
-        if (slot == moze3) return moze3;
+        if (slot == 1) return moze1;
+        if (slot == 2) return moze2;
+        if (slot == 3) return moze3;
         Log.debug("xdddddddddddddddddddd");
         Log.debug(slot + "");
         Log.debug(moze1 + moze2 + moze3 + "");
