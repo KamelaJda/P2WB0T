@@ -30,28 +30,21 @@ public class Slot {
         int jeden;
         String tak = slot[1].toLowerCase();
 
-        Log.debug(slot[0]);
-        Log.debug(slot[1]);
-
         try {
             jeden = Integer.parseInt(slot[0]);
         } catch (NumberFormatException e) {
-            Log.debug("1");
             return false;
         }
 
         if (jeden < 1 || jeden > 3) {
-            Log.debug("2");
             return false;
         }
         if (!tak.equals("a") && !tak.equals("b") && !tak.equals("c")) {
-            Log.debug("3");
             return false;
         }
 
         String kekw = sloty.get(format(slot));
         if (!kekw.equals(Gra.PUSTE)) {
-            Log.debug("4");
             return false;
         }
 
