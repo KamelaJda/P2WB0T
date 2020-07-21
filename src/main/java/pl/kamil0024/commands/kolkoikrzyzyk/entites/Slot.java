@@ -96,7 +96,9 @@ public class Slot {
     private boolean tak(String equals, String... id) {
         List<Boolean> tak = new ArrayList<>();
         for (String s : id) {
-            if (getSloty().get(s).equals(equals)) tak.add(true);
+            try {
+                if (getSloty().getOrDefault(s, Gra.PUSTE).equals(equals)) tak.add(true);
+            } catch (NullPointerException ignored) {}
         }
         return tak.size() == 3;
     }
