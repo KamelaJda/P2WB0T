@@ -105,7 +105,7 @@ public class Gra {
         }
         if (!getSlot().check(msg,this, event.getMember())) {
             event.getChannel().sendMessage(event.getAuthor().getAsMention() + ", zły format planszy (lub chcesz zając zajęte już pole)! Użycie: `gra: <nr. planszy>`. np. `gra: 1b`")
-                    .queueAfter(6, TimeUnit.SECONDS, m -> m.delete().queue());
+            .queue(m -> m.delete().queueAfter(7, TimeUnit.SECONDS));
             return false;
         }
         return true;
