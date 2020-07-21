@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.bdate.BDate;
 import pl.kamil0024.commands.kolkoikrzyzyk.entites.Slot;
 import pl.kamil0024.core.util.BetterStringBuilder;
@@ -33,6 +34,8 @@ public class Gra {
 
     private EventWaiter eventWaiter;
     private Slot slot;
+
+    boolean koniec = false;
 
     public Gra(Member osoba1, Member osoba2, TextChannel channel, EventWaiter eventWaiter) {
         this.osoba1 = osoba1;
@@ -93,13 +96,23 @@ public class Gra {
         if (msg.isEmpty() || !msg.toLowerCase().startsWith("gra:")
                 || !getKogoRuch().getId().equals(event.getAuthor().getId())
                 || !getChannel().getId().equals(event.getChannel().getId())) return false;
+        if (isKoniec()) return false;
+
         event.getMessage().delete().queue();
         msg = msg.replaceAll(" ", "").replaceAll("gra:", "");
 
-        if (!getSlot().check(msg,this, event.getMember())) {
-            event.getChannel().sendMessage(event.getAuthor().getAsMention() + ", zły format planszy (lub chcesz zając zajęte już pole)! Użycie: `gra: <nr. planszy>`. np. `gra: 1b`")
-            .queue(m -> m.delete().queueAfter(7, TimeUnit.SECONDS));
-            return false;
+        Slot.ReturnType returnn = getSlot().check(msg,this, event.getMember());
+
+        switch (returnn) {
+            case BAD_FORMAT:
+                event.getChannel().sendMessage(event.getAuthor().getAsMention() + ", zły format planszy (lub chcesz zając zajęte już pole)! Użycie: `gra: <nr. planszy>`. np. `gra: 1b`")
+                        .queue(m -> m.delete().queueAfter(7, TimeUnit.SECONDS));
+                return false;
+            case FULL_MAP:
+                end(null);
+            case WIN:
+                end(event.getMember());
+                break;
         }
         return true;
     }
@@ -112,15 +125,37 @@ public class Gra {
 
     public void waitForRuch() {
         eventWaiter.waitForEvent(GuildMessageReceivedEvent.class,
-                this::checkRuch, this::ruch, 30, TimeUnit.SECONDS, this::stopGame);
-    }
-
-    private void stopGame() {
-        getBotMsg().editMessage("koniec").complete();
+                this::checkRuch, this::ruch, 30, TimeUnit.SECONDS, this::end);
     }
 
     public String getEmote(Member member) {
         return member.getId().equals(getOsoba1().getId()) ? KOLKO : KRZYZYK;
+    }
+
+    public void end() {
+        end(null);
+    }
+
+    public void end(@Nullable Member member) {
+        // member == null = remis
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.setColor(Color.cyan);
+        eb.setTitle("Gra w Kółko i Krzyżyk");
+        eb.setDescription(getOsoba1().getAsMention() + " vs " + getOsoba2().getAsMention()
+                + "\n\n" + getOsoba1().getAsMention() + " " + getEmote(getOsoba1())
+                + "\n" + getOsoba2().getAsMention() + " " + getEmote(getOsoba2()));
+
+        eb.addField("Plansza", getPlansza(), false);
+        
+        if (member != null) {
+            eb.addField("Runda się zakończyła", "Wygrał: " + member.getAsMention() 
+                    + "\nEzem jest: " + (member.getId().equals(osoba1.getId()) ? osoba2 : osoba1).getAsMention(), false);
+        } else {
+            eb.addField("Runda się zakończyła", "Remis! Czyli "
+                    + osoba1.getAsMention() + " i " + osoba2.getAsMention() + " sa ezami.", false);
+        }
+        getBotMsg().editMessage(eb.build()).queue();
+        setKoniec(true);
     }
 
 }

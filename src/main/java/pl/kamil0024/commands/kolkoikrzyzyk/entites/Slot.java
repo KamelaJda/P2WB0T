@@ -7,8 +7,7 @@ import net.dv8tion.jda.api.entities.Member;
 import pl.kamil0024.commands.kolkoikrzyzyk.Gra;
 import pl.kamil0024.core.logger.Log;
 
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 
 
 public class Slot {
@@ -24,7 +23,7 @@ public class Slot {
 
     }
 
-    public boolean check(String s, Gra gra, Member osoba) {
+    public ReturnType check(String s, Gra gra, Member osoba) {
         String[] slot = s.split("");
 
         int jeden;
@@ -33,35 +32,30 @@ public class Slot {
         try {
             jeden = Integer.parseInt(slot[0]);
         } catch (NumberFormatException e) {
-            return false;
+            return ReturnType.BAD_FORMAT;
         }
 
-        if (jeden < 1 || jeden > 3) {
-            return false;
-        }
-        if (!tak.equals("a") && !tak.equals("b") && !tak.equals("c")) {
-            return false;
-        }
+        if (jeden < 1 || jeden > 3) return ReturnType.BAD_FORMAT;
+        if (!tak.equals("a") && !tak.equals("b") && !tak.equals("c")) return ReturnType.BAD_FORMAT;
 
         String kekw = sloty.get(format(slot));
-        if (!kekw.equals(Gra.PUSTE)) {
-            return false;
-        }
+        if (!kekw.equals(Gra.PUSTE)) return ReturnType.BAD_FORMAT;
 
-        Log.debug("5");
         sloty.put(format(slot), gra.getEmote(osoba));
-        return true;
+
+        boolean pelnaMapa = true;
+        for (Map.Entry<Integer, String> entry : getSloty().entrySet()) {
+            if (entry.getValue().equals(Gra.PUSTE)) {
+                pelnaMapa = false;
+                break;
+            }
+        }
+        if (pelnaMapa) return ReturnType.FULL_MAP;
+
+        return ReturnType.SUCCES;
     }
 
     private int format(String[] s) {
-        // s[0] = numer to lewej
-        // s[1] = litera na dole
-
-        // 1 [1] | [2] | [3]
-        // 2 [4] | [5] | [6]
-        // 3 [7] | [8] | [9]
-        //    A     B    C
-
         Log.debug(Arrays.toString(s));
         int slot = Integer.parseInt(s[0]);
 
@@ -69,35 +63,42 @@ public class Slot {
         if (s[1].equals("b")) return jebacMatme(slot, 2, 5, 8);
         if (s[1].equals("c")) return jebacMatme(slot, 3, 6, 9);
 
-//        if (s[1].equals("a")) {
-//            if (slot == 1) return 1;
-//            if (slot == 2) return 4;
-//            if (slot == 3) return 7;
-//        }
-//        if (s[1].equals("b")) {
-//            if (slot == 1) return 2;
-//            if (slot == 2) return 5;
-//            if (slot == 3) return 8;
-//        }
-//        if (s[1].equals("c")) {
-//            if (slot == 1) return 3;
-//            if (slot == 2) return 6;
-//            if (slot == 3) return 9;
-//        }
-
-        Log.debug("kurwa " + s[1]);
-        return 0;
+        throw new UnsupportedOperationException("co jest");
     }
 
     private int jebacMatme(int slot, int moze1, int moze2, int moze3) {
         if (slot == 1) return moze1;
         if (slot == 2) return moze2;
         if (slot == 3) return moze3;
-        Log.debug("xdddddddddddddddddddd");
-        Log.debug(slot + "");
-        Log.debug(moze1 + moze2 + moze3 + "");
-        Log.debug("xdddddddddddddddddddd");
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("co jest");
+    }
+
+    public enum ReturnType {
+        BAD_FORMAT, FULL_MAP, WIN, SUCCES
+    }
+
+    @SuppressWarnings("RedundantIfStatement")
+    private boolean checkWin(String emote) {
+
+        if (tak(emote, "1", "2", "3")) return true;
+        if (tak(emote, "4", "5", "6")) return true;
+        if (tak(emote, "7", "8", "9")) return true;
+
+        if (tak(emote, "1", "4", "7")) return true;
+        if (tak(emote, "2", "5", "8")) return true;
+        if (tak(emote, "3", "6", "9")) return true;
+        
+        if (tak(emote, "7", "5", "4")) return true;
+
+        return false;
+    }
+
+    private boolean tak(String equals, String... id) {
+        List<Boolean> tak = new ArrayList<>();
+        for (String s : id) {
+            if (getSloty().get(s).equals(equals)) tak.add(true);
+        }
+        return tak.size() == 3;
     }
 
 }
