@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.Member;
 import pl.kamil0024.commands.kolkoikrzyzyk.Gra;
+import pl.kamil0024.core.logger.Log;
 
 import java.util.HashMap;
 
@@ -28,18 +29,32 @@ public class Slot {
         int jeden;
         String tak = slot[1].toLowerCase();
 
+        Log.debug(slot[0]);
+        Log.debug(slot[1]);
+        
         try {
             jeden = Integer.parseInt(slot[0]);
         } catch (NumberFormatException e) {
+            Log.debug("1");
             return false;
         }
 
-        if (jeden < 1 || jeden > 3) return false;
-        if (!tak.equals("a") && !tak.equals("b") && !tak.equals("c")) return false;
+        if (jeden < 1 || jeden > 3) {
+            Log.debug("2");
+            return false;
+        }
+        if (!tak.equals("a") && !tak.equals("b") && !tak.equals("c")) {
+            Log.debug("3");
+            return false;
+        }
 
         String kekw = sloty.get(format(slot));
-        if (!kekw.equals(Gra.PUSTE)) return false;
+        if (!kekw.equals(Gra.PUSTE)) {
+            Log.debug("4");
+            return false;
+        }
 
+        Log.debug("5");
         sloty.put(format(slot), gra.getEmote(osoba));
         return true;
     }
