@@ -38,7 +38,7 @@ public class Log {
                 sb.append("\n```");
                 WebhookUtil web = new WebhookUtil();
                 web.setType(WebhookUtil.LogType.ERROR);
-                web.setMessage(sb.toString().replaceAll(" {4}at ", ""));
+                web.setMessage(sb.toString().replaceAll(" {4}at ", "").replaceAll("    at ", ""));
                 web.send();
                 sb = new StringBuilder();
                 strona = true;

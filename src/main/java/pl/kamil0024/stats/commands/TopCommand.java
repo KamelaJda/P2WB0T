@@ -50,49 +50,50 @@ public class TopCommand extends Command {
         Message msg = context.send("Ładuje...").complete();
         context.getChannel().sendTyping().queue();
 
-        List<StatsConfig> staty = statsDao.getAll();
-        if (staty.isEmpty()) {
-            msg.editMessage("Nikt nie ma statystyk lol").queue();
-            return false;
-        }
+        new Thread(() -> {
+            List<StatsConfig> staty = statsDao.getAll();
+            if (staty.isEmpty()) {
+                msg.editMessage("Nikt nie ma statystyk lol").queue();
+            }
 
-        HashMap<String, Suma> mapa = new HashMap<>();
-        HashMap<String, Integer> top = new HashMap<>();
-        ArrayList<EmbedBuilder> pages = new ArrayList<>();
+            HashMap<String, Suma> mapa = new HashMap<>();
+            HashMap<String, Integer> top = new HashMap<>();
+            ArrayList<EmbedBuilder> pages = new ArrayList<>();
 
-        Emote green = CommandExecute.getReaction(context.getUser(), true);
-        Emote red = CommandExecute.getReaction(context.getUser(), false);
+            Emote green = CommandExecute.getReaction(context.getUser(), true);
+            Emote red = CommandExecute.getReaction(context.getUser(), false);
 
-        for (StatsConfig statsConfig : staty) {
-            int suma = 0;
-            Statystyka statyZParuDni = StatsCommand.getStatsOfDayMinus(statsConfig.getStats(), dni);
-            suma += (statyZParuDni.getWyrzuconych() +
-                    statyZParuDni.getZbanowanych() +
-                    statyZParuDni.getZmutowanych());
+            for (StatsConfig statsConfig : staty) {
+                int suma = 0;
+                Statystyka statyZParuDni = StatsCommand.getStatsOfDayMinus(statsConfig.getStats(), dni);
+                suma += (statyZParuDni.getWyrzuconych() +
+                        statyZParuDni.getZbanowanych() +
+                        statyZParuDni.getZmutowanych());
 
-            mapa.put(statsConfig.getId(), new Suma(suma, statyZParuDni));
-        }
+                mapa.put(statsConfig.getId(), new Suma(suma, statyZParuDni));
+            }
 
-        for (Map.Entry<String, Suma> entry : mapa.entrySet()) {
-            top.put(entry.getKey(), entry.getValue().getNadaneKary());
-        }
+            for (Map.Entry<String, Suma> entry : mapa.entrySet()) {
+                top.put(entry.getKey(), entry.getValue().getNadaneKary());
+            }
 
-        int rank = 1;
-        for (Map.Entry<String, Integer> entry : sortByValue(top).entrySet()) {
-            EmbedBuilder eb = new EmbedBuilder();
-            User user = context.getParsed().getUser(entry.getKey());
+            int rank = 1;
+            for (Map.Entry<String, Integer> entry : sortByValue(top).entrySet()) {
+                EmbedBuilder eb = new EmbedBuilder();
+                User user = context.getParsed().getUser(entry.getKey());
 
-            eb.setColor(UserUtil.getColor(context.getMember()));
-            eb.setTitle("Miejsce #" + rank);
-            eb.setThumbnail(user.getAvatarUrl());
-            eb.setDescription(UserUtil.getFullName(user) + "\n\n" +
-                    StatsCommand.getStringForStats(mapa.get(entry.getKey()).getStatystyka()) +
-                    "\nMa nieobecność? " + (nieobecnosciDao.hasNieobecnosc(user.getId()) ? green.getAsMention() : red.getAsMention()));
-            pages.add(eb);
-            rank++;
-        }
+                eb.setColor(UserUtil.getColor(context.getMember()));
+                eb.setTitle("Miejsce #" + rank);
+                eb.setThumbnail(user.getAvatarUrl());
+                eb.setDescription(UserUtil.getFullName(user) + "\n\n" +
+                        StatsCommand.getStringForStats(mapa.get(entry.getKey()).getStatystyka()) +
+                        "\nMa nieobecność? " + (nieobecnosciDao.hasNieobecnosc(user.getId()) ? green.getAsMention() : red.getAsMention()));
+                pages.add(eb);
+                rank++;
+            }
 
-        new EmbedPageintaor(pages, context.getUser(), eventWaiter, context.getJDA(), 240).create(msg);
+            new EmbedPageintaor(pages, context.getUser(), eventWaiter, context.getJDA(), 240).create(msg);
+        }).start();
         return true;
     }
 

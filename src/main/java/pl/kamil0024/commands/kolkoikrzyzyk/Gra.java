@@ -9,19 +9,17 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import pl.kamil0024.bdate.BDate;
 import pl.kamil0024.commands.kolkoikrzyzyk.entites.Slot;
-import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.util.BetterStringBuilder;
 import pl.kamil0024.core.util.EventWaiter;
 
 import java.awt.*;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Data
 public class Gra {
 
-    public static String KOLKO = "\uD83D\uDD34";
+    public static String KOLKO = "⭕";
     public static String KRZYZYK = "❌";
     public static String PUSTE = "\uD83D\uDED1";
 
