@@ -140,10 +140,9 @@ public class Gra {
     public void end(@Nullable Member member) {
         // member == null = remis
         EmbedBuilder eb = new EmbedBuilder();
-        eb.setColor(Color.cyan);
+        eb.setColor(Color.red);
         eb.setTitle("Gra w Kółko i Krzyżyk");
-        eb.setDescription(getOsoba1().getAsMention() + " vs " + getOsoba2().getAsMention()
-                + "\n\n" + getOsoba1().getAsMention() + " " + getEmote(getOsoba1())
+        eb.setDescription(getOsoba1().getAsMention() + " " + getEmote(getOsoba1())
                 + "\n" + getOsoba2().getAsMention() + " " + getEmote(getOsoba2()));
 
         eb.addField("Plansza", getPlansza(), false);
