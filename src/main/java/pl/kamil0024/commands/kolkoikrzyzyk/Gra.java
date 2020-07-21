@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import pl.kamil0024.bdate.BDate;
 import pl.kamil0024.commands.kolkoikrzyzyk.entites.Slot;
+import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.util.BetterStringBuilder;
 import pl.kamil0024.core.util.EventWaiter;
 
@@ -91,18 +92,14 @@ public class Gra {
 
     private boolean checkRuch(GuildMessageReceivedEvent event) {
         String msg = event.getMessage().getContentRaw();
+        Log.debug("tak1");
         if (msg.isEmpty() || !msg.toLowerCase().startsWith("gra:")
                 || !getKogoRuch().getId().equals(event.getAuthor().getId())
                 || !getChannel().getId().equals(event.getChannel().getId())) return false;
         event.getMessage().delete().queue();
+        Log.debug("tak2");
         msg = msg.replaceAll(" ", "");
 
-        String[] plansza = msg.split("");
-        if (plansza.length != 2) {
-            event.getChannel().sendMessage(event.getAuthor().getAsMention() + ", zły numer planszy! Użycie: `gra: <nr. planszy>`. np. `gra: 1b`")
-                    .queueAfter(6, TimeUnit.SECONDS, m -> m.delete().queue());
-            return false;
-        }
         if (!getSlot().check(msg,this, event.getMember())) {
             event.getChannel().sendMessage(event.getAuthor().getAsMention() + ", zły format planszy (lub chcesz zając zajęte już pole)! Użycie: `gra: <nr. planszy>`. np. `gra: 1b`")
             .queue(m -> m.delete().queueAfter(7, TimeUnit.SECONDS));

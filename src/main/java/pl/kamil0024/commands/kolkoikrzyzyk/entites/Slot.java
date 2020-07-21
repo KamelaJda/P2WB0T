@@ -31,7 +31,7 @@ public class Slot {
 
         Log.debug(slot[0]);
         Log.debug(slot[1]);
-        
+
         try {
             jeden = Integer.parseInt(slot[0]);
         } catch (NumberFormatException e) {
