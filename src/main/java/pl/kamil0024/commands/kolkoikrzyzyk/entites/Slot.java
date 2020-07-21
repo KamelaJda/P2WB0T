@@ -80,6 +80,8 @@ public class Slot {
         if (slot == moze1) return moze1;
         if (slot == moze2) return moze2;
         if (slot == moze3) return moze3;
+        Log.debug(slot + "");
+        Log.debug(moze1 + moze2 + moze3 + "");
         throw new UnsupportedOperationException();
     }
 
