@@ -51,12 +51,12 @@ public class Slot {
             }
         }
         if (pelnaMapa) return ReturnType.FULL_MAP;
+        if (checkWin(gra.getEmote(osoba))) return ReturnType.WIN;
 
         return ReturnType.SUCCES;
     }
 
     private int format(String[] s) {
-        Log.debug(Arrays.toString(s));
         int slot = Integer.parseInt(s[0]);
 
         if (s[1].equals("a")) return jebacMatme(slot, 1, 4, 7);
