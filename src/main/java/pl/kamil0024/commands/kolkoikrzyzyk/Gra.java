@@ -110,9 +110,10 @@ public class Gra {
                 return false;
             case FULL_MAP:
                 end(null);
+                return false;
             case WIN:
                 end(event.getMember());
-                break;
+                return false;
         }
         return true;
     }

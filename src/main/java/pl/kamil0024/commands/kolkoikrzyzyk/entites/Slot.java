@@ -87,7 +87,7 @@ public class Slot {
         if (tak(emote, "1", "4", "7")) return true;
         if (tak(emote, "2", "5", "8")) return true;
         if (tak(emote, "3", "6", "9")) return true;
-        
+
         if (tak(emote, "7", "5", "4")) return true;
 
         return false;
