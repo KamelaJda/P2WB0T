@@ -156,6 +156,8 @@ public class Gra {
         }
         getBotMsg().editMessage(eb.build()).queue();
         setKoniec(true);
+        KolkoIKrzyzykManager.graja.remove(osoba1.getId());
+        KolkoIKrzyzykManager.graja.remove(osoba2.getId());
     }
 
 }

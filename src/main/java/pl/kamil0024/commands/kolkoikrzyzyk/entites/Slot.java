@@ -80,24 +80,25 @@ public class Slot {
     @SuppressWarnings("RedundantIfStatement")
     private boolean checkWin(String emote) {
 
-        if (tak(emote, "1", "2", "3")) return true;
-        if (tak(emote, "4", "5", "6")) return true;
-        if (tak(emote, "7", "8", "9")) return true;
+        if (tak(emote, 1, 2, 3)) return true;
+        if (tak(emote, 4, 5, 6)) return true;
+        if (tak(emote, 7, 8, 9)) return true;
 
-        if (tak(emote, "1", "4", "7")) return true;
-        if (tak(emote, "2", "5", "8")) return true;
-        if (tak(emote, "3", "6", "9")) return true;
+        if (tak(emote, 1, 4, 7)) return true;
+        if (tak(emote, 2, 5, 8)) return true;
+        if (tak(emote, 3, 6, 9)) return true;
 
-        if (tak(emote, "7", "5", "4")) return true;
+        if (tak(emote, 7, 5, 3)) return true;
+
 
         return false;
     }
 
-    private boolean tak(String equals, String... id) {
+    private boolean tak(String equals, Integer... id) {
         List<Boolean> tak = new ArrayList<>();
-        for (String s : id) {
+        for (Integer s : id) {
             try {
-                if (getSloty().getOrDefault(Integer.valueOf(s), Gra.PUSTE).equals(equals)) tak.add(true);
+                if (getSloty().get(s).equals(equals)) tak.add(true);
             } catch (Exception ignored) {}
         }
         return tak.size() == 3;

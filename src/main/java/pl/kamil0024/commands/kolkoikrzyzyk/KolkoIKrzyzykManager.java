@@ -11,6 +11,7 @@ import pl.kamil0024.bdate.BDate;
 import pl.kamil0024.commands.kolkoikrzyzyk.entites.Zaproszenie;
 import pl.kamil0024.core.util.EventWaiter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,6 +19,7 @@ import java.util.Map;
 public class KolkoIKrzyzykManager {
     
     public HashMap<String, Zaproszenie> zaproszenia;
+    public static final ArrayList<String> graja = new ArrayList<>();;
 
     private ShardManager api;
     private EventWaiter eventWaiter;
@@ -30,11 +32,14 @@ public class KolkoIKrzyzykManager {
     }
 
     public void stop() {
+        graja.clear();
         getZaproszenia().clear();
     }
 
     public synchronized ZaproszenieStatus zapros(Member zapraszajacy, Member zapraszajaGo, TextChannel textChannel) {
         if (hasInvite(zapraszajacy.getId())) return ZaproszenieStatus.FAILED;
+
+        if (graja.contains(zapraszajacy.getId()) || graja.contains(zapraszajaGo.getId())) return ZaproszenieStatus.IN_GAME;
 
         Zaproszenie zapro = new Zaproszenie();
         zapro.setZapraszajacy(zapraszajacy.getId());
@@ -76,6 +81,9 @@ public class KolkoIKrzyzykManager {
 
         if (osoba1 == null || osoba2 == null) throw new NullPointerException("osoba1 || osoba2 == null");
 
+        graja.add(osoba1.getId());
+        graja.add(osoba2.getId());
+
         new Gra(osoba1, osoba2, zapro.getChannel(), eventWaiter).create();
     }
 
@@ -83,6 +91,7 @@ public class KolkoIKrzyzykManager {
     public enum ZaproszenieStatus {
 
         SUCCES("Pomyślnie zaproszono. Użytkownik ma **30 sekund** na napisane /kolko akceptuj %s", false),
+        IN_GAME("Nie możesz zaprosić tej osoby, ponieważ ona (lub Ty) jesteście podczas gry!", true),
         FAILED("Nie możesz zaprosić tego gracza! Możliwe, że masz już jedno aktywne zaproszenie", true);
 
         private final String msg;

@@ -15,7 +15,7 @@ public class KolkoIKrzyzykCommand extends Command {
         name = "kolkoikrzyzyk";
         aliases.add("kolko");
         aliases.add("krzyzyk");
-        cooldown = 30;
+        cooldown = 15;
 
         this.kolkoIKrzyzykManager = kolkoIKrzyzykManager;
     }
@@ -47,6 +47,11 @@ public class KolkoIKrzyzykCommand extends Command {
             }
             if (member.getId().equals(context.getUser().getId())) {
                 context.send("Kolegów nie masz, że musisz siebie do gry zapraszać? xD").queue();
+                return false;
+            }
+
+            if (member.getUser().isBot() || member.getUser().isFake()) {
+                context.send("Nie masz kolegów, że musisz bota do gry zapraszać?").queue();
                 return false;
             }
 
