@@ -211,6 +211,7 @@ public class MusicModule implements Modul {
             if (g == null) return;
 
             VoiceStateConfig vsc = new VoiceStateConfig("1");
+            if (g.getAudioManager().getConnectedChannel() == null) return;
             vsc.setVoiceChannel(g.getAudioManager().getConnectedChannel().getId());
 
             ArrayList<String> linki = new ArrayList<>();
