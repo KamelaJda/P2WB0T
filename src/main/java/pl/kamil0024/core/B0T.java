@@ -57,6 +57,8 @@ import pl.kamil0024.core.util.EventWaiter;
 import pl.kamil0024.core.util.Statyczne;
 import pl.kamil0024.core.util.Tlumaczenia;
 import pl.kamil0024.core.util.kary.KaryJSON;
+import pl.kamil0024.embedgenerator.EmbedGeneratorModule;
+import pl.kamil0024.embedgenerator.entity.EmbedRedisManager;
 import pl.kamil0024.liczydlo.LiczydloModule;
 import pl.kamil0024.logs.LogsModule;
 import pl.kamil0024.music.MusicModule;
@@ -235,6 +237,7 @@ public class B0T {
         } catch (InterruptedException ignored) {}
 
         RedisManager     redisManager        = new RedisManager(shard.get().getSelfUser().getIdLong());
+        EmbedRedisManager embedRedisManager  = new EmbedRedisManager(redisManager);
                          this.musicAPI       = new MusicAPIImpl(api);
 
         CaseDao          caseDao             = new CaseDao(databaseManager);
@@ -269,11 +272,12 @@ public class B0T {
 //        modulManager.getModules().add(new StatusModule(api));
         modulManager.getModules().add(new NieobecnosciModule(api, nieobecnosciDao, nieobecnosciManager));
         modulManager.getModules().add(new LiczydloModule(api));
-        modulManager.getModules().add(new CommandsModule(commandManager, tlumaczenia, api, eventWaiter, karyJSON, caseDao, modulManager, commandExecute, userDao, modLog, nieobecnosciDao, remindDao, giveawayDao, statsModule, musicModule, multiDao, musicAPI, nieobecnosciManager, youTrack, ticketDao, apelacjeDao, ankietaDao));
+        modulManager.getModules().add(new CommandsModule(commandManager, tlumaczenia, api, eventWaiter, karyJSON, caseDao, modulManager, commandExecute, userDao, modLog, nieobecnosciDao, remindDao, giveawayDao, statsModule, musicModule, multiDao, musicAPI, nieobecnosciManager, youTrack, ticketDao, apelacjeDao, ankietaDao, embedRedisManager));
         modulManager.getModules().add(new RekruModule(api, commandManager));
         modulManager.getModules().add(musicModule);
         modulManager.getModules().add(statsModule);
         modulManager.getModules().add(apiModule);
+        modulManager.getModules().add(new EmbedGeneratorModule(commandManager, embedRedisManager));
         modulManager.getModules().add(new WeryfikacjaModule(apiModule, multiDao, modLog, caseDao));
         modulManager.getModules().add(new TicketModule(api, ticketDao, redisManager, eventWaiter));
         if (youTrack != null) modulManager.getModules().add(new YTModule(commandManager, api, eventWaiter, youTrack));
