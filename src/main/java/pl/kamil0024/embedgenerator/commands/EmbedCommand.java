@@ -45,7 +45,7 @@ public class EmbedCommand extends Command {
         String firsta = context.getArgs().get(0);
         if (firsta == null || (!firsta.equalsIgnoreCase("send")) && !firsta.equalsIgnoreCase("edit")) throw new UsageException();
 
-        TextChannel kanal = context.getParsed().getTextChannel(context.getArgs().get(0));
+        TextChannel kanal = context.getParsed().getTextChannel(context.getArgs().get(1));
         if (kanal == null) {
             context.send("Musisz podać kanał!").queue();
             return false;
@@ -54,7 +54,7 @@ public class EmbedCommand extends Command {
             context.send("Nie mam odpowiednich permisji!").queue();
             return false;
         }
-        String kod = context.getArgs().get(1);
+        String kod = context.getArgs().get(2);
         if (kod == null) {
             context.send("Musiz podać kod embeda!").queue();
             return false;
@@ -72,7 +72,7 @@ public class EmbedCommand extends Command {
         if (firsta.equalsIgnoreCase("edit")) {
             Message msg;
             try {
-                msg = kanal.retrieveMessageById(context.getArgs().get(2)).complete();
+                msg = kanal.retrieveMessageById(context.getArgs().get(3)).complete();
             } catch (Exception e) {
                 context.send("Nie udało się uzyskać wiadomości!").queue();
                 return false;
