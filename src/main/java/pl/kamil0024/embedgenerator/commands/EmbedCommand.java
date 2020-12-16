@@ -23,11 +23,14 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.util.UsageException;
 import pl.kamil0024.embedgenerator.entity.EmbedRedisManager;
+
+import java.util.HashMap;
 
 public class EmbedCommand extends Command {
 
@@ -54,18 +57,13 @@ public class EmbedCommand extends Command {
             context.send("Nie mam odpowiednich permisji!").queue();
             return false;
         }
-        String kod = context.getArgs().get(2);
-        if (kod == null) {
-            context.send("Musiz podać kod embeda!").queue();
-            return false;
-        }
-        EmbedBuilder eb = embedRedisManager.get(kod);
-        if (eb == null) {
-            context.send("Kod jest nieprawidłowy!").queue();
+        Object kod = getCode(context.getArgs());
+        if (kod instanceof String) {
+            context.send((String) kod).queue();
             return false;
         }
         if (firsta.equalsIgnoreCase("send")) {
-            kanal.sendMessage(eb.build()).complete();
+            kanal.sendMessage(((EmbedBuilder) kod).build()).complete();
             context.send("Pomyślnie wysłano!").queue();
             return true;
         }
@@ -73,15 +71,28 @@ public class EmbedCommand extends Command {
             Message msg;
             try {
                 msg = kanal.retrieveMessageById(context.getArgs().get(3)).complete();
+                if (!msg.getAuthor().getId().equals(Ustawienia.instance.bot.botId)) throw new Exception();
             } catch (Exception e) {
-                context.send("Nie udało się uzyskać wiadomości!").queue();
+                context.send("Nie udało się uzyskać wiadomości lub autorem wiadomości nie jest bot!").queue();
                 return false;
             }
-            msg.editMessage(eb.build()).queue();
+            msg.editMessage(((EmbedBuilder) kod).build()).queue();
             context.send("Pomyślnie edytowano!").queue();
             return true;
         }
         throw new UsageException();
+    }
+
+    private Object getCode(HashMap<Integer, String> args) {
+        String kod = args.get(2);
+        if (kod == null) {
+            return "Musiz podać kod embeda!";
+        }
+        EmbedBuilder eb = embedRedisManager.get(kod);
+        if (eb == null) {
+            return "Kod jest nieprawidłowy!";
+        }
+        return eb;
     }
 
 }

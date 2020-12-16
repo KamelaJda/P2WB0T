@@ -19,22 +19,25 @@
 
 package pl.kamil0024.api.handlers;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import net.dv8tion.jda.api.EmbedBuilder;
 import org.json.JSONObject;
 import pl.kamil0024.api.Response;
-import pl.kamil0024.core.database.AnkietaDao;
 import pl.kamil0024.core.database.config.AnkietaConfig;
+import pl.kamil0024.embedgenerator.entity.EmbedRedisManager;
 
-public class AnkietaHandler implements HttpHandler {
+import java.util.Random;
 
-    public static final Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-    private final AnkietaDao ankietaDao;
+public class EmbedHandler implements HttpHandler {
 
-    public AnkietaHandler(AnkietaDao ankietaDao) {
-        this.ankietaDao = ankietaDao;
+    private final EmbedRedisManager embedRedisManager;
+    private final Random radom = new Random(); // radom - tak
+
+    public EmbedHandler(EmbedRedisManager embedRedisManager) {
+        this.embedRedisManager = embedRedisManager;
     }
 
     @Override
@@ -42,14 +45,20 @@ public class AnkietaHandler implements HttpHandler {
         if (!Response.checkIp(ex)) { return; }
         try {
             JSONObject json = new JSONObject(Response.getBody(ex.getInputStream()));
-            AnkietaConfig conf = gson.fromJson(json.toString(), AnkietaConfig.class);
-            Response.sendResponse(ex, "Pomyślnie zapisano");
-            ankietaDao.save(conf);
-            ankietaDao.send(conf);
+            int rand = radom.nextInt(10000);
+            EmbedBuilder conf = AnkietaHandler.gson.fromJson(json.toString(), EmbedBuilder.class);
+            embedRedisManager.save(String.valueOf(rand), conf);
+            Response.sendObjectResponse(ex, new Code(rand));
+
         } catch (Exception e) {
             Response.sendErrorResponse(ex, "Błąd", "Nie udało się wysłać requesta! " + e.getMessage());
         }
+    }
 
+    @Data
+    @AllArgsConstructor
+    private static class Code {
+        private final int code;
     }
 
 }

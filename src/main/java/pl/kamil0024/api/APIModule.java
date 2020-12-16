@@ -46,6 +46,7 @@ import pl.kamil0024.core.musicapi.MusicAPI;
 import pl.kamil0024.core.redis.Cache;
 import pl.kamil0024.core.redis.RedisManager;
 import pl.kamil0024.core.util.UserUtil;
+import pl.kamil0024.embedgenerator.entity.EmbedRedisManager;
 
 import java.util.Map;
 import java.util.Objects;
@@ -72,6 +73,7 @@ public class APIModule implements Modul {
     @Inject private final TicketDao ticketDao;
     @Inject private final ApelacjeDao apelacjeDao;
     @Inject private final AnkietaDao ankietaDao;
+    @Inject private final EmbedRedisManager embedRedisManager;
 
     private final Cache<UserinfoConfig> ucCache;
     private final Cache<DiscordInviteConfig> dcCache;
@@ -81,7 +83,7 @@ public class APIModule implements Modul {
 
     private final ScheduledExecutorService executorSche;
 
-    public APIModule(ShardManager api, CaseDao caseDao, RedisManager redisManager, NieobecnosciDao nieobecnosciDao, StatsDao statsDao, MusicAPI musicAPI, VoiceStateDao voiceStateDao, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao) {
+    public APIModule(ShardManager api, CaseDao caseDao, RedisManager redisManager, NieobecnosciDao nieobecnosciDao, StatsDao statsDao, MusicAPI musicAPI, VoiceStateDao voiceStateDao, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager) {
         this.api = api;
         this.redisManager = redisManager;
         this.guild = api.getGuildById(Ustawienia.instance.bot.guildId);
@@ -95,6 +97,7 @@ public class APIModule implements Modul {
         this.ticketDao = ticketDao;
         this.apelacjeDao = apelacjeDao;
         this.ankietaDao = ankietaDao;
+        this.embedRedisManager = embedRedisManager;
 
         this.ucCache = redisManager.new CacheRetriever<UserinfoConfig>(){}.getCache(-1);
         this.dcCache = redisManager.new CacheRetriever<DiscordInviteConfig>() {}.getCache();
@@ -582,6 +585,8 @@ public class APIModule implements Modul {
         routes.post("api/react/apelacje/getmonthstats", new ApelacjeHandler(apelacjeDao, 5));
 
         routes.post("api/react/ankiety/post", new AnkietaHandler(ankietaDao));
+
+        routes.post("api/react/embed/post", new EmbedHandler(embedRedisManager));
 
         this.server = Undertow.builder()
                 .addHttpListener(Ustawienia.instance.api.port, "0.0.0.0")
