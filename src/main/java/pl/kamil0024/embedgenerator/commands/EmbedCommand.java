@@ -50,21 +50,21 @@ public class EmbedCommand extends Command {
 
         TextChannel kanal = context.getParsed().getTextChannel(context.getArgs().get(1));
         if (kanal == null) {
-            context.send("Musisz podać kanał!").queue();
+            context.sendTranslate("embed.requiredchannel").queue();
             return false;
         }
         if (!kanal.canTalk() || !context.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
-            context.send("Nie mam odpowiednich permisji!").queue();
+            context.sendTranslate("embed.permissionerror").queue();
             return false;
         }
         Object kod = getCode(context.getArgs());
         if (kod instanceof String) {
-            context.send((String) kod).queue();
+            context.sendTranslate((String) kod).queue();
             return false;
         }
         if (firsta.equalsIgnoreCase("send")) {
             kanal.sendMessage(((EmbedBuilder) kod).build()).complete();
-            context.send("Pomyślnie wysłano!").queue();
+            context.sendTranslate("embed.successsend").queue();
             return true;
         }
         if (firsta.equalsIgnoreCase("edit")) {
@@ -73,11 +73,11 @@ public class EmbedCommand extends Command {
                 msg = kanal.retrieveMessageById(context.getArgs().get(3)).complete();
                 if (!msg.getAuthor().getId().equals(Ustawienia.instance.bot.botId)) throw new Exception();
             } catch (Exception e) {
-                context.send("Nie udało się uzyskać wiadomości lub autorem wiadomości nie jest bot!").queue();
+                context.sendTranslate("embed.badmessage").queue();
                 return false;
             }
             msg.editMessage(((EmbedBuilder) kod).build()).queue();
-            context.send("Pomyślnie edytowano!").queue();
+            context.sendTranslate("embed.successedit").queue();
             return true;
         }
         throw new UsageException();
@@ -86,11 +86,11 @@ public class EmbedCommand extends Command {
     private Object getCode(HashMap<Integer, String> args) {
         String kod = args.get(2);
         if (kod == null) {
-            return "Musiz podać kod embeda!";
+            return "embed.requiredcode";
         }
         EmbedBuilder eb = embedRedisManager.get(kod);
         if (eb == null) {
-            return "Kod jest nieprawidłowy!";
+            return "embed.badcode";
         }
         return eb;
     }
