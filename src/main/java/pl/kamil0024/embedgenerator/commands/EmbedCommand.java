@@ -50,7 +50,7 @@ public class EmbedCommand extends Command {
             context.send("Musisz podać kanał!").queue();
             return false;
         }
-        if (!kanal.canTalk() || context.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
+        if (!kanal.canTalk() || !context.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
             context.send("Nie mam odpowiednich permisji!").queue();
             return false;
         }
