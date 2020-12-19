@@ -71,7 +71,7 @@ public class ModLog extends ListenerAdapter {
             throw new UnsupportedOperationException("Kanał do modlogów jest nullem");
         }
         this.caseDao = caseDao;
-        ScheduledExecutorService executorSche = Executors.newSingleThreadScheduledExecutor();
+        ScheduledExecutorService executorSche = Executors.newScheduledThreadPool(2);
         executorSche.scheduleAtFixedRate(() -> {
             try {
                 check();

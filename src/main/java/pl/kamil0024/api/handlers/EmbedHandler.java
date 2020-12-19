@@ -23,10 +23,8 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import net.dv8tion.jda.api.EmbedBuilder;
 import org.json.JSONObject;
 import pl.kamil0024.api.Response;
-import pl.kamil0024.core.database.config.AnkietaConfig;
 import pl.kamil0024.embedgenerator.entity.EmbedRedisManager;
 
 import java.util.Random;
@@ -46,10 +44,8 @@ public class EmbedHandler implements HttpHandler {
         try {
             JSONObject json = new JSONObject(Response.getBody(ex.getInputStream()));
             int rand = radom.nextInt(10000);
-            EmbedBuilder conf = AnkietaHandler.gson.fromJson(json.toString(), EmbedBuilder.class);
-            embedRedisManager.save(String.valueOf(rand), conf);
+            embedRedisManager.save(String.valueOf(rand), json.toString());
             Response.sendObjectResponse(ex, new Code(rand));
-
         } catch (Exception e) {
             Response.sendErrorResponse(ex, "Błąd", "Nie udało się wysłać requesta! " + e.getMessage());
         }

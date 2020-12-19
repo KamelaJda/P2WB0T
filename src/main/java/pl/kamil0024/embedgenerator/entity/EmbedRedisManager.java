@@ -19,7 +19,6 @@
 
 package pl.kamil0024.embedgenerator.entity;
 
-import net.dv8tion.jda.api.EmbedBuilder;
 import pl.kamil0024.core.redis.Cache;
 import pl.kamil0024.core.redis.RedisManager;
 
@@ -27,19 +26,19 @@ import javax.annotation.Nullable;
 
 public class EmbedRedisManager {
 
-    private final Cache<EmbedBuilder> cache;
+    private final Cache<String> cache;
 
     public EmbedRedisManager(RedisManager redisManager) {
-        this.cache = redisManager.new CacheRetriever<EmbedBuilder>(){}.getCache(3600);
+        this.cache = redisManager.new CacheRetriever<String>(){}.getCache(3600);
     }
 
     @Nullable
-    public EmbedBuilder get(String code) {
+    public String get(String code) {
         return cache.getIfPresent(code);
     }
 
-    public void save(String code, EmbedBuilder embedBuilder) {
-        cache.put(code, embedBuilder);
+    public void save(String code, String string) {
+        cache.put(code, string);
     }
 
 }

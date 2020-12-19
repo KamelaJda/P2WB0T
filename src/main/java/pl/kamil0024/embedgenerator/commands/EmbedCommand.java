@@ -19,6 +19,9 @@
 
 package pl.kamil0024.embedgenerator.commands;
 
+import com.google.gson.Gson;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
@@ -27,12 +30,17 @@ import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
 import pl.kamil0024.core.command.enums.PermLevel;
+import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.util.UsageException;
 import pl.kamil0024.embedgenerator.entity.EmbedRedisManager;
 
+import java.awt.*;
 import java.util.HashMap;
+import java.util.List;
 
 public class EmbedCommand extends Command {
+
+    private static Gson GSON = new Gson();
 
     private final EmbedRedisManager embedRedisManager;
 
@@ -57,13 +65,19 @@ public class EmbedCommand extends Command {
             context.sendTranslate("embed.permissionerror").queue();
             return false;
         }
-        Object kod = getCode(context.getArgs());
-        if (kod instanceof String) {
-            context.sendTranslate((String) kod).queue();
+        String kod = getCode(context.getArgs());
+        if (kod.startsWith("embed.")) {
+            context.sendTranslate(kod).queue();
             return false;
         }
         if (firsta.equalsIgnoreCase("send")) {
-            kanal.sendMessage(((EmbedBuilder) kod).build()).complete();
+            try {
+                kanal.sendMessage(kod).complete();
+            } catch (Exception e) {
+                context.sendTranslate("embed.parseerror");
+                Log.newError(e, getClass());
+                return false;
+            }
             context.sendTranslate("embed.successsend").queue();
             return true;
         }
@@ -76,23 +90,73 @@ public class EmbedCommand extends Command {
                 context.sendTranslate("embed.badmessage").queue();
                 return false;
             }
-            msg.editMessage(((EmbedBuilder) kod).build()).queue();
+            try {
+                msg.editMessage(getEmed(kod).build()).queue();
+            } catch (Exception e) {
+                context.sendTranslate("embed.parseerror");
+                Log.newError(e, getClass());
+                return false;
+            }
             context.sendTranslate("embed.successedit").queue();
             return true;
         }
         throw new UsageException();
     }
 
-    private Object getCode(HashMap<Integer, String> args) {
+    private String getCode(HashMap<Integer, String> args) {
         String kod = args.get(2);
-        if (kod == null) {
-            return "embed.requiredcode";
+        if (kod == null) return "embed.requiredcode";
+        String eb = embedRedisManager.get(kod);
+        if (eb == null) return "embed.badcode";
+        return eb;
+    }
+    
+    private EmbedBuilder getEmed(String json) throws Exception {
+        EmbedBuilder eb = new EmbedBuilder();
+        Embed embed = GSON.fromJson(json, Embed.class);
+
+        if (embed.getKolor() != null) eb.setColor(Color.decode(embed.getKolor()));
+        eb.setDescription(embed.getDescription());
+
+        if (embed.getTitleurl() != null) {
+            if (EmbedBuilder.URL_PATTERN.matcher(embed.getTitle()).matches()) {
+                eb.setTitle(embed.getTitle(), embed.getTitleurl());
+            }
+        } else eb.setTitle(embed.getTitle());
+        if (EmbedBuilder.URL_PATTERN.matcher(embed.getThumbnail()).matches()) eb.setThumbnail(embed.getThumbnail());
+        if (EmbedBuilder.URL_PATTERN.matcher(embed.getImage()).matches()) eb.setImage(embed.getImage());
+
+        eb.setAuthor(embed.getAuthor(), embed.getAuthorlink(), embed.getAuthorurl());
+
+        if (embed.getFields() != null) {
+            embed.getFields().forEach(f -> eb.addField(f.getName(), f.getValue(), false));
         }
-        EmbedBuilder eb = embedRedisManager.get(kod);
-        if (eb == null) {
-            return "embed.badcode";
-        }
+
         return eb;
     }
 
+    @Data
+    @AllArgsConstructor
+    private static class Embed {
+        private final String description;
+        private final String title;
+        private final String thumbnail;
+        private final String image;
+        private final String author;
+        private final String authorlink;
+        private final String authorurl;
+        private final String kolor;
+        private final String titleurl;
+        private final List<Field> fields;
+        
+        @Data
+        @AllArgsConstructor
+        private static class Field {
+            private final Integer id;
+            private final String name;
+            private final String value;
+        }
+        
+    }
+    
 }
