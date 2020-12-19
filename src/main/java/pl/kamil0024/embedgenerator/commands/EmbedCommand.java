@@ -72,7 +72,7 @@ public class EmbedCommand extends Command {
         }
         if (firsta.equalsIgnoreCase("send")) {
             try {
-                kanal.sendMessage(kod).complete();
+                kanal.sendMessage(getEmed(kod).build()).complete();
             } catch (Exception e) {
                 context.sendTranslate("embed.parseerror");
                 Log.newError(e, getClass());
@@ -123,8 +123,10 @@ public class EmbedCommand extends Command {
                 eb.setTitle(embed.getTitle(), embed.getTitleurl());
             }
         } else eb.setTitle(embed.getTitle());
-        if (EmbedBuilder.URL_PATTERN.matcher(embed.getThumbnail()).matches()) eb.setThumbnail(embed.getThumbnail());
-        if (EmbedBuilder.URL_PATTERN.matcher(embed.getImage()).matches()) eb.setImage(embed.getImage());
+        try {
+            if (EmbedBuilder.URL_PATTERN.matcher(embed.getThumbnail()).matches()) eb.setThumbnail(embed.getThumbnail());
+            if (EmbedBuilder.URL_PATTERN.matcher(embed.getImage()).matches()) eb.setImage(embed.getImage());
+        } catch (Exception ignored) { }
 
         eb.setAuthor(embed.getAuthor(), embed.getAuthorlink(), embed.getAuthorurl());
 
