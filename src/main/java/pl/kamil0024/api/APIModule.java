@@ -99,9 +99,9 @@ public class APIModule implements Modul {
         this.ankietaDao = ankietaDao;
         this.embedRedisManager = embedRedisManager;
 
-        this.ucCache = redisManager.new CacheRetriever<UserinfoConfig>(){}.getCache(-1);
-        this.dcCache = redisManager.new CacheRetriever<DiscordInviteConfig>() {}.getCache();
-        this.cdCache = redisManager.new CacheRetriever<ChatModUser>() {}.getCache(-1);
+        this.ucCache = redisManager.new CacheRetriever<UserinfoConfig>(){}.getCache(3600);
+        this.dcCache = redisManager.new CacheRetriever<DiscordInviteConfig>() {}.getCache(3600);
+        this.cdCache = redisManager.new CacheRetriever<ChatModUser>() {}.getCache(3600);
 
         executorSche = Executors.newSingleThreadScheduledExecutor();
         executorSche.scheduleAtFixedRate(this::refreshChatmod, 0, 30, TimeUnit.MINUTES);

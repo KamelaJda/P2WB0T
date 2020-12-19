@@ -26,13 +26,10 @@ import pl.kamil0024.core.redis.RedisManager;
 
 public class TicketRedisManager {
 
-    private final RedisManager redisManager;
-
     private final Cache<ChannelTicketConfig> channelCache;
 
     public TicketRedisManager(RedisManager redisManager) {
-        this.redisManager = redisManager;
-        this.channelCache = redisManager.new CacheRetriever<ChannelTicketConfig>() {}.getCache(-1);
+        this.channelCache = redisManager.new CacheRetriever<ChannelTicketConfig>() {}.getCache(3600);
     }
 
     @Nullable
