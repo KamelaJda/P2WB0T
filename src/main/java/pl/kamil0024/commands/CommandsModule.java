@@ -173,6 +173,7 @@ public class CommandsModule implements Modul {
         cmd.add(new HistoryCommand(caseDao, eventWaiter));
         cmd.add(new NieobecnoscCommand(nieobecnosciManager, eventWaiter, nieobecnosciDao));
         cmd.add(new DowodCommand(caseDao, eventWaiter));
+        cmd.add(new RecordingCommand());
 
         cmd.forEach(commandManager::registerCommand);
         setStart(true);
