@@ -40,16 +40,25 @@ import java.util.concurrent.TimeUnit;
 
 public class TestHandler implements AudioSendHandler, AudioReceiveHandler {
 
-    private final List<byte[]> bytes = new ArrayList<>();
     private final Queue<byte[]> queue = new ConcurrentLinkedQueue<>();
+    
+    private final List<byte[]> bytes = new ArrayList<>();
     private OutputStream fc;
 
     public TestHandler() {
         try {
-            fc = new FileOutputStream("xd.bin");
+            fc = new FileOutputStream("tmp.bin");
             Runnable task = () -> {
                 try {
-                    byte[] b = bytes.get(0);
+                    ByteArrayOutputStream output = new ByteArrayOutputStream();
+                    bytes.forEach(b -> {
+                        try {
+                            output.write(b);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                    byte[] b = output.toByteArray();
                     InputStream is = new ByteArrayInputStream(b);
                     fc.write(b);
 
