@@ -69,13 +69,14 @@ public class TestHandler implements AudioSendHandler, AudioReceiveHandler {
         InputStream is = new ByteArrayInputStream(b);
         fc.write(b);
 
-        AudioFormat format = new AudioFormat(8000f, 16, 1, true, false);
+        AudioFormat format = new AudioFormat(48000f, 16, 1, true, false);
         AudioInputStream stream = new AudioInputStream(is, format, b.length);
         File file = new File("test.wav");
         AudioSystem.write(stream, AudioFileFormat.Type.WAVE, file);
 
         fc.close();
         is.close();
+        f.delete();
     }
 
     @Override
