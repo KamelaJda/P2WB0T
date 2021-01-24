@@ -41,36 +41,16 @@ import java.util.concurrent.TimeUnit;
 public class TestHandler implements AudioSendHandler, AudioReceiveHandler {
 
     private final Queue<byte[]> queue = new ConcurrentLinkedQueue<>();
-    
-    private final List<byte[]> bytes = new ArrayList<>();
-    private OutputStream fc;
 
-    public TestHandler() {
+    private final List<byte[]> bytes = new ArrayList<>();
+
+    public TestHandler() throws FileNotFoundException {
         try {
-            fc = new FileOutputStream("tmp.bin");
             Runnable task = () -> {
                 try {
-                    ByteArrayOutputStream output = new ByteArrayOutputStream();
-                    bytes.forEach(b -> {
-                        try {
-                            output.write(b);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
-                    byte[] b = output.toByteArray();
-                    InputStream is = new ByteArrayInputStream(b);
-                    fc.write(b);
-
-                    AudioFormat format = new AudioFormat(8000f, 16, 1, true, false);
-                    AudioInputStream stream = new AudioInputStream(is, format, b.length);
-                    File file = new File("test.wav");
-                    AudioSystem.write(stream, AudioFileFormat.Type.WAVE, file);
-
-                    fc.close();
-                    is.close();
-                    fc = null;
-                    Log.debug("Plik zostal zamkniety");
+                    for (byte[] aByte : bytes) {
+                        saveByte(aByte);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -78,9 +58,24 @@ public class TestHandler implements AudioSendHandler, AudioReceiveHandler {
             ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
             ses.schedule(task, 25, TimeUnit.SECONDS);
         } catch (Exception e) {
-            fc = null;
             e.printStackTrace();
         }
+    }
+
+    private void saveByte(byte[] b) throws IOException {
+        File f = new File("tmp.bin");
+        OutputStream fc = new FileOutputStream(f);
+        InputStream is = new ByteArrayInputStream(b);
+        fc.write(b);
+
+        AudioFormat format = new AudioFormat(8000f, 16, 1, true, false);
+        AudioInputStream stream = new AudioInputStream(is, format, b.length);
+        File file = new File("test.wav");
+        AudioSystem.write(stream, AudioFileFormat.Type.WAVE, file);
+
+        fc.close();
+        is.close();
+        f.delete();
     }
 
     @Override
