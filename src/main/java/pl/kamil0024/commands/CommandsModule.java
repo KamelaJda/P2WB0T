@@ -160,7 +160,7 @@ public class CommandsModule implements Modul {
         cmd.add(new PogodaCommand());
         cmd.add(new KolkoIKrzyzykCommand(kolkoIKrzyzykManager));
         cmd.add(new OsuCommand(api, eventWaiter));
-        cmd.add(new RecordingCommand(recordingDao));
+        cmd.add(new RecordingCommand(recordingDao, eventWaiter));
 
         // Moderacyjne:
         cmd.add(new StatusCommand(eventWaiter));
