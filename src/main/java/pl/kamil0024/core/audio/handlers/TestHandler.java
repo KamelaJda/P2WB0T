@@ -41,16 +41,29 @@ import java.util.concurrent.TimeUnit;
 public class TestHandler implements AudioSendHandler, AudioReceiveHandler {
 
     private final Queue<byte[]> queue = new ConcurrentLinkedQueue<>();
-
     private final List<byte[]> bytes = new ArrayList<>();
 
     public TestHandler() throws FileNotFoundException {
         try {
             Runnable task = () -> {
                 try {
-                    for (byte[] aByte : bytes) {
-                        saveByte(aByte);
-                    }
+                    ByteArrayOutputStream output = new ByteArrayOutputStream();
+                    bytes.forEach(b -> {
+                        try {
+                            output.write(b);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                    byte[] b = output.toByteArray();
+                    InputStream is = new ByteArrayInputStream(b);
+
+                    AudioFormat format = new AudioFormat(48000, 16, 2, true, true);
+                    AudioInputStream stream = new AudioInputStream(is, format, b.length);
+                    File file = new File("test.wav");
+                    AudioSystem.write(stream, AudioFileFormat.Type.WAVE, file);
+
+                    is.close();
                     Log.debug("Plik zapisany");
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -61,22 +74,6 @@ public class TestHandler implements AudioSendHandler, AudioReceiveHandler {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private void saveByte(byte[] b) throws IOException {
-        File f = new File("tmp.bin");
-        OutputStream fc = new FileOutputStream(f);
-        InputStream is = new ByteArrayInputStream(b);
-        fc.write(b);
-
-        AudioFormat format = new AudioFormat(48000f, 16, 1, true, false);
-        AudioInputStream stream = new AudioInputStream(is, format, b.length);
-        File file = new File("test.wav");
-        AudioSystem.write(stream, AudioFileFormat.Type.WAVE, file);
-
-        fc.close();
-        is.close();
-        f.delete();
     }
 
     @Override
