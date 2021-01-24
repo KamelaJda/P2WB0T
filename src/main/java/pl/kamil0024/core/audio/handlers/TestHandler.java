@@ -24,9 +24,11 @@ import net.dv8tion.jda.api.audio.AudioSendHandler;
 import net.dv8tion.jda.api.audio.CombinedAudio;
 import pl.kamil0024.core.logger.Log;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,17 +46,20 @@ public class TestHandler implements AudioSendHandler, AudioReceiveHandler {
 
     public TestHandler() {
         try {
-            fc = new FileOutputStream("xd.mp3");
+            fc = new FileOutputStream("xd.bin");
             Runnable task = () -> {
                 try {
-                    bytes.forEach(b -> {
-                        try {
-                            fc.write(b);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
+                    byte[] b = bytes.get(0);
+                    InputStream is = new ByteArrayInputStream(b);
+                    fc.write(b);
+
+                    AudioFormat format = new AudioFormat(8000f, 16, 1, true, false);
+                    AudioInputStream stream = new AudioInputStream(is, format, b.length);
+                    File file = new File("test.wav");
+                    AudioSystem.write(stream, AudioFileFormat.Type.WAVE, file);
+
                     fc.close();
+                    is.close();
                     fc = null;
                     Log.debug("Plik zostal zamkniety");
                 } catch (Exception e) {
