@@ -41,10 +41,7 @@ import pl.kamil0024.music.commands.PlayCommand;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.FutureTask;
 
 public class RecordingCommand extends Command {
@@ -94,7 +91,7 @@ public class RecordingCommand extends Command {
             setHandler(h);
             try {
                 manager.openAudioConnection(PlayCommand.getVc(context.getMember()));
-                context.sendTranslate("recording.startrec", "⏭️").queue();
+                context.sendTranslate("recording.startrec").queue();
             } catch (Exception e) {
                 e.printStackTrace();
                 context.sendTranslate("recording.noconnect").queue();
@@ -132,7 +129,7 @@ public class RecordingCommand extends Command {
                 context.sendTranslate("recording.emptylist").queue();
                 return false;
             }
-
+            Collections.reverse(rc);
             List<FutureTask<EmbedBuilder>> futurePages = new ArrayList<>();
 
             for (RecordingConfig entry : rc) {
