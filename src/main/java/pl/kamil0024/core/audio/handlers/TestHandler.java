@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.audio.CombinedAudio;
 import pl.kamil0024.core.logger.Log;
 
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Queue;
@@ -36,6 +35,7 @@ import java.util.concurrent.TimeUnit;
 
 public class TestHandler implements AudioSendHandler, AudioReceiveHandler {
 
+    private byte[] firstByte = null;
     private final Queue<byte[]> queue = new ConcurrentLinkedQueue<>();
     private FileChannel fc;
 
@@ -44,6 +44,7 @@ public class TestHandler implements AudioSendHandler, AudioReceiveHandler {
             fc = new FileOutputStream("xd.mp3").getChannel();
             Runnable task = () -> {
                 try {
+                    fc.write(ByteBuffer.wrap(firstByte));
                     fc.close();
                     fc = null;
                     Log.debug("Plik zostal zamkniety");
@@ -52,7 +53,7 @@ public class TestHandler implements AudioSendHandler, AudioReceiveHandler {
                 }
             };
             ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
-            ses.schedule(task, 60, TimeUnit.SECONDS);
+            ses.schedule(task, 25, TimeUnit.SECONDS);
         } catch (Exception e) {
             fc = null;
             e.printStackTrace();
@@ -70,13 +71,7 @@ public class TestHandler implements AudioSendHandler, AudioReceiveHandler {
             return;
         }
         byte[] data = combinedAudio.getAudioData(1.0f);
-        if (fc != null) {
-            try {
-                fc.write(ByteBuffer.wrap(data));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        if (firstByte == null) firstByte = data;
         queue.add(data);
     }
 

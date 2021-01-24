@@ -50,6 +50,7 @@ import pl.kamil0024.weryfikacja.WeryfikacjaModule;
 import pl.kamil0024.youtrack.YouTrack;
 
 import java.awt.*;
+import java.io.File;
 
 public class EvalCommand extends Command {
 
