@@ -75,6 +75,7 @@ public class APIModule implements Modul {
     @Inject private final AnkietaDao ankietaDao;
     @Inject private final EmbedRedisManager embedRedisManager;
     @Inject private final AcBanDao acBanDao;
+    @Inject private final RecordingDao recordingDao;
 
     private final Cache<UserinfoConfig> ucCache;
     private final Cache<DiscordInviteConfig> dcCache;
@@ -84,7 +85,7 @@ public class APIModule implements Modul {
 
     private final ScheduledExecutorService executorSche;
 
-    public APIModule(ShardManager api, CaseDao caseDao, RedisManager redisManager, NieobecnosciDao nieobecnosciDao, StatsDao statsDao, MusicAPI musicAPI, VoiceStateDao voiceStateDao, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, AcBanDao acBanDao) {
+    public APIModule(ShardManager api, CaseDao caseDao, RedisManager redisManager, NieobecnosciDao nieobecnosciDao, StatsDao statsDao, MusicAPI musicAPI, VoiceStateDao voiceStateDao, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, AcBanDao acBanDao, RecordingDao recordingDao) {
         this.api = api;
         this.redisManager = redisManager;
         this.guild = api.getGuildById(Ustawienia.instance.bot.guildId);
@@ -100,6 +101,7 @@ public class APIModule implements Modul {
         this.ankietaDao = ankietaDao;
         this.embedRedisManager = embedRedisManager;
         this.acBanDao = acBanDao;
+        this.recordingDao = recordingDao;
 
         this.ucCache = redisManager.new CacheRetriever<UserinfoConfig>(){}.getCache(3600);
         this.dcCache = redisManager.new CacheRetriever<DiscordInviteConfig>() {}.getCache(3600);
@@ -595,6 +597,9 @@ public class APIModule implements Modul {
         routes.post("api/react/embed/post", new EmbedHandler(embedRedisManager));
 
         routes.get("api/staff", new StaffHandler(api));
+
+
+        routes.get("api/recording", new RecordingHandler(recordingDao));
 
         this.server = Undertow.builder()
                 .addHttpListener(Ustawienia.instance.api.port, "0.0.0.0")

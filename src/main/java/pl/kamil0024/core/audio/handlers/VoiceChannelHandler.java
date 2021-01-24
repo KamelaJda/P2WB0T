@@ -37,11 +37,13 @@ public class VoiceChannelHandler implements AudioReceiveHandler {
 
     private final List<byte[]> bytes = new ArrayList<>();
 
-    private final long date;
+    @Getter public final long date;
     @Getter public final String id;
+    @Getter public final String userId;
 
-    public VoiceChannelHandler(String id) {
+    public VoiceChannelHandler(String id, String userId) {
         this.id = id;
+        this.userId = userId;
         this.date = new Date().getTime();
     }
 
@@ -60,7 +62,7 @@ public class VoiceChannelHandler implements AudioReceiveHandler {
 
             AudioFormat format = new AudioFormat(48000, 16, 2, true, true);
             AudioInputStream stream = new AudioInputStream(is, format, b.length);
-            File file = new File(String.format("recordings/%s-%s.wav", id, date));
+            File file = new File(String.format("recordings/%s.wav", id));
             AudioSystem.write(stream, AudioFileFormat.Type.WAVE, file);
 
             is.close();

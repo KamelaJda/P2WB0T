@@ -87,6 +87,7 @@ public class CommandsModule implements Modul {
     @Inject EmbedRedisManager embedRedisManager;
     @Inject WeryfikacjaDao weryfikacjaDao;
     @Inject WeryfikacjaModule weryfikacjaModule;
+    @Inject RecordingDao recordingDao;
 
     private boolean start = false;
     private final ModLog modLog;
@@ -96,7 +97,7 @@ public class CommandsModule implements Modul {
     GuildListener guildListener;
     GiveawayListener giveawayListener;
 
-    public CommandsModule(CommandManager commandManager, Tlumaczenia tlumaczenia, ShardManager api, EventWaiter eventWaiter, KaryJSON karyJSON, CaseDao caseDao, ModulManager modulManager, CommandExecute commandExecute, UserDao userDao, ModLog modLog, NieobecnosciDao nieobecnosciDao, RemindDao remindDao, GiveawayDao giveawayDao, StatsModule statsModule, MusicModule musicModule, MultiDao multiDao, MusicAPI musicAPI, NieobecnosciManager nieobecnosciManager, YouTrack youTrack, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, WeryfikacjaDao weryfikacjaDao, WeryfikacjaModule weryfikacjaModule) {
+    public CommandsModule(CommandManager commandManager, Tlumaczenia tlumaczenia, ShardManager api, EventWaiter eventWaiter, KaryJSON karyJSON, CaseDao caseDao, ModulManager modulManager, CommandExecute commandExecute, UserDao userDao, ModLog modLog, NieobecnosciDao nieobecnosciDao, RemindDao remindDao, GiveawayDao giveawayDao, StatsModule statsModule, MusicModule musicModule, MultiDao multiDao, MusicAPI musicAPI, NieobecnosciManager nieobecnosciManager, YouTrack youTrack, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, WeryfikacjaDao weryfikacjaDao, WeryfikacjaModule weryfikacjaModule, RecordingDao recordingDao) {
         this.commandManager = commandManager;
         this.tlumaczenia = tlumaczenia;
         this.api = api;
@@ -122,6 +123,7 @@ public class CommandsModule implements Modul {
         this.embedRedisManager = embedRedisManager;
         this.weryfikacjaDao = weryfikacjaDao;
         this.weryfikacjaModule = weryfikacjaModule;
+        this.recordingDao = recordingDao;
 
         ScheduledExecutorService executorSche = Executors.newSingleThreadScheduledExecutor();
         executorSche.scheduleAtFixedRate(() -> tak(api), 0, 5, TimeUnit.MINUTES);
@@ -158,6 +160,7 @@ public class CommandsModule implements Modul {
         cmd.add(new PogodaCommand());
         cmd.add(new KolkoIKrzyzykCommand(kolkoIKrzyzykManager));
         cmd.add(new OsuCommand(api, eventWaiter));
+        cmd.add(new RecordingCommand(recordingDao));
 
         // Moderacyjne:
         cmd.add(new StatusCommand(eventWaiter));
@@ -173,7 +176,6 @@ public class CommandsModule implements Modul {
         cmd.add(new HistoryCommand(caseDao, eventWaiter));
         cmd.add(new NieobecnoscCommand(nieobecnosciManager, eventWaiter, nieobecnosciDao));
         cmd.add(new DowodCommand(caseDao, eventWaiter));
-        cmd.add(new RecordingCommand());
 
         cmd.forEach(commandManager::registerCommand);
         setStart(true);
