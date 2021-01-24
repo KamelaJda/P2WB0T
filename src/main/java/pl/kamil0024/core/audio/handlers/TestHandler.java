@@ -43,13 +43,10 @@ public class TestHandler implements AudioSendHandler, AudioReceiveHandler {
 
     @Override
     public void handleCombinedAudio(CombinedAudio combinedAudio) {
-        logger.debug("Odbieram event");
         if (combinedAudio.getUsers().isEmpty()) {
-            logger.debug("userzy sa pusci lol");
             return;
         }
         byte[] data = combinedAudio.getAudioData(1.0f);
-        logger.debug("Nowe data: " + Arrays.toString(data));
         queue.add(data);
     }
 
@@ -61,7 +58,6 @@ public class TestHandler implements AudioSendHandler, AudioReceiveHandler {
     @Override
     public ByteBuffer provide20MsAudio() {
         byte[] data = queue.poll();
-        logger.debug("Wysyłam data:" + Arrays.toString(data));
         return data == null ? null : ByteBuffer.wrap(data);
     }
 
