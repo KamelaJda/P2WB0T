@@ -22,23 +22,46 @@ package pl.kamil0024.core.audio.handlers;
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
 import net.dv8tion.jda.api.audio.CombinedAudio;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import pl.kamil0024.core.logger.Log;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
+import java.nio.channels.FileChannel;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class TestHandler implements AudioSendHandler, AudioReceiveHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(TestHandler.class);
-
     private final Queue<byte[]> queue = new ConcurrentLinkedQueue<>();
+    private FileChannel fc;
+
+    public TestHandler() {
+        try {
+            fc = new FileOutputStream("xd.mp3").getChannel();
+            Runnable task = () -> {
+                try {
+                    fc.close();
+                    fc = null;
+                    Log.debug("Plik zostal zamkniety");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            };
+            ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+            ses.schedule(task, 60, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            fc = null;
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public boolean canReceiveCombined() {
-        return queue.size() < 10;
+        return queue.size() < 30;
     }
 
     @Override
@@ -47,6 +70,13 @@ public class TestHandler implements AudioSendHandler, AudioReceiveHandler {
             return;
         }
         byte[] data = combinedAudio.getAudioData(1.0f);
+        if (fc != null) {
+            try {
+                fc.write(ByteBuffer.wrap(data));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         queue.add(data);
     }
 
