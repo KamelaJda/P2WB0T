@@ -80,7 +80,6 @@ public class VoiceChannelHandler implements AudioReceiveHandler {
     @Override
     public void handleCombinedAudio(CombinedAudio combinedAudio) {
         if (combinedAudio.getUsers().isEmpty()) return;
-        Log.debug("Odbieram event");
         bytes.add(combinedAudio.getAudioData(1.0f));
     }
 
