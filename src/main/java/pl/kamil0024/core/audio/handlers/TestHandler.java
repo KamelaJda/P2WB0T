@@ -51,6 +51,7 @@ public class TestHandler implements AudioSendHandler, AudioReceiveHandler {
                     for (byte[] aByte : bytes) {
                         saveByte(aByte);
                     }
+                    Log.debug("Plik zapisany");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -75,7 +76,6 @@ public class TestHandler implements AudioSendHandler, AudioReceiveHandler {
 
         fc.close();
         is.close();
-        f.delete();
     }
 
     @Override
