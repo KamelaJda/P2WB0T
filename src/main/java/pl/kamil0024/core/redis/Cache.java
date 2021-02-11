@@ -23,6 +23,7 @@ import java.util.function.Function;
 public interface Cache<V> {
     V getIfPresent(@Nonnull Object key);
     V get(@Nonnull String key, @Nonnull Function<? super String, ? extends V> mappingFunction);
+    V getifPresentOr(@Nonnull Object key, @Nonnull V value);
     Map<String, V> getAllPresent(@Nonnull Iterable<?> keys);
     void put(@Nonnull String key, @Nonnull V value);
     void putAll(@Nonnull Map<? extends String,? extends V> map);

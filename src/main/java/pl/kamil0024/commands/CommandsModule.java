@@ -51,6 +51,7 @@ import pl.kamil0024.stats.StatsModule;
 import pl.kamil0024.commands.dews.*;
 import pl.kamil0024.commands.system.*;
 import pl.kamil0024.core.database.*;
+import pl.kamil0024.userstats.manager.StatsManager;
 import pl.kamil0024.weryfikacja.WeryfikacjaModule;
 import pl.kamil0024.youtrack.YouTrack;
 
@@ -63,31 +64,31 @@ public class CommandsModule implements Modul {
 
     private ArrayList<Command> cmd;
 
-    @Inject CommandManager commandManager;
-    @Inject Tlumaczenia tlumaczenia;
-    @Inject ShardManager api;
-    @Inject EventWaiter eventWaiter;
-    @Inject KaryJSON karyJSON;
-    @Inject CaseDao caseDao;
-    @Inject ModulManager modulManager;
-    @Inject CommandExecute commandExecute;
-    @Inject UserDao userDao;
-    @Inject NieobecnosciDao nieobecnosciDao;
-    @Inject RemindDao remindDao;
-    @Inject GiveawayDao giveawayDao;
-    @Inject StatsModule statsModule;
-    @Inject MusicModule musicModule;
-    @Inject MultiDao multiDao;
-    @Inject NieobecnosciManager nieobecnosciManager;
-    @Inject YouTrack youTrack;
-    @Inject TicketDao ticketDao;
-    @Inject ApelacjeDao apelacjeDao;
-    @Inject AnkietaDao ankietaDao;
-    @Inject EmbedRedisManager embedRedisManager;
-    @Inject WeryfikacjaDao weryfikacjaDao;
-    @Inject WeryfikacjaModule weryfikacjaModule;
-    @Inject RecordingDao recordingDao;
-    @Inject SocketManager socketManager;
+    private final CommandManager commandManager;
+    private final Tlumaczenia tlumaczenia;
+    private final ShardManager api;
+    private final EventWaiter eventWaiter;
+    private final KaryJSON karyJSON;
+    private final CaseDao caseDao;
+    private final ModulManager modulManager;
+    private final CommandExecute commandExecute;
+    private final UserDao userDao;
+    private final NieobecnosciDao nieobecnosciDao;
+    private final RemindDao remindDao;
+    private final GiveawayDao giveawayDao;
+    private final StatsModule statsModule;
+    private final MusicModule musicModule;
+    private final MultiDao multiDao;
+    private final YouTrack youTrack;
+    private final TicketDao ticketDao;
+    private final ApelacjeDao apelacjeDao;
+    private final AnkietaDao ankietaDao;
+    private final EmbedRedisManager embedRedisManager;
+    private final WeryfikacjaDao weryfikacjaDao;
+    private final WeryfikacjaModule weryfikacjaModule;
+    private final RecordingDao recordingDao;
+    private final SocketManager socketManager;
+    private final StatsManager statsManager;
 
     private boolean start = false;
     private final ModLog modLog;
@@ -97,7 +98,7 @@ public class CommandsModule implements Modul {
     GuildListener guildListener;
     GiveawayListener giveawayListener;
 
-    public CommandsModule(CommandManager commandManager, Tlumaczenia tlumaczenia, ShardManager api, EventWaiter eventWaiter, KaryJSON karyJSON, CaseDao caseDao, ModulManager modulManager, CommandExecute commandExecute, UserDao userDao, ModLog modLog, NieobecnosciDao nieobecnosciDao, RemindDao remindDao, GiveawayDao giveawayDao, StatsModule statsModule, MusicModule musicModule, MultiDao multiDao, NieobecnosciManager nieobecnosciManager, YouTrack youTrack, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, WeryfikacjaDao weryfikacjaDao, WeryfikacjaModule weryfikacjaModule, RecordingDao recordingDao, SocketManager socketManager) {
+    public CommandsModule(CommandManager commandManager, Tlumaczenia tlumaczenia, ShardManager api, EventWaiter eventWaiter, KaryJSON karyJSON, CaseDao caseDao, ModulManager modulManager, CommandExecute commandExecute, UserDao userDao, ModLog modLog, NieobecnosciDao nieobecnosciDao, RemindDao remindDao, GiveawayDao giveawayDao, StatsModule statsModule, MusicModule musicModule, MultiDao multiDao, YouTrack youTrack, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, WeryfikacjaDao weryfikacjaDao, WeryfikacjaModule weryfikacjaModule, RecordingDao recordingDao, SocketManager socketManager, StatsManager statsManager) {
         this.commandManager = commandManager;
         this.tlumaczenia = tlumaczenia;
         this.api = api;
@@ -114,7 +115,6 @@ public class CommandsModule implements Modul {
         this.statsModule = statsModule;
         this.musicModule = musicModule;
         this.multiDao = multiDao;
-        this.nieobecnosciManager = nieobecnosciManager;
         this.youTrack = youTrack;
         this.ticketDao = ticketDao;
         this.apelacjeDao = apelacjeDao;
@@ -124,6 +124,7 @@ public class CommandsModule implements Modul {
         this.weryfikacjaModule = weryfikacjaModule;
         this.recordingDao = recordingDao;
         this.socketManager = socketManager;
+        this.statsManager = statsManager;
 
         ScheduledExecutorService executorSche = Executors.newSingleThreadScheduledExecutor();
         executorSche.scheduleAtFixedRate(() -> tak(api), 0, 5, TimeUnit.MINUTES);
@@ -143,7 +144,7 @@ public class CommandsModule implements Modul {
         cmd.add(new BotinfoCommand(commandManager, modulManager, socketManager));
         cmd.add(new HelpCommand(commandManager));
         cmd.add(new PoziomCommand());
-        cmd.add(new EvalCommand(eventWaiter, commandManager, caseDao, modLog, karyJSON, tlumaczenia, commandExecute, userDao, nieobecnosciDao, remindDao, modulManager, giveawayListener, giveawayDao, statsModule, multiDao, musicModule, youTrack, ticketDao, apelacjeDao, ankietaDao, embedRedisManager, weryfikacjaDao, weryfikacjaModule, socketManager));
+        cmd.add(new EvalCommand(eventWaiter, commandManager, caseDao, modLog, karyJSON, tlumaczenia, commandExecute, userDao, nieobecnosciDao, remindDao, modulManager, giveawayListener, giveawayDao, statsModule, multiDao, musicModule, youTrack, ticketDao, apelacjeDao, ankietaDao, embedRedisManager, weryfikacjaDao, weryfikacjaModule, socketManager, statsManager));
         cmd.add(new ForumCommand());
         cmd.add(new UserinfoCommand());
         cmd.add(new McpremiumCommand());

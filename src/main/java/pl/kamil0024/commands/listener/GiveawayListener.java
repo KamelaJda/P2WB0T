@@ -164,19 +164,14 @@ public class GiveawayListener {
                                     .filter(u -> !u.isBot())
                                     .map(User::getId)
                                     .collect(Collectors.toList());
-                            Log.debug("Lista ludzi: " + listaLudzi);
                         }
                     }
 
-                    Log.debug("1");
-
                     while (config.getWygranychOsob() != wygrani.size()) {
                         String wygral = listaLudzi.get(rand.nextInt(listaLudzi.size() - 1));
-                        Log.debug("Dodaje " + wygral + " do wygranych ludzi");
                         wygrani.add(wygral);
                         listaLudzi.remove(wygral);
                     }
-                    Log.debug("Kończę while");
 
                     config.setWinners(wygrani);
                     msg.clearReactions().queue();

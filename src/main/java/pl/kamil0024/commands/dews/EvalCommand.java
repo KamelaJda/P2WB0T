@@ -45,6 +45,7 @@ import pl.kamil0024.core.util.kary.KaryJSON;
 import pl.kamil0024.embedgenerator.entity.EmbedRedisManager;
 import pl.kamil0024.music.MusicModule;
 import pl.kamil0024.stats.StatsModule;
+import pl.kamil0024.userstats.manager.StatsManager;
 import pl.kamil0024.weryfikacja.WeryfikacjaModule;
 import pl.kamil0024.youtrack.YouTrack;
 
@@ -78,8 +79,9 @@ public class EvalCommand extends Command {
     @Inject private final WeryfikacjaDao weryfikacjaDao;
     @Inject private final WeryfikacjaModule weryfikacjaModule;
     @Inject private final SocketManager socketManager;
+    @Inject private final StatsManager statsManager;
 
-    public EvalCommand(EventWaiter eventWaiter, CommandManager commandManager, CaseDao caseDao, ModLog modLog, KaryJSON karyJSON, Tlumaczenia tlumaczenia, CommandExecute commandExecute, UserDao userDao, NieobecnosciDao nieobecnosciDao, RemindDao remindDao, ModulManager modulManager, GiveawayListener giveawayListener, GiveawayDao giveawayDao, StatsModule statsModule, MultiDao multiDao, MusicModule musicModule, YouTrack youTrack, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, WeryfikacjaDao weryfikacjaDao, WeryfikacjaModule weryfikacjaModule, SocketManager socketManager) {
+    public EvalCommand(EventWaiter eventWaiter, CommandManager commandManager, CaseDao caseDao, ModLog modLog, KaryJSON karyJSON, Tlumaczenia tlumaczenia, CommandExecute commandExecute, UserDao userDao, NieobecnosciDao nieobecnosciDao, RemindDao remindDao, ModulManager modulManager, GiveawayListener giveawayListener, GiveawayDao giveawayDao, StatsModule statsModule, MultiDao multiDao, MusicModule musicModule, YouTrack youTrack, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, WeryfikacjaDao weryfikacjaDao, WeryfikacjaModule weryfikacjaModule, SocketManager socketManager, StatsManager statsManager) {
         name = "eval";
         aliases.add("ev");
         category = CommandCategory.DEVS;
@@ -109,6 +111,7 @@ public class EvalCommand extends Command {
         this.weryfikacjaDao = weryfikacjaDao;
         this.weryfikacjaModule = weryfikacjaModule;
         this.socketManager = socketManager;
+        this.statsManager = statsManager;
     }
 
     @Override
@@ -146,6 +149,7 @@ public class EvalCommand extends Command {
         shell.setVariable("weryfikacjaModule", weryfikacjaModule);
         shell.setVariable("gson", new Gson());
         shell.setVariable("socketManager", socketManager);
+        shell.setVariable("statsManager", statsManager);
 
         long ms = System.currentTimeMillis();
         Object value;
