@@ -32,7 +32,7 @@ public class MessageLogsHandler implements HttpHandler {
 
     @Override
     public void handleRequest(HttpServerExchange ex)  {
-
+        if (!Response.checkIp(ex)) { return; }
         try {
             String type = ex.getQueryParameters().get("type").getFirst();
             String data = ex.getQueryParameters().get("data").getFirst();

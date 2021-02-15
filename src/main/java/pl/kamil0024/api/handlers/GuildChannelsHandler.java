@@ -38,7 +38,7 @@ public class GuildChannelsHandler implements HttpHandler {
 
     @Override
     public void handleRequest(HttpServerExchange ex) {
-
+        if (!Response.checkIp(ex)) { return; }
         try {
             Map<String, String> channels = new HashMap<>();
             for (String s : new String[]{"425673488456482817", "494507499739676686", "502831202332573707"}) {
