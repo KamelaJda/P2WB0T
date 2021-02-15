@@ -22,13 +22,23 @@ package pl.kamil0024.api.handlers;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import lombok.AllArgsConstructor;
+import lombok.Data;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import pl.kamil0024.api.Response;
+import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.database.DeletedMessagesDao;
+import pl.kamil0024.core.database.config.DeletedMessagesConfig;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @AllArgsConstructor
 public class MessageLogsHandler implements HttpHandler {
 
     private final DeletedMessagesDao dao;
+    private final ShardManager api;
 
     @Override
     public void handleRequest(HttpServerExchange ex)  {
@@ -43,21 +53,43 @@ public class MessageLogsHandler implements HttpHandler {
                 return;
             }
 
+            List<Info> finalList = new ArrayList<>();
+            List<DeletedMessagesConfig> list = new ArrayList<>();
+
             switch (type) {
                 case "all":
-                    Response.sendObjectResponse(ex, dao.getAll(offset));
+                    list = dao.getAll(offset);
                     break;
                 case "channel":
-                    Response.sendObjectResponse(ex, dao.getFromChannel(data, offset));
+                    list = dao.getFromChannel(data, offset);
                     break;
                 case "user":
-                    Response.sendObjectResponse(ex, dao.getFromUser(data, offset));
+                    list = dao.getFromUser(data, offset);
             }
+
+            Guild g = api.getGuildById(Ustawienia.instance.bot.guildId);
+            for (DeletedMessagesConfig entry : list) {
+                try {
+                    Info i = new Info();
+                    i.setMessage(entry);
+                    Member mem = g.getMemberById(entry.getUserId());
+                    if (mem != null) i.setMember(MemberInfoHandler.getMember(mem));
+                    else i.setMember(MemberInfoHandler.getUser(api.getUserById(entry.getUserId())));
+                    finalList.add(i);
+                } catch (Exception ignored) { }
+            }
+            Response.sendObjectResponse(ex, finalList);
 
         } catch (Exception e) {
             e.printStackTrace();
             Response.sendErrorResponse(ex, "Błąd!", e.getLocalizedMessage());
         }
+    }
+
+    @Data
+    private static class Info {
+        DeletedMessagesConfig message;
+        MemberInfoHandler.MemberInfo member;
     }
 
 }

@@ -42,7 +42,7 @@ import pl.kamil0024.stats.StatsModule;
 import javax.annotation.Nonnull;
 import java.awt.*;
 import java.time.OffsetDateTime;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
 
 public class Logger extends ListenerAdapter {
@@ -88,7 +88,9 @@ public class Logger extends ListenerAdapter {
         sendLog(eb);
         manager.getMap().invalidate(event.getMessageId());
 
-        deletedMessagesDao.save(DeletedMessagesConfig.convert(msg, new Date().getTime()));
+        if (event.getChannel().getParent() != null && !Arrays.asList("425673488456482817", "494507499739676686", "502831202332573707").contains(event.getChannel().getParent().getId())) {
+            deletedMessagesDao.save(DeletedMessagesConfig.convert(msg, new Date().getTime()));
+        }
     }
 
     @Override

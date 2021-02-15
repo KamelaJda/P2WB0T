@@ -25,6 +25,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import pl.kamil0024.api.Response;
 import pl.kamil0024.core.Ustawienia;
@@ -51,9 +52,7 @@ public class MemberInfoHandler implements HttpHandler {
                     .getMemberById(ex.getQueryParameters().get("id").getFirst());
 
             if (mem != null) {
-                if (mem.getNickname() != null) memberInfo.setNickname(mem.getNickname());
-                memberInfo.setPermLevel(UserUtil.getPermLevel(mem));
-                memberInfo.setRoles(mem.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
+                memberInfo = getMember(mem);
             } else memberInfo.setInGuild(false);
 
             Response.sendObjectResponse(ex, memberInfo);
@@ -66,14 +65,34 @@ public class MemberInfoHandler implements HttpHandler {
     }
 
     @Data
-    private static class MemberInfo {
+    public static class MemberInfo {
         public MemberInfo() { }
 
+        private String username;
         private String nickname;
+        private String avatarUrl;
         private boolean inGuild = true;
         private PermLevel permLevel;
         private List<String> roles = new ArrayList<>();
 
+    }
+
+    public static MemberInfo getMember(Member member) {
+        MemberInfo inf = new MemberInfo();
+        inf.setUsername(UserUtil.getName(member.getUser()));
+        inf.setAvatarUrl(member.getUser().getAvatarUrl());
+        if (member.getNickname() != null) inf.setNickname(member.getNickname());
+        inf.setPermLevel(UserUtil.getPermLevel(member));
+        inf.setRoles(member.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
+        return inf;
+    }
+
+    public static MemberInfo getUser(User user) {
+        MemberInfo inf = new MemberInfo();
+        inf.setUsername(UserUtil.getName(user));
+        inf.setAvatarUrl(user.getAvatarUrl());
+        inf.setInGuild(false);
+        return inf;
     }
 
 }
