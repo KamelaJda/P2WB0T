@@ -61,10 +61,6 @@ public class TicketDao implements Dao<TicketConfig> {
         return list;
     }
 
-    public void delete(TicketConfig tc) {
-        mapper.deleteById(tc.getId());
-    }
-
     @Override
     public List<TicketConfig> getAll() {
         return reverse(mapper.loadAll());
@@ -127,7 +123,7 @@ public class TicketDao implements Dao<TicketConfig> {
                     "Dbamy o jakość świadczonej przez nas pomocy oraz staramy się polepszać oferowane przez nas usługi, " +
                     "prosimy więc o wypełnienie krótkiej ankiety pod poniższym linkiem:");
             msg.appendLine(TicketConfig.getUrl(tc));
-            msg.appendLine("\nCzas na uzupełnienie ankiety wynosi 1 (jeden) dzień. Z góry dziękujemy za poświęcony czas!");
+            msg.appendLine("\nZ góry dziękujemy za poświęcony czas!");
 
             save(tc);
             member.getUser().openPrivateChannel().complete().sendMessage(msg.toString()).complete();

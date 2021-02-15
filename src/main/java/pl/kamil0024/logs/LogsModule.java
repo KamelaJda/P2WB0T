@@ -20,7 +20,9 @@
 package pl.kamil0024.logs;
 
 import net.dv8tion.jda.api.sharding.ShardManager;
+import org.joda.time.DateTime;
 import pl.kamil0024.core.database.DeletedMessagesDao;
+import pl.kamil0024.core.database.config.DeletedMessagesConfig;
 import pl.kamil0024.core.module.Modul;
 import pl.kamil0024.core.redis.RedisManager;
 import pl.kamil0024.logs.logger.Logger;
@@ -28,6 +30,9 @@ import pl.kamil0024.logs.logger.MessageManager;
 import pl.kamil0024.stats.StatsModule;
 
 import javax.inject.Inject;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class LogsModule implements Modul {
     
@@ -46,6 +51,16 @@ public class LogsModule implements Modul {
         this.statsModule = statsModule;
         this.redisManager = redisManager;
         this.deletedMessagesDao = deletedMessagesDao;
+
+        ScheduledExecutorService executorSche = Executors.newScheduledThreadPool(2);
+        executorSche.scheduleAtFixedRate(() -> {
+            for (DeletedMessagesConfig entry : deletedMessagesDao.getAll()) {
+                if (new DateTime(entry.getDeletedDate()).plusDays(7).isBeforeNow()) {
+                    deletedMessagesDao.delete(entry.getId());
+                }
+            }
+        }, 1, 1, TimeUnit.HOURS);
+
     }
     
     @Override

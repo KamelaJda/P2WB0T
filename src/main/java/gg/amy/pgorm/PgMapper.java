@@ -260,15 +260,6 @@ public class PgMapper<T> {
         return result.get();
     }
 
-    public Optional<Boolean> deleteById(final String id) {
-        AtomicReference<Optional<Boolean>> result = new AtomicReference<>(Optional.empty());
-        String msg = String.format("DELETE FROM " + table.value() + " WHERE " + primaryKey.value() + " = %s;", id);
-        store.sql(msg, c -> {
-            result.set(Optional.of(c.execute()));
-        });
-        return result.get();
-    }
-
     public Optional<Boolean> delete(final int id) {
         AtomicReference<Optional<Boolean>> result = new AtomicReference<>(Optional.empty());
         store.sql("DELETE FROM " + table.value() + " WHERE " + primaryKey.value() + " = '"+ id +"';");
@@ -616,6 +607,24 @@ public class PgMapper<T> {
     public List<T> getAllApelacjeByNick(String nick, int offset) {
         final List<T> data = new ArrayList<>();
         String msg = String.format("SELECT * FROM %s WHERE data::jsonb @> '{\"apelacjeNick\": \"%s\"}' ORDER BY data->>'createdTime' DESC LIMIT 10 OFFSET %d;", table.value(), nick, offset);
+        store.sql(msg, c -> {
+            final ResultSet resultSet = c.executeQuery();
+            if (resultSet.isBeforeFirst()) {
+                while(resultSet.next()) {
+                    try {
+                        data.add(loadFromResultSet(resultSet));
+                    } catch(final IllegalStateException e) {
+                        Log.error("Load error: %s", e);
+                    }
+                }
+            }
+        });
+        return data;
+    }
+
+    public List<T> getAllLogs(int offset) {
+        final List<T> data = new ArrayList<>();
+        String msg = String.format("SELECT * FROM %s ORDER BY data->>'deletedDate' DESC LIMIT 10 OFFSET %d;", table.value(), offset);
         store.sql(msg, c -> {
             final ResultSet resultSet = c.executeQuery();
             if (resultSet.isBeforeFirst()) {

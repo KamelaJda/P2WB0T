@@ -54,16 +54,6 @@ public class TicketModule implements Modul {
         this.redisManager = redisManager;
         this.ticketRedisManager = new TicketRedisManager(redisManager);
         this.eventWaiter = eventWaiter;
-
-        ScheduledExecutorService executorSche = Executors.newSingleThreadScheduledExecutor();
-        executorSche.scheduleAtFixedRate(() -> {
-            long date = new Date().getTime();
-            for (TicketConfig ticketConfig : ticketDao.getAll()) {
-                if (ticketConfig.getCreatedTime() + 86400000 >= date && !TicketConfig.isEdited(ticketConfig)) {
-                    ticketDao.delete(ticketConfig);
-                }
-            }
-        }, 0, 1, TimeUnit.HOURS);
     }
 
     @Override

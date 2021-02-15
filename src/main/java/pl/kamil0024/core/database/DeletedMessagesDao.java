@@ -41,12 +41,16 @@ public class DeletedMessagesDao implements Dao<DeletedMessagesConfig>  {
         return mapper.load(id).orElse(null);
     }
 
-    public List<DeletedMessagesConfig> getFromChannel(String channelId) {
-        return mapper.loadRaw(String.format("SELECT * FROM deletedmessage WHERE data->>'channelId' = '%s';", channelId));
+    public List<DeletedMessagesConfig> getFromChannel(String channelId, int offset) {
+        return mapper.loadRaw(String.format("SELECT * FROM deletedmessage WHERE data->>'channelId' = '%s' ORDER BY data->>'deletedDate' DESC LIMIT 10 OFFSET %d;", channelId, offset));
     }
 
-    public List<DeletedMessagesConfig> getFromUser(String userId) {
-        return mapper.loadRaw(String.format("SELECT * FROM deletedmessage WHERE data->>'userId' = '%s';", userId));
+    public List<DeletedMessagesConfig> getFromUser(String userId, int offset) {
+        return mapper.loadRaw(String.format("SELECT * FROM deletedmessage WHERE data->>'userId' = '%s' ORDER BY data->>'deletedDate' DESC LIMIT 10 OFFSET %d;", userId, offset));
+    }
+
+    public void delete(String id) {
+        mapper.getStore().sql(String.format("DELETE FROM deletedmessage WHERE id='%s'"));
     }
 
     @Override
@@ -57,6 +61,10 @@ public class DeletedMessagesDao implements Dao<DeletedMessagesConfig>  {
     @Override
     public List<DeletedMessagesConfig> getAll() {
         return mapper.loadAll();
+    }
+
+    public List<DeletedMessagesConfig> getAll(int offset) {
+        return mapper.getAllLogs(offset);
     }
 
 }
