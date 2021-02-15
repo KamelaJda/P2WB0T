@@ -165,7 +165,7 @@ public class APIModule implements Modul {
         routes.get("api/chatmod/stats", new ChatmodStats(statsDao, this));
 
         routes.get("api/channels", new GuildChannelsHandler(api));
-        routes.get("api/react/message/logs", new MessageLogsHandler(deletedMessagesDao));
+        routes.get("api/react/message/logs", new MessageLogsHandler(deletedMessagesDao, api));
 
         this.server = Undertow.builder()
                 .addHttpListener(Ustawienia.instance.api.port, "0.0.0.0")

@@ -71,6 +71,7 @@ public class MessageLogsHandler implements HttpHandler {
             for (DeletedMessagesConfig entry : list) {
                 try {
                     Info i = new Info();
+                    entry.setChannelId(g.getGuildChannelById(entry.getChannelId()).getName());
                     i.setMessage(entry);
                     Member mem = g.getMemberById(entry.getUserId());
                     if (mem != null) i.setMember(MemberInfoHandler.getMember(mem));
