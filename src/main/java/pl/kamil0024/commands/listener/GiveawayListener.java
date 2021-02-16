@@ -145,15 +145,12 @@ public class GiveawayListener {
                     msg = Objects.requireNonNull(tc).retrieveMessageById(config.getMessageId()).complete();
                 } catch (Exception ignored) { }
 
-                Log.debug("msg: " + msg);
-
                 if (msg == null) {
                     config.setMessageId(null);
                     createMessage(config);
                     continue;
                 }
 
-                Log.debug("end? " + end);
                 if (end) {
                     List<String> listaLudzi = new ArrayList<>();
                     List<String> wygrani = new ArrayList<>();
@@ -164,22 +161,17 @@ public class GiveawayListener {
                                     .filter(u -> !u.isBot())
                                     .map(User::getId)
                                     .collect(Collectors.toList());
-                            Log.debug("Lista ludzi: " + listaLudzi);
                         }
                     }
 
-                    Log.debug("1");
-
                     while (config.getWygranychOsob() != wygrani.size()) {
                         String wygral = listaLudzi.get(rand.nextInt(listaLudzi.size() - 1));
-                        Log.debug("Dodaje " + wygral + " do wygranych ludzi");
                         wygrani.add(wygral);
                         listaLudzi.remove(wygral);
                     }
-                    Log.debug("Kończę while");
 
                     config.setWinners(wygrani);
-                    msg.clearReactions().queue();
+//                    msg.clearReactions().queue();
 
                     StringBuilder sb = new StringBuilder();
                     String f = "<@%s>";
