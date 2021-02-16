@@ -41,7 +41,7 @@ public class GuildChannelsHandler implements HttpHandler {
         if (!Response.checkIp(ex)) { return; }
         try {
             Map<String, String> channels = new HashMap<>();
-            for (String s : new String[]{"425673488456482817", "494507499739676686", "502831202332573707"}) {
+            for (String s : new String[]{"425673488456482817", "494507499739676686", "502831202332573707", "506210855231291393"}) {
                 Category cate = api.getCategoryById(s);
                 if (cate == null) {
                     Log.newError("Kategoria " + s + " jest nullem!", getClass());

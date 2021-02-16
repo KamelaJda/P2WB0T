@@ -88,7 +88,7 @@ public class Logger extends ListenerAdapter {
         sendLog(eb);
         manager.getMap().invalidate(event.getMessageId());
 
-        if (event.getChannel().getParent() != null && !Arrays.asList("425673488456482817", "494507499739676686", "502831202332573707").contains(event.getChannel().getParent().getId())) {
+        if (event.getChannel().getParent() != null && Arrays.asList("425673488456482817", "494507499739676686", "502831202332573707", "506210855231291393").contains(event.getChannel().getParent().getId())) {
             deletedMessagesDao.save(DeletedMessagesConfig.convert(msg, new Date().getTime()));
         }
     }

@@ -312,7 +312,7 @@ public class PunishCommand extends Command {
                         userMsg.delete().complete();
                     } catch (Exception ignored) { }
                 },
-                30, TimeUnit.SECONDS,
+                3, TimeUnit.MINUTES,
                 () -> {
                     if (!kurwaBylaAkcja.get()) {
                         try {

@@ -47,7 +47,7 @@ public class DeletedMessagesConfig {
     private String content;
 
     public static DeletedMessagesConfig convert(FakeMessage msg, long deletedDate) {
-        return new DeletedMessagesConfig(msg.getId(), msg.getCreatedAt().toInstant().getEpochSecond(), deletedDate, msg.getAuthor(), msg.getChannel(), msg.getContent());
+        return new DeletedMessagesConfig(msg.getId(), msg.getCreatedAt().toInstant().toEpochMilli(), deletedDate, msg.getAuthor(), msg.getChannel(), msg.getContent());
     }
 
 }
