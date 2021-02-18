@@ -55,7 +55,6 @@ import java.util.concurrent.TimeUnit;
 import static io.undertow.Handlers.path;
 
 @Getter
-@SuppressWarnings("DanglingJavadoc")
 public class APIModule implements Modul {
 
     private final VoiceStateDao voiceStateDao;
