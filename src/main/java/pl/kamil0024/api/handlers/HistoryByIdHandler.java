@@ -19,36 +19,34 @@
 
 package pl.kamil0024.api.handlers;
 
-import com.google.gson.Gson;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.Headers;
 import lombok.AllArgsConstructor;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import pl.kamil0024.api.Response;
+import pl.kamil0024.commands.system.UserinfoCommand;
 import pl.kamil0024.core.database.CaseDao;
 import pl.kamil0024.core.database.config.CaseConfig;
-
-import java.nio.charset.StandardCharsets;
-import java.util.List;
+import pl.kamil0024.core.util.kary.Kara;
 
 @AllArgsConstructor
-public class HistoryDescById implements HttpHandler {
+public class HistoryByIdHandler implements HttpHandler {
 
+    private final ShardManager api;
     private final CaseDao caseDao;
 
     @Override
     public void handleRequest(HttpServerExchange ex) {
-        if (!CheckToken.checkToken(ex)) return;
+        if (!Response.checkToken(ex)) return;
+
         try {
-            String userId = ex.getQueryParameters().get("id").getFirst();
-            int offset = Integer.parseInt(ex.getQueryParameters().get("offset").getFirst());
-            List<CaseConfig> kary = caseDao.getAllDesc(userId, offset);
-            ex.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-            ex.getResponseSender().send(new Gson().toJson(kary), StandardCharsets.UTF_8);
+            CaseConfig cc = caseDao.get(ex.getQueryParameters().get("id").getFirst());
+            if (cc.getKara() == null) throw new UnsupportedOperationException("Nie ma kary o takim id!");
+            Response.sendObjectResponse(ex, MemberHistoryHandler.ApiCaseConfig.convert(cc.getKara(), api));
         } catch (Exception e) {
-            Response.sendErrorResponse(ex, "Błąd", "Wystąpił błąd");
-            e.printStackTrace();
+            Response.sendErrorResponse(ex, "Błąd", "Nie udało się wysłać requesta: " + e.getLocalizedMessage());
         }
 
     }
+
 }

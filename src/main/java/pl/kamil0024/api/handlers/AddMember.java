@@ -35,6 +35,7 @@ public class AddMember implements HttpHandler {
     @SuppressWarnings("ConstantConditions")
     @Override
     public void handleRequest(HttpServerExchange ex)  {
+        if (!Response.checkIp(ex)) return;
         try {
             JSONObject json = new JSONObject(Response.getBody(ex.getInputStream()));
             api.getGuildById(Ustawienia.instance.bot.guildId)

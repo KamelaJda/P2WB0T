@@ -94,4 +94,8 @@ public class CaseDao implements Dao<CaseConfig> {
         return mapper.getDescKary(userId, offset);
     }
 
+    public List<CaseConfig> getAllByOffset(int offset) {
+        return mapper.getAllByOffset(offset);
+    }
+
 }

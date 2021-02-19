@@ -47,6 +47,7 @@ public class YouTrackReport implements HttpHandler {
 
     @Override
     public void handleRequest(HttpServerExchange ex) {
+        if (!Response.checkToken(ex)) return;
         Response.sendResponse(ex, "Pomyślnie wysłano reporta!");
 
         String header = ex.getRequestHeaders().get("data").getFirst();

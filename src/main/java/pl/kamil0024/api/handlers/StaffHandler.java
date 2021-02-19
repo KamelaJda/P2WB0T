@@ -43,7 +43,7 @@ public class StaffHandler implements HttpHandler {
 
     @Override
     public void handleRequest(HttpServerExchange ex){
-        if (!Response.checkIp(ex)) { return; }
+        if (!Response.checkToken(ex)) { return; }
 
         Guild g = api.getGuildById(Ustawienia.instance.bot.guildId);
         StaffList staffList = new StaffList();

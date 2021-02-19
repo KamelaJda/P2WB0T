@@ -51,7 +51,6 @@ public class Response {
         ex.getResponseSender().send(gson.toJson(new ToJSON(true, null, null, data)), StandardCharsets.UTF_8);
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean checkIp(HttpServerExchange ex) {
         String host = ex.getSourceAddress().getAddress().getHostAddress();
         if (host.isEmpty() || !Ustawienia.instance.api.whitelist.contains(host)) {
@@ -59,6 +58,20 @@ public class Response {
             return false;
         }
         return true;
+    }
+
+    public static boolean checkToken(HttpServerExchange ex) {
+        try {
+            String auth = ex.getRequestHeaders().get("Authorization").getFirst();
+            if (!Ustawienia.instance.api.tokens.contains(auth)) {
+                Response.sendErrorResponse(ex, "Brak autoryzacji", "Token jest nieprawidłowy.");
+                return false;
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
+
     }
 
     public static String getBody(InputStream is) {

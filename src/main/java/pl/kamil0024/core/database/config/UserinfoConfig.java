@@ -21,7 +21,16 @@ package pl.kamil0024.core.database.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
+import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.core.command.enums.PermLevel;
+import pl.kamil0024.core.util.UserUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
@@ -35,11 +44,34 @@ public class UserinfoConfig {
     private String id = "";
 
     private String mcNick = null;
-    private String fullname = "/";
+    private String username;
+    private String tag;
     private PermLevel permLevel = PermLevel.MEMBER;
+    private String avatarUrl;
+    private boolean inGuild = true;
+    private List<String> roles = new ArrayList<>();
 
     public String getWhateverName() {
-        return getMcNick() == null ? getFullname() : getMcNick();
+        return getMcNick() == null ? getUsername() : getMcNick();
+    }
+
+    public static UserinfoConfig convert(Member member) {
+        UserinfoConfig inf = convert(member.getUser());
+        if (member.getNickname() != null) inf.setMcNick(member.getNickname());
+        inf.setPermLevel(UserUtil.getPermLevel(member));
+        inf.setInGuild(true);
+        inf.setRoles(member.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
+        return inf;
+    }
+
+    public static UserinfoConfig convert(@Nullable User user) {
+        if (user == null) return null;
+        UserinfoConfig inf = new UserinfoConfig(user.getId());
+        inf.setUsername(user.getName());
+        inf.setTag(user.getAsTag());
+        inf.setAvatarUrl(user.getAvatarUrl());
+        inf.setInGuild(false);
+        return inf;
     }
 
 }

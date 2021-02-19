@@ -38,7 +38,7 @@ public class DiscordInvite implements HttpHandler  {
 
     @Override
     public void handleRequest(HttpServerExchange ex) {
-        if (!CheckToken.checkToken(ex)) return;
+        if (!Response.checkToken(ex)) return;
 
         String nick = ex.getQueryParameters().get("nick").getFirst();
         String ranga = ex.getQueryParameters().get("ranga").getFirst();

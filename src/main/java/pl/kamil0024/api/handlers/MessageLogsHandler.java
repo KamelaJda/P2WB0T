@@ -30,6 +30,7 @@ import pl.kamil0024.api.Response;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.database.DeletedMessagesDao;
 import pl.kamil0024.core.database.config.DeletedMessagesConfig;
+import pl.kamil0024.core.database.config.UserinfoConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,8 +75,8 @@ public class MessageLogsHandler implements HttpHandler {
                     entry.setChannelId(g.getGuildChannelById(entry.getChannelId()).getName());
                     i.setMessage(entry);
                     Member mem = g.getMemberById(entry.getUserId());
-                    if (mem != null) i.setMember(MemberInfoHandler.getMember(mem));
-                    else i.setMember(MemberInfoHandler.getUser(api.getUserById(entry.getUserId())));
+                    if (mem != null) i.setMember(UserinfoConfig.convert(mem));
+                    else i.setMember(UserinfoConfig.convert(api.getUserById(entry.getUserId())));
                     finalList.add(i);
                 } catch (Exception ignored) { }
             }
@@ -90,7 +91,7 @@ public class MessageLogsHandler implements HttpHandler {
     @Data
     private static class Info {
         DeletedMessagesConfig message;
-        MemberInfoHandler.MemberInfo member;
+        UserinfoConfig member;
     }
 
 }
