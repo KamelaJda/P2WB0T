@@ -5,7 +5,7 @@
 
 ## Opis
 
-Zwraca prawidłowość tokeny
+Zwraca prawidłowość tokenu
 
 ## Headers
 | Key           | Value   |

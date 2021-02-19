@@ -67,8 +67,9 @@ public class Response {
                 Response.sendErrorResponse(ex, "Brak autoryzacji", "Token jest nieprawidłowy.");
                 return false;
             }
-            return false;
+            return true;
         } catch (Exception e) {
+            Response.sendErrorResponse(ex, "Brak autoryzacji", "Token jest nieprawidłowy.");
             return false;
         }
 

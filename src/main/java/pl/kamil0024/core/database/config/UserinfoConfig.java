@@ -68,7 +68,7 @@ public class UserinfoConfig {
         if (user == null) return null;
         UserinfoConfig inf = new UserinfoConfig(user.getId());
         inf.setUsername(user.getName());
-        inf.setTag(user.getAsTag());
+        inf.setTag(user.getDiscriminator());
         inf.setAvatarUrl(user.getAvatarUrl());
         inf.setInGuild(false);
         return inf;

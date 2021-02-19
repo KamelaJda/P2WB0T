@@ -1,6 +1,6 @@
 # Kara
 ### Informacja
-Wygląd kary
+Wygląd kar
 
 ### Przykłady
 ```json
@@ -26,8 +26,8 @@ Wygląd kary
 {
   "id": 1,
   "user": "ID użytkownika",
-  "content": "Treść dowodu (jeżeli nie ma, tego klucza nie będzie)",
-  "image": "Link do zdjęcia (jeżeli nie ma, tego klucza nie będzie)"
+  "content": "Treść dowodu (jeżeli wartość jest pusta, tego klucza nie będzie)",
+  "image": "Link do zdjęcia (jeżeli wartość jest pusta, tego klucza nie będzie)"
 }
 ```
 
