@@ -57,7 +57,6 @@ public class MemberInfoHandler implements HttpHandler {
             else uc = UserinfoConfig.convert(api.getUserById(id));
 
             Response.sendObjectResponse(ex, uc);
-
         } catch (Exception e) {
             e.printStackTrace();
             Response.sendErrorResponse(ex, "Błąd!", "Nie udało się wykonać requesta!");

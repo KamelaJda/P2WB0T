@@ -22,6 +22,7 @@ package pl.kamil0024.api.handlers;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import lombok.AllArgsConstructor;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import pl.kamil0024.api.APIModule;
 import pl.kamil0024.api.Response;
 import pl.kamil0024.core.database.StatsDao;
@@ -41,7 +42,7 @@ import static pl.kamil0024.stats.commands.TopCommand.sortByValue;
 public class ChatmodStats implements HttpHandler {
 
     private final StatsDao statsDao;
-    private final APIModule apiModule;
+    private final ShardManager api;
 
     @Override
     public void handleRequest(HttpServerExchange ex) {
@@ -69,7 +70,7 @@ public class ChatmodStats implements HttpHandler {
            Map<String, TopCommand.Suma> finalStats = new HashMap<>();
            for (Map.Entry<String, Integer> entry : sortByValue(top).entrySet()) {
                try {
-                   UserinfoConfig user = apiModule.getUserConfig(entry.getKey());
+                   UserinfoConfig user = MemberHistoryHandler.getWhateverConfig(entry.getKey(), api);
                    if (user.getMcNick() == null) continue;
                    finalStats.put(user.getMcNick(), mapa.get(entry.getKey()));
                } catch (Exception ignored) { }

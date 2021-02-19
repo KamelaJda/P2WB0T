@@ -113,7 +113,7 @@ public class APIModule implements Modul {
         routes.post("api/react/ankiety/post", new AnkietaHandler(ankietaDao));
         routes.post("api/react/embed/post", new EmbedHandler(embedRedisManager));
 
-        routes.get("api/chatmod/stats", new ChatmodStats(statsDao, this));
+        routes.get("api/chatmod/stats", new ChatmodStats(statsDao, api));
         routes.get("api/chatmod/logs", new MessageLogsHandler(deletedMessagesDao, api));
 
         routes.get("api/util/staff", new StaffHandler(api));
