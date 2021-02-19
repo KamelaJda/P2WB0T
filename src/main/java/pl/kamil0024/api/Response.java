@@ -38,7 +38,7 @@ public class Response {
 
     public static void sendErrorResponse(HttpServerExchange ex, String body, String description) {
         ex.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-        ex.getResponseSender().send(gson.toJson(new ToJSON(false, null, new Error(body, description), null)), StandardCharsets.UTF_8);
+        ex.getResponseSender().send(gson.toJson(new ToJSON(false, null, new ToJSON.Error(body, description), null)), StandardCharsets.UTF_8);
     }
 
     public static void sendResponse(HttpServerExchange ex, String msg) {
@@ -87,13 +87,14 @@ public class Response {
         private final String msg;
         private final Error error;
         private final Object data;
-    }
 
-    @Data
-    @AllArgsConstructor
-    public static class Error {
-        private final String body;
-        private final String description;
+        @Data
+        @AllArgsConstructor
+        public static class Error {
+            private final String body;
+            private final String description;
+        }
+
     }
 
 }

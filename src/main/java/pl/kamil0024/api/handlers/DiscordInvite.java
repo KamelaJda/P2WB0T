@@ -24,6 +24,7 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import pl.kamil0024.api.APIModule;
 import pl.kamil0024.api.Response;
+import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.database.config.DiscordInviteConfig;
 
 import java.util.Map;
@@ -38,7 +39,16 @@ public class DiscordInvite implements HttpHandler  {
 
     @Override
     public void handleRequest(HttpServerExchange ex) {
-        if (!Response.checkToken(ex)) return;
+        try {
+            String token = ex.getQueryParameters().get("token").getFirst();
+            if (!Ustawienia.instance.api.tokens.contains(token)) {
+                Response.sendErrorResponse(ex, "Brak autoryzacji", "Token jest nieprawidłowy.");
+                return;
+            }
+        } catch (Exception e) {
+            Response.sendErrorResponse(ex, "Brak autoryzacji", "Token jest nieprawidłowy.");
+            return;
+        }
 
         String nick = ex.getQueryParameters().get("nick").getFirst();
         String ranga = ex.getQueryParameters().get("ranga").getFirst();
