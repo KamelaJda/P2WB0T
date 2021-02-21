@@ -46,7 +46,7 @@ public class MemberInfoHandler implements HttpHandler {
 
     @Override
     public void handleRequest(HttpServerExchange ex) {
-        if (!Response.checkIp(ex)) { return; }
+        if (!Response.checkIp(ex)) return;
 
         try {
             UserinfoConfig uc;
@@ -55,6 +55,10 @@ public class MemberInfoHandler implements HttpHandler {
 
             if (mem != null) uc = UserinfoConfig.convert(mem);
             else uc = UserinfoConfig.convert(api.getUserById(id));
+            if (uc == null) {
+                Response.sendErrorResponse(ex, "Błąd!", "Nie ma takiego użytkownika");
+                return;
+            }
 
             Response.sendObjectResponse(ex, uc);
         } catch (Exception e) {

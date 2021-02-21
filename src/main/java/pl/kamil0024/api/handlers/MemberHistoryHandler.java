@@ -50,13 +50,14 @@ public class MemberHistoryHandler implements HttpHandler {
 
         try {
             String id = ex.getQueryParameters().get("member").getFirst();
-            int offset = Integer.parseInt(ex.getQueryParameters().get("query").getFirst());
+            int offset = Integer.parseInt(ex.getQueryParameters().get("offset").getFirst());
             if (offset < 0) throw new UnsupportedOperationException("Query nie może być mniejsze od 0");
 
             List<CaseConfig> cc = caseDao.getAllDesc(id, offset);
             Response.sendObjectResponse(ex, cc.stream().map(a -> ApiCaseConfig.convert(a.getKara(), api)).collect(Collectors.toList()));
 
         } catch (Exception e) {
+            e.printStackTrace();
             Response.sendErrorResponse(ex, "Błąd", "Nie udało się wysłać requesta: " + e.getLocalizedMessage());
         }
 

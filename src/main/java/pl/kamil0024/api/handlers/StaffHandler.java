@@ -41,9 +41,11 @@ public class StaffHandler implements HttpHandler {
 
     private final ShardManager api;
 
+    // 
+
     @Override
     public void handleRequest(HttpServerExchange ex){
-        if (!Response.checkToken(ex)) { return; }
+        if (!Response.checkToken(ex)) return;
 
         Guild g = api.getGuildById(Ustawienia.instance.bot.guildId);
         StaffList staffList = new StaffList();

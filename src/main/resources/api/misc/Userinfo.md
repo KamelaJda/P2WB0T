@@ -7,7 +7,7 @@ Jeżeli użytkownik jest na serwerze
 ```json
 {
   "id": "id użytkownika",
-  "mcNick": "nick na serwerze Discor (jeżeli użytkownik nie ma ustawionego nicku, nie ma tego klucza)",
+  "mcNick": "nick na serwerze Discord (jeżeli użytkownik nie ma ustawionego nicku, nie ma tego klucza)",
   "username": "nick konta na discordzie",
   "tag": "tag użytkownika (np. #2137)",
   "permLevel": "permisje użytkownika (patrz PermLevel.md)",

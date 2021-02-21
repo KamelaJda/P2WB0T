@@ -16,16 +16,6 @@ Zwraca liste administracji
 
 ```json
 {
-  "success": false,
-  "error": {
-    "body": "Brak autoryzacji",
-    "description": "Token jest nieprawidłowy."
-  }
-}
-```
-
-```json
-{
   "success": true,
   "data": {
     "zarzad": [
@@ -55,8 +45,8 @@ Zwraca liste administracji
 #### Osoba
 ```json
 {
-  "nick": "nick użytkownika",
-  "discordnick": "nick na discordzie",
+  "nick": "username na Discordzie",
+  "discordnick": "nick na serwerze Discord",
   "prefix": "prefix użytkownika",
   "zespoły": ["lista", "zespołów"],
   "lider": ["lista", "zespołów, w których osoba jest liderem"]

@@ -55,11 +55,15 @@ public class ApelacjeHandler implements HttpHandler {
                 String value = json.getString("value");
                 int offset = json.getInt("offset");
 
+                if (!filtr.equals("all") && !filtr.equals("nick") && !filtr.equals("id")) {
+                    Response.sendErrorResponse(ex, "Błąd!", "filtr typu " + filtr + " jest nieprawidłowy");
+                    return;
+                }
+
                 if (filtr.equalsIgnoreCase("all")) Response.sendObjectResponse(ex, apelacjeDao.getAll(offset));
-
                 if (filtr.equalsIgnoreCase("nick")) Response.sendObjectResponse(ex, apelacjeDao.getAllByNick(value, offset));
+                if (filtr.equalsIgnoreCase("id")) Response.sendObjectResponse(ex, apelacjeDao.get(value));
 
-                Response.sendErrorResponse(ex, "Błąd!", "filtr typu " + filtr + " jest nieprawidłowy");
             } catch (Exception e) {
                 e.printStackTrace();
                 Response.sendErrorResponse(ex, "Błąd!", "Nie udało się wysłać requesta: " + e.getMessage());

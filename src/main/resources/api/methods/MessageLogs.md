@@ -13,10 +13,10 @@ Poprzez IP
 
 ## Query
 
-| Key           | Value                                                                                                                                       |
-|---------------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| type          | Typ wyszukiwania (all, channel, user)                                                                                                       |
-| data          | Nie może być puste! W przypadku wybrania `type` jako `channel` lub `user`, data ma wartość jakie ID kanału lub jakiego użytkownika wyszukać |
+| Key           | Value                                                                                                            |
+|---------------|------------------------------------------------------------------------------------------------------------------|
+| type          | Typ wyszukiwania (all, channel, user)                                                                            |
+| data          | Nie może być puste! W przypadku wybrania `type` jako `channel` lub `user`, data ma wartość ID kanału/użytkownika |
 | offset        | Offset (limit 10)                                                                                                                                    |
 
 ## Przykłady

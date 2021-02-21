@@ -5,7 +5,7 @@ Wygląd kar
 ### Przykłady
 ```json
 {
-  "karaId": 1237,
+  "karaId": 2137,
   "karany": "Patrz Userinfo.md",
   "mcNick": "Nick w mc, na którym został ukarany",
   "adm": "Patrz Userinfo.md",
@@ -16,8 +16,8 @@ Wygląd kar
   "messageUrl": "URL wiadomości w formacie 'id serwera/id kanału/id wiadomości'",
   "end": "Kiedy koniec kary. Format w longu!",
   "duration": "Na ile nadano (2h, 1d, 2137m)",
-  "punAktywna": "Wartość bezużyteczna :p",
-  "dowody": "Lista dowodów (Format dowód jest na dole)"
+  "dowody": "Lista dowodów (Format dowód jest na dole)",
+  "punAktywna": "Wartość bezużyteczna :p"
 }
 ```
 
