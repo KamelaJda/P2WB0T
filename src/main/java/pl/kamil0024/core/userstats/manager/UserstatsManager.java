@@ -29,10 +29,7 @@ import pl.kamil0024.core.redis.RedisManager;
 import pl.kamil0024.core.util.GsonUtil;
 
 import javax.annotation.Nonnull;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -82,9 +79,12 @@ public class UserstatsManager extends ListenerAdapter {
 
     public void load() {
 
+        Set<Map.Entry<String, UserstatsConfig.Config>> saveConf = config.asMap().entrySet();
+        config.invalidateAll();
+
         Map<Long, UserstatsConfig> map = new HashMap<>();
 
-        for (Map.Entry<String, UserstatsConfig.Config> entry : config.asMap().entrySet()) {
+        for (Map.Entry<String, UserstatsConfig.Config> entry : saveConf) {
             try {
                 Log.debug("entry.getKey(): " + entry.getKey());
                 String[] split = entry.getKey().split("::Config:")[1].split("-");
@@ -94,6 +94,7 @@ public class UserstatsManager extends ListenerAdapter {
 
                 UserstatsConfig conf = map.getOrDefault(ldate, new UserstatsConfig(ldate));
                 conf.getMembers().put(member, entry.getValue());
+                map.put(ldate, conf);
             } catch (Exception e) {
                 e.printStackTrace();
 //                Log.newError(e, getClass());
