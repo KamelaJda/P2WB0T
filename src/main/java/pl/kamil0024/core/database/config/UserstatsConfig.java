@@ -51,6 +51,8 @@ public class UserstatsConfig {
     @Data
     @AllArgsConstructor
     public static class Config {
+        public Config() { }
+
         private long messageCount;
         private Map<String, Long> channels;
     }
