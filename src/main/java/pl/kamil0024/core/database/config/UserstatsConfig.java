@@ -25,7 +25,9 @@ import gg.amy.pgorm.annotations.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Table("userstats")
@@ -47,6 +49,7 @@ public class UserstatsConfig {
     private String date;
 
     private Map<String, Config> members = new HashMap<>();
+    private List<String> memberslist = new ArrayList<>();
 
     @Data
     @AllArgsConstructor

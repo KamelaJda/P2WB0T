@@ -23,10 +23,8 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import pl.kamil0024.core.database.UserstatsDao;
 import pl.kamil0024.core.database.config.UserstatsConfig;
-import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.redis.Cache;
 import pl.kamil0024.core.redis.RedisManager;
-import pl.kamil0024.core.util.GsonUtil;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -86,7 +84,6 @@ public class UserstatsManager extends ListenerAdapter {
 
         for (Map.Entry<String, UserstatsConfig.Config> entry : saveConf) {
             try {
-                Log.debug("entry.getKey(): " + entry.getKey());
                 String[] split = entry.getKey().split("::Config:")[1].split("-");
                 String sdate = split[0];
                 String member = split[1];
@@ -94,6 +91,8 @@ public class UserstatsManager extends ListenerAdapter {
 
                 UserstatsConfig conf = map.getOrDefault(ldate, new UserstatsConfig(ldate));
                 conf.getMembers().put(member, entry.getValue());
+                conf.getMemberslist().remove(member);
+                conf.getMemberslist().add(member);
                 map.put(ldate, conf);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -101,7 +100,6 @@ public class UserstatsManager extends ListenerAdapter {
             }
         }
 
-        Log.debug(GsonUtil.toJSON(map));
         for (UserstatsConfig v : map.values()) {
             UserstatsConfig dConf = userstatsDao.get(v.getDate());
             if (dConf == null) {
