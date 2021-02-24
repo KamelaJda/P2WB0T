@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.kamil0024.core.userstats.manager.UserstatsManager;
 import pl.kamil0024.moderation.listeners.ModLog;
 import pl.kamil0024.commands.listener.GiveawayListener;
 import pl.kamil0024.core.command.Command;
@@ -79,8 +80,9 @@ public class EvalCommand extends Command {
     private final SocketManager socketManager;
     private final DeletedMessagesDao deletedMessagesDao;
     private final AcBanDao acBanDao;
+    private final UserstatsManager userstatsManager;
 
-    public EvalCommand(EventWaiter eventWaiter, CommandManager commandManager, CaseDao caseDao, ModLog modLog, KaryJSON karyJSON, Tlumaczenia tlumaczenia, CommandExecute commandExecute, UserDao userDao, NieobecnosciDao nieobecnosciDao, RemindDao remindDao, ModulManager modulManager, GiveawayListener giveawayListener, GiveawayDao giveawayDao, StatsModule statsModule, MultiDao multiDao, MusicModule musicModule, YouTrack youTrack, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, WeryfikacjaDao weryfikacjaDao, WeryfikacjaModule weryfikacjaModule, SocketManager socketManager, DeletedMessagesDao deletedMessagesDao, AcBanDao acBanDao) {
+    public EvalCommand(EventWaiter eventWaiter, CommandManager commandManager, CaseDao caseDao, ModLog modLog, KaryJSON karyJSON, Tlumaczenia tlumaczenia, CommandExecute commandExecute, UserDao userDao, NieobecnosciDao nieobecnosciDao, RemindDao remindDao, ModulManager modulManager, GiveawayListener giveawayListener, GiveawayDao giveawayDao, StatsModule statsModule, MultiDao multiDao, MusicModule musicModule, YouTrack youTrack, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, WeryfikacjaDao weryfikacjaDao, WeryfikacjaModule weryfikacjaModule, SocketManager socketManager, DeletedMessagesDao deletedMessagesDao, AcBanDao acBanDao, UserstatsManager userstatsManager) {
         name = "eval";
         aliases.add("ev");
         category = CommandCategory.DEVS;
@@ -112,6 +114,7 @@ public class EvalCommand extends Command {
         this.socketManager = socketManager;
         this.deletedMessagesDao = deletedMessagesDao;
         this.acBanDao = acBanDao;
+        this.userstatsManager = userstatsManager;
     }
 
     @Override
@@ -151,6 +154,7 @@ public class EvalCommand extends Command {
         shell.setVariable("socketManager", socketManager);
         shell.setVariable("deletedMessagesDao", deletedMessagesDao);
         shell.setVariable("acBanDao", acBanDao);
+        shell.setVariable("userstatsManager", userstatsManager);
 
         long ms = System.currentTimeMillis();
         Object value;

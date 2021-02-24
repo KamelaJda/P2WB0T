@@ -42,6 +42,7 @@ import pl.kamil0024.antiraid.AntiRaidModule;
 import pl.kamil0024.api.APIModule;
 import pl.kamil0024.chat.ChatModule;
 import pl.kamil0024.commands.CommandsModule;
+import pl.kamil0024.core.userstats.manager.UserstatsManager;
 import pl.kamil0024.moderation.ModerationModule;
 import pl.kamil0024.moderation.listeners.ModLog;
 import pl.kamil0024.commands.dews.RebootCommand;
@@ -259,6 +260,7 @@ public class B0T {
         RecordingDao       recordingDao        = new RecordingDao(databaseManager);
         AntiRaidDao        antiRaidDao         = new AntiRaidDao(databaseManager);
         DeletedMessagesDao deletedMessagesDao  = new DeletedMessagesDao(databaseManager);
+        UserstatsDao       userstatsDao        = new UserstatsDao(databaseManager);
 
         ArrayList<Object> listeners = new ArrayList<>();
         CommandExecute commandExecute = new CommandExecute(commandManager, tlumaczenia, argumentManager, userDao);
@@ -268,7 +270,10 @@ public class B0T {
         this.modulManager = new ModulManager();
         ModLog modLog = new ModLog(api, caseDao);
         NieobecnosciManager nieobecnosciManager = new NieobecnosciManager(api, nieobecnosciDao);
+        UserstatsManager    userstatsManager    = new UserstatsManager(redisManager, userstatsDao);
+
         api.addEventListener(modLog);
+        api.addEventListener(userstatsManager);
 
         this.musicModule = new MusicModule(commandManager, api, eventWaiter, voiceStateDao, socketManager);
         this.statsModule = new StatsModule(commandManager, api, eventWaiter, statsDao, musicModule, nieobecnosciDao);
@@ -280,7 +285,7 @@ public class B0T {
 //        modulManager.getModules().add(new StatusModule(api));
         modulManager.getModules().add(new NieobecnosciModule(api, nieobecnosciDao, nieobecnosciManager));
         modulManager.getModules().add(new LiczydloModule(api));
-        modulManager.getModules().add(new CommandsModule(commandManager, tlumaczenia, api, eventWaiter, karyJSON, caseDao, modulManager, commandExecute, userDao, modLog, nieobecnosciDao, remindDao, giveawayDao, statsModule, musicModule, multiDao, nieobecnosciManager, youTrack, ticketDao, apelacjeDao, ankietaDao, embedRedisManager, weryfikacjaDao, weryfikacjaModule, recordingDao, socketManager, deletedMessagesDao, acBanDao));
+        modulManager.getModules().add(new CommandsModule(commandManager, tlumaczenia, api, eventWaiter, karyJSON, caseDao, modulManager, commandExecute, userDao, modLog, nieobecnosciDao, remindDao, giveawayDao, statsModule, musicModule, multiDao, nieobecnosciManager, youTrack, ticketDao, apelacjeDao, ankietaDao, embedRedisManager, weryfikacjaDao, weryfikacjaModule, recordingDao, socketManager, deletedMessagesDao, acBanDao, userstatsManager));
         modulManager.getModules().add(new RekruModule(api, commandManager));
         modulManager.getModules().add(musicModule);
         modulManager.getModules().add(statsModule);

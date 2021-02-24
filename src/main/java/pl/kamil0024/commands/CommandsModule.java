@@ -39,6 +39,7 @@ import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.module.Modul;
 import pl.kamil0024.core.module.ModulManager;
 import pl.kamil0024.core.socket.SocketManager;
+import pl.kamil0024.core.userstats.manager.UserstatsManager;
 import pl.kamil0024.core.util.EventWaiter;
 import pl.kamil0024.core.util.Tlumaczenia;
 import pl.kamil0024.core.util.kary.KaryJSON;
@@ -89,6 +90,7 @@ public class CommandsModule implements Modul {
     private final SocketManager socketManager;
     private final DeletedMessagesDao deletedMessagesDao;
     private final AcBanDao acBanDao;
+    private final UserstatsManager userstatsManager;
 
     private boolean start = false;
     private final ModLog modLog;
@@ -98,7 +100,7 @@ public class CommandsModule implements Modul {
     GuildListener guildListener;
     GiveawayListener giveawayListener;
 
-    public CommandsModule(CommandManager commandManager, Tlumaczenia tlumaczenia, ShardManager api, EventWaiter eventWaiter, KaryJSON karyJSON, CaseDao caseDao, ModulManager modulManager, CommandExecute commandExecute, UserDao userDao, ModLog modLog, NieobecnosciDao nieobecnosciDao, RemindDao remindDao, GiveawayDao giveawayDao, StatsModule statsModule, MusicModule musicModule, MultiDao multiDao, NieobecnosciManager nieobecnosciManager, YouTrack youTrack, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, WeryfikacjaDao weryfikacjaDao, WeryfikacjaModule weryfikacjaModule, RecordingDao recordingDao, SocketManager socketManager, DeletedMessagesDao deletedMessagesDao, AcBanDao acBanDao) {
+    public CommandsModule(CommandManager commandManager, Tlumaczenia tlumaczenia, ShardManager api, EventWaiter eventWaiter, KaryJSON karyJSON, CaseDao caseDao, ModulManager modulManager, CommandExecute commandExecute, UserDao userDao, ModLog modLog, NieobecnosciDao nieobecnosciDao, RemindDao remindDao, GiveawayDao giveawayDao, StatsModule statsModule, MusicModule musicModule, MultiDao multiDao, NieobecnosciManager nieobecnosciManager, YouTrack youTrack, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, WeryfikacjaDao weryfikacjaDao, WeryfikacjaModule weryfikacjaModule, RecordingDao recordingDao, SocketManager socketManager, DeletedMessagesDao deletedMessagesDao, AcBanDao acBanDao, UserstatsManager userstatsManager) {
         this.commandManager = commandManager;
         this.tlumaczenia = tlumaczenia;
         this.api = api;
@@ -126,6 +128,7 @@ public class CommandsModule implements Modul {
         this.socketManager = socketManager;
         this.deletedMessagesDao = deletedMessagesDao;
         this.acBanDao = acBanDao;
+        this.userstatsManager = userstatsManager;
 
         ScheduledExecutorService executorSche = Executors.newSingleThreadScheduledExecutor();
         executorSche.scheduleAtFixedRate(() -> tak(api), 0, 5, TimeUnit.MINUTES);
@@ -145,7 +148,7 @@ public class CommandsModule implements Modul {
         cmd.add(new BotinfoCommand(commandManager, modulManager, socketManager));
         cmd.add(new HelpCommand(commandManager));
         cmd.add(new PoziomCommand());
-        cmd.add(new EvalCommand(eventWaiter, commandManager, caseDao, modLog, karyJSON, tlumaczenia, commandExecute, userDao, nieobecnosciDao, remindDao, modulManager, giveawayListener, giveawayDao, statsModule, multiDao, musicModule, youTrack, ticketDao, apelacjeDao, ankietaDao, embedRedisManager, weryfikacjaDao, weryfikacjaModule, socketManager, deletedMessagesDao, acBanDao));
+        cmd.add(new EvalCommand(eventWaiter, commandManager, caseDao, modLog, karyJSON, tlumaczenia, commandExecute, userDao, nieobecnosciDao, remindDao, modulManager, giveawayListener, giveawayDao, statsModule, multiDao, musicModule, youTrack, ticketDao, apelacjeDao, ankietaDao, embedRedisManager, weryfikacjaDao, weryfikacjaModule, socketManager, deletedMessagesDao, acBanDao, userstatsManager));
         cmd.add(new ForumCommand());
         cmd.add(new UserinfoCommand());
         cmd.add(new McpremiumCommand());

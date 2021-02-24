@@ -18,6 +18,7 @@
 package pl.kamil0024.core.redis;
 
 import com.google.common.reflect.TypeToken;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.LinkedHashMap;
@@ -38,6 +39,12 @@ public class RedisCache<V> implements Cache<V> {
     @Override
     public V getIfPresent(@Nonnull Object key) {
         return rcm.get(key.toString(), holds);
+    }
+
+    @Override
+    public V getOrElse(@NotNull Object key, @NotNull V value) {
+        V v = rcm.get(key.toString(), holds);
+        return v != null ? v : value;
     }
 
     @Override
