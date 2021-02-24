@@ -87,7 +87,7 @@ public class UserstatsManager extends ListenerAdapter {
         for (Map.Entry<String, UserstatsConfig.Config> entry : config.asMap().entrySet()) {
             try {
                 Log.debug("entry.getKey(): " + entry.getKey());
-                String[] split = entry.getKey().split("-");
+                String[] split = entry.getKey().split("::Config:")[1].split("-");
                 String sdate = split[0];
                 String member = split[1];
                 long ldate = Long.parseLong(sdate);
