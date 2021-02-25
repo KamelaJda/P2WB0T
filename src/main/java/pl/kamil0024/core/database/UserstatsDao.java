@@ -48,7 +48,7 @@ public class UserstatsDao implements Dao<UserstatsConfig> {
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
-        return mapper.loadRaw(String.format("SELECT * FROM userstats WHERE data->'memberslist' ?| ARRAY['%s'] AND id::numeric >= %s", id, cal.getTimeInMillis())); // TODO: Sprawdzić
+        return mapper.loadRaw("SELECT * FROM %s WHERE data->'memberslist' ??| ARRAY[?] AND id::numeric >= ?::numeric", id, String.valueOf(cal.getTimeInMillis()));
     }
 
     @Override
