@@ -69,7 +69,7 @@ public class StatsCommand extends Command {
                 UserstatsConfig.Config memStat = entry.getMembers().get(context.getUser().getId());
                 if (memStat == null) continue;
                 wszystkieWiadomosci += memStat.getMessageCount();
-                
+
                 for (Map.Entry<String, Long> channelEntry : memStat.getChannels().entrySet()) {
                     long suma = kanaly.getOrDefault(channelEntry.getKey(), 0L);
                     kanaly.put(channelEntry.getKey(), suma + channelEntry.getValue());
