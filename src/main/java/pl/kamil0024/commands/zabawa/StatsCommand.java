@@ -69,12 +69,10 @@ public class StatsCommand extends Command {
                 UserstatsConfig.Config memStat = entry.getMembers().get(context.getUser().getId());
                 if (memStat == null) continue;
                 wszystkieWiadomosci += memStat.getMessageCount();
-
-                Log.debug("Nowa godzina");
+                
                 for (Map.Entry<String, Long> channelEntry : memStat.getChannels().entrySet()) {
                     long suma = kanaly.getOrDefault(channelEntry.getKey(), 0L);
-                    Log.debug(channelEntry.getKey() + " = " + (suma + 1L));
-                    kanaly.put(channelEntry.getKey(), suma + 1L);
+                    kanaly.put(channelEntry.getKey(), suma + channelEntry.getValue());
                 }
 
             }
