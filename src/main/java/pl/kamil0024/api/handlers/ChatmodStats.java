@@ -27,7 +27,7 @@ import pl.kamil0024.api.Response;
 import pl.kamil0024.core.database.StatsDao;
 import pl.kamil0024.core.database.config.StatsConfig;
 import pl.kamil0024.core.database.config.UserinfoConfig;
-import pl.kamil0024.stats.commands.StatsCommand;
+import pl.kamil0024.stats.commands.ChatmodStatsCommand;
 import pl.kamil0024.stats.commands.TopCommand;
 import pl.kamil0024.stats.entities.Statystyka;
 
@@ -54,7 +54,7 @@ public class ChatmodStats implements HttpHandler {
 
            for (StatsConfig statsConfig : staty) {
                int suma = 0;
-               Statystyka statyZParuDni = StatsCommand.getStatsOfDayMinus(statsConfig.getStats(), Integer.parseInt(ex.getQueryParameters().get("dni").getFirst()));
+               Statystyka statyZParuDni = ChatmodStatsCommand.getStatsOfDayMinus(statsConfig.getStats(), Integer.parseInt(ex.getQueryParameters().get("dni").getFirst()));
                suma += (statyZParuDni.getWyrzuconych() +
                        statyZParuDni.getZbanowanych() +
                        statyZParuDni.getZmutowanych());

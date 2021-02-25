@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import pl.kamil0024.core.database.UserstatsDao;
 import pl.kamil0024.core.database.config.UserstatsConfig;
+import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.redis.Cache;
 import pl.kamil0024.core.redis.RedisManager;
 
@@ -77,50 +78,52 @@ public class UserstatsManager extends ListenerAdapter {
 
     public void load() {
 
-        Set<Map.Entry<String, UserstatsConfig.Config>> saveConf = config.asMap().entrySet();
-        config.invalidateAll();
+        new Thread(() -> {
+            Set<Map.Entry<String, UserstatsConfig.Config>> saveConf = config.asMap().entrySet();
+            config.invalidateAll();
 
-        Map<Long, UserstatsConfig> map = new HashMap<>();
+            Map<Long, UserstatsConfig> map = new HashMap<>();
 
-        for (Map.Entry<String, UserstatsConfig.Config> entry : saveConf) {
-            try {
-                String[] split = entry.getKey().split("::Config:")[1].split("-");
-                String sdate = split[0];
-                String member = split[1];
-                long ldate = Long.parseLong(sdate);
+            for (Map.Entry<String, UserstatsConfig.Config> entry : saveConf) {
+                try {
+                    String[] split = entry.getKey().split("::Config:")[1].split("-");
+                    String sdate = split[0];
+                    String member = split[1];
+                    long ldate = Long.parseLong(sdate);
 
-                UserstatsConfig conf = map.getOrDefault(ldate, new UserstatsConfig(ldate));
-                conf.getMembers().put(member, entry.getValue());
-                conf.getMemberslist().remove(member);
-                conf.getMemberslist().add(member);
-                map.put(ldate, conf);
-            } catch (Exception e) {
-                e.printStackTrace();
-//                Log.newError(e, getClass());
-            }
-        }
+                    UserstatsConfig conf = map.getOrDefault(ldate, new UserstatsConfig(ldate));
+                    conf.getMembers().put(member, entry.getValue());
+                    conf.getMemberslist().remove(member);
+                    conf.getMemberslist().add(member);
+                    map.put(ldate, conf);
 
-        for (UserstatsConfig v : map.values()) {
-            UserstatsConfig dConf = userstatsDao.get(v.getDate());
-            if (dConf == null) {
-                userstatsDao.save(v);
-            } else {
-
-                for (Map.Entry<String, UserstatsConfig.Config> entry : v.getMembers().entrySet()) {
-                    UserstatsConfig.Config c = dConf.getMembers().getOrDefault(entry.getKey(), new UserstatsConfig.Config(0L, new HashMap<>()));
-                    c.setMessageCount(c.getMessageCount() + entry.getValue().getMessageCount());
-
-                    for (Map.Entry<String, Long> channelEntry : entry.getValue().getChannels().entrySet()) {
-                        long channelValue = c.getChannels().getOrDefault(channelEntry.getKey(), 0L);
-                        c.getChannels().put(channelEntry.getKey(), channelValue + channelEntry.getValue());
-                    }
-
-                    dConf.getMembers().put(entry.getKey(), c);
+                } catch (Exception e) {
+                    Log.newError(e, getClass());
                 }
-                userstatsDao.save(dConf);
             }
 
-        }
+            for (UserstatsConfig v : map.values()) {
+                UserstatsConfig dConf = userstatsDao.get(v.getDate());
+                if (dConf == null) {
+                    userstatsDao.save(v);
+                } else {
+
+                    for (Map.Entry<String, UserstatsConfig.Config> entry : v.getMembers().entrySet()) {
+                        UserstatsConfig.Config c = dConf.getMembers().getOrDefault(entry.getKey(), new UserstatsConfig.Config(0L, new HashMap<>()));
+                        c.setMessageCount(c.getMessageCount() + entry.getValue().getMessageCount());
+
+                        for (Map.Entry<String, Long> channelEntry : entry.getValue().getChannels().entrySet()) {
+                            long channelValue = c.getChannels().getOrDefault(channelEntry.getKey(), 0L);
+                            c.getChannels().put(channelEntry.getKey(), channelValue + channelEntry.getValue());
+                        }
+
+                        dConf.getMembers().put(entry.getKey(), c);
+                    }
+                    userstatsDao.save(dConf);
+                }
+            }
+        }).start();
+
     }
 
 }

@@ -33,14 +33,14 @@ import pl.kamil0024.stats.entities.Statystyka;
 
 import java.util.ArrayList;
 
-public class StatsCommand extends Command {
+public class ChatmodStatsCommand extends Command {
 
     private static final String DAY_OF_STATS = "03.09.2020";
 
     private final StatsDao statsDao;
 
-    public StatsCommand(StatsDao statsDao) {
-        name = "stats";
+    public ChatmodStatsCommand(StatsDao statsDao) {
+        name = "chatmodstats";
         permLevel = PermLevel.HELPER;
         this.statsDao = statsDao;
     }

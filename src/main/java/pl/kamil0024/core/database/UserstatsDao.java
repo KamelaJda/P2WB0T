@@ -20,9 +20,12 @@
 package pl.kamil0024.core.database;
 
 import gg.amy.pgorm.PgMapper;
+import org.joda.time.DateTime;
 import pl.kamil0024.core.database.config.Dao;
 import pl.kamil0024.core.database.config.UserstatsConfig;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class UserstatsDao implements Dao<UserstatsConfig> {
@@ -37,6 +40,15 @@ public class UserstatsDao implements Dao<UserstatsConfig> {
     @Override
     public UserstatsConfig get(String date) {
         return mapper.load(date).orElse(null);
+    }
+
+    public List<UserstatsConfig> getFromMember(String id, int minusDays) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date(new DateTime().minusDays(minusDays).getMillis()));
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return mapper.loadRaw(String.format("SELECT * FROM userstats WHERE data->'memberslist' ?| ARRAY['%s'] AND id::numeric >= %s", id, cal.getTimeInMillis())); // TODO: Sprawdzić
     }
 
     @Override

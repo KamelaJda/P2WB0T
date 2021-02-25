@@ -90,7 +90,7 @@ public class TopCommand extends Command {
 
             for (StatsConfig statsConfig : staty) {
                 int suma = 0;
-                Statystyka statyZParuDni = StatsCommand.getStatsOfDayMinus(statsConfig.getStats(), dni);
+                Statystyka statyZParuDni = ChatmodStatsCommand.getStatsOfDayMinus(statsConfig.getStats(), dni);
                 suma += (statyZParuDni.getWyrzuconych() +
                         statyZParuDni.getZbanowanych() +
                         statyZParuDni.getZmutowanych());
@@ -117,7 +117,7 @@ public class TopCommand extends Command {
                     tak = sdf.format(new Date(lastNieobecnosci.getEnd()));
                 }
                 eb.setDescription(UserUtil.getFullName(user) + "\n\n" +
-                        StatsCommand.getStringForStats(mapa.get(entry.getKey()).getStatystyka()) +
+                        ChatmodStatsCommand.getStringForStats(mapa.get(entry.getKey()).getStatystyka()) +
                         "\nMa nieobecność? " + (nieobecnosciDao.hasNieobecnosc(user.getId()) ? green.getAsMention() : red.getAsMention()) +
                         "\nOstatnia nieobecność skończyła się o: " + tak);
                 pages.add(eb);

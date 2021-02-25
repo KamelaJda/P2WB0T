@@ -19,7 +19,6 @@
 
 package pl.kamil0024.stats;
 
-import com.google.inject.Inject;
 import lombok.Getter;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import pl.kamil0024.bdate.BDate;
@@ -31,7 +30,7 @@ import pl.kamil0024.core.database.config.StatsConfig;
 import pl.kamil0024.core.module.Modul;
 import pl.kamil0024.core.util.EventWaiter;
 import pl.kamil0024.music.MusicModule;
-import pl.kamil0024.stats.commands.StatsCommand;
+import pl.kamil0024.stats.commands.ChatmodStatsCommand;
 import pl.kamil0024.stats.commands.TekstCommand;
 import pl.kamil0024.stats.commands.TopCommand;
 import pl.kamil0024.stats.entities.StatsCache;
@@ -44,12 +43,12 @@ public class StatsModule implements Modul {
 
     private ArrayList<Command> cmd;
 
-    @Inject CommandManager commandManager;
-    @Inject ShardManager api;
-    @Inject EventWaiter eventWaiter;
-    @Inject StatsDao statsDao;
-    @Inject MusicModule musicModule;
-    @Inject NieobecnosciDao nieobecnosciDao;
+    private final CommandManager commandManager;
+    private final ShardManager api;
+    private final EventWaiter eventWaiter;
+    private final StatsDao statsDao;
+    private final MusicModule musicModule;
+    private final NieobecnosciDao nieobecnosciDao;
 
     private boolean start = false;
 
@@ -80,7 +79,7 @@ public class StatsModule implements Modul {
         api.addEventListener(statsListener);
         cmd = new ArrayList<>();
 
-        cmd.add(new StatsCommand(statsDao));
+        cmd.add(new ChatmodStatsCommand(statsDao));
         cmd.add(new TopCommand(statsDao, eventWaiter, nieobecnosciDao));
         cmd.add(new TekstCommand(eventWaiter, musicModule));
 
