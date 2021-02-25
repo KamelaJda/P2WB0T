@@ -29,7 +29,9 @@ import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.database.UserstatsDao;
 import pl.kamil0024.core.database.config.UserstatsConfig;
+import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.util.BetterStringBuilder;
+import pl.kamil0024.core.util.GsonUtil;
 import pl.kamil0024.core.util.UserUtil;
 
 import java.time.Instant;
@@ -69,27 +71,32 @@ public class StatsCommand extends Command {
                 if (memStat == null) continue;
                 wszystkieWiadomosci += memStat.getMessageCount();
 
+                Log.debug("Nowa godzina");
                 for (Map.Entry<String, Long> channelEntry : memStat.getChannels().entrySet()) {
-                    String name = "<kanał usunięty>";
+                    String name = "#<kanał usunięty>";
                     GuildChannel channel = context.getJDA().getGuildChannelById(channelEntry.getKey());
-                    if (channel != null) name = channel.getName();
-                    kanaly.put(name, kanaly.getOrDefault(name, 0L) + 1L);
+                    if (channel != null) name = String.format("<#%s>", channel.getId());
+                    long suma = kanaly.getOrDefault(name, 0L) + 1L;
+                    Log.debug(channel.getName() + " = " + suma);
+                    kanaly.put(name, suma);
                 }
 
             }
 
+            Log.debug("Kanały:");
+            Log.debug(GsonUtil.toJSON(kanaly));
+
             EmbedBuilder eb = new EmbedBuilder();
             eb.setColor(UserUtil.getColor(context.getMember()));
             eb.setTimestamp(Instant.now());
+            eb.setDescription(String.format("Napisanych wiadomości: **%s**", wszystkieWiadomosci));
 
             BetterStringBuilder sb = new BetterStringBuilder();
-            sb.appendLine(String.format("Napisanych wiadomości: **%s**", wszystkieWiadomosci));
             sb.appendLine("Wiadomości na kanałach:");
             for (Map.Entry<String, Long> entry : sortByValue(kanaly).entrySet()) {
-                sb.appendLine(String.format("#%s - **%s**", entry.getKey(), entry.getValue()));
+                sb.appendLine(String.format("%s - **%s**", entry.getKey(), entry.getValue()));
             }
-
-            eb.setDescription(sb.build());
+            eb.addField("Wiadomości na kanałach", sb.build(), false);
 
             MessageBuilder mb = new MessageBuilder();
             mb.setContent("Twoje statystyki z ostatnich **30** dni");
