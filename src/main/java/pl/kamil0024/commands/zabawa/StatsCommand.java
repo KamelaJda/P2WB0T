@@ -21,7 +21,6 @@ package pl.kamil0024.commands.zabawa;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
-import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Message;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
@@ -58,7 +57,7 @@ public class StatsCommand extends Command {
         new Thread(() -> {
 
             long wszystkieWiadomosci = 0;
-            HashMap<String, Long> kanaly = new HashMap<>();
+            Map<String, Long> kanaly = new HashMap<>();
 
             List<UserstatsConfig> conf = userstatsDao.getFromMember(context.getUser().getId(), 30);
             if (conf.isEmpty()) {
@@ -73,12 +72,9 @@ public class StatsCommand extends Command {
 
                 Log.debug("Nowa godzina");
                 for (Map.Entry<String, Long> channelEntry : memStat.getChannels().entrySet()) {
-                    String name = "#<kanał usunięty>";
-                    GuildChannel channel = context.getJDA().getGuildChannelById(channelEntry.getKey());
-                    if (channel != null) name = String.format("<#%s>", channel.getId());
-                    long suma = kanaly.getOrDefault(name, 0L) + 1L;
-                    Log.debug(channel.getName() + " = " + suma);
-                    kanaly.put(name, suma);
+                    long suma = kanaly.getOrDefault(channelEntry.getKey(), 0L);
+                    Log.debug(channelEntry.getKey() + " = " + (suma + 1L));
+                    kanaly.put(channelEntry.getKey(), suma + 1L);
                 }
 
             }
@@ -94,7 +90,7 @@ public class StatsCommand extends Command {
             BetterStringBuilder sb = new BetterStringBuilder();
             sb.appendLine("Wiadomości na kanałach:");
             for (Map.Entry<String, Long> entry : sortByValue(kanaly).entrySet()) {
-                sb.appendLine(String.format("%s - **%s**", entry.getKey(), entry.getValue()));
+                sb.appendLine(String.format("<#%s> - **%s**", entry.getKey(), entry.getValue()));
             }
             eb.addField("Wiadomości na kanałach", sb.build(), false);
 
@@ -106,7 +102,7 @@ public class StatsCommand extends Command {
         return true;
     }
 
-    private static HashMap<String, Long> sortByValue(HashMap<String, Long> hm) {
+    private static HashMap<String, Long> sortByValue(Map<String, Long> hm) {
         List<Map.Entry<String, Long> > list =
                 new LinkedList<>(hm.entrySet());
         list.sort(Map.Entry.comparingByValue());
