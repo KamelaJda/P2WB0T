@@ -22,15 +22,14 @@ package pl.kamil0024.commands.zabawa;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
+import org.joda.time.DateTime;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
 import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.database.UserstatsDao;
 import pl.kamil0024.core.database.config.UserstatsConfig;
-import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.util.BetterStringBuilder;
-import pl.kamil0024.core.util.GsonUtil;
 import pl.kamil0024.core.util.UserUtil;
 
 import java.time.Instant;
@@ -77,20 +76,33 @@ public class StatsCommand extends Command {
 
             }
 
-            Log.debug("Kanały:");
-            Log.debug(GsonUtil.toJSON(kanaly));
-
             EmbedBuilder eb = new EmbedBuilder();
             eb.setColor(UserUtil.getColor(context.getMember()));
             eb.setTimestamp(Instant.now());
-            eb.setDescription(String.format("Napisanych wiadomości: **%s**", wszystkieWiadomosci));
+            eb.setFooter("Statystyki: " + UserUtil.getMcNick(context.getMember(), true));
+            eb.setThumbnail(context.getUser().getAvatarUrl());
 
             BetterStringBuilder sb = new BetterStringBuilder();
-            sb.appendLine("Wiadomości na kanałach:");
             for (Map.Entry<String, Long> entry : sortByValue(kanaly).entrySet()) {
-                sb.appendLine(String.format("<#%s> - **%s**", entry.getKey(), entry.getValue()));
+                sb.appendLine(String.format("Tekstowe: <#%s>: `%s wiadomości`", entry.getKey(), entry.getValue()));
+                sb.appendLine("Głosowe: -: `-`");
+                break;
             }
-            eb.addField("Wiadomości na kanałach", sb.build(), false);
+            eb.addField("Najbardziej aktywne kanały", sb.build(), false);
+
+            sb = new BetterStringBuilder();
+            sb.appendLine("__30 dni__: `" + wszystkieWiadomosci + " wiadomości`");
+            sb.appendLine("__14 dni__: `0 wiadomości`");
+            sb.appendLine("__7 dni__: `0 wiadomości`");
+            sb.appendLine("__24 godziny__: `0 wiadomości`");
+            eb.addField("Wiadomości", sb.toString(), false);
+
+            sb = new BetterStringBuilder();
+            sb.appendLine("__30 dni__: `0 min. 0  sek.`");
+            sb.appendLine("__14 dni__: `0 min. 0  sek.`");
+            sb.appendLine("__7 dni__: `0 min. 0  sek.`");
+            sb.appendLine("__24 godziny__: `0 min. 0  sek.`");
+            eb.addField("Głosowe", sb.toString(), false);
 
             MessageBuilder mb = new MessageBuilder();
             mb.setContent("Twoje statystyki z ostatnich **30** dni");
@@ -110,6 +122,15 @@ public class StatsCommand extends Command {
             temp.put(aa.getKey(), aa.getValue());
         }
         return temp;
+    }
+
+    private long getRawDate(int minusDays) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date(new DateTime().minusDays(minusDays).getMillis()));
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTimeInMillis();
     }
 
 }

@@ -26,6 +26,7 @@ import pl.kamil0024.core.database.config.UserstatsConfig;
 import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.redis.Cache;
 import pl.kamil0024.core.redis.RedisManager;
+import redis.clients.jedis.exceptions.JedisDataException;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -80,7 +81,9 @@ public class UserstatsManager extends ListenerAdapter {
         new Thread(() -> {
             try {
                 Set<Map.Entry<String, UserstatsConfig.Config>> saveConf = config.asMap().entrySet();
-                config.invalidateAll();
+                try {
+                    config.invalidateAll();
+                } catch (JedisDataException ignored) { }
 
                 Map<Long, UserstatsConfig> map = new HashMap<>();
 
