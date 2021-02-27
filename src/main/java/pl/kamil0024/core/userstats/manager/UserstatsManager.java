@@ -19,15 +19,24 @@
 
 package pl.kamil0024.core.userstats.manager;
 
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildVoiceState;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.sharding.ShardManager;
+import org.jetbrains.annotations.NotNull;
+import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.database.UserstatsDao;
 import pl.kamil0024.core.database.config.UserstatsConfig;
 import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.redis.Cache;
 import pl.kamil0024.core.redis.RedisManager;
+import pl.kamil0024.core.userstats.config.VoiceStateConfig;
+import redis.clients.jedis.exceptions.JedisDataException;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -37,20 +46,26 @@ public class UserstatsManager extends ListenerAdapter {
 
     public final RedisManager redisManager;
     public final UserstatsDao userstatsDao;
+    public final ShardManager api;
 
     private final Cache<UserstatsConfig.Config> config;
+    private final Cache<VoiceStateConfig> voiceStateConfig;
 
-    public UserstatsManager(RedisManager redisManager, UserstatsDao userstatsDao) {
+    public UserstatsManager(RedisManager redisManager, UserstatsDao userstatsDao, ShardManager api) {
         this.redisManager = redisManager;
         this.userstatsDao = userstatsDao;
+        this.api = api;
+
         this.config = redisManager.new CacheRetriever<UserstatsConfig.Config>() {}.getCache(-1);
+        this.voiceStateConfig = redisManager.new CacheRetriever<VoiceStateConfig>() {}.getCache(-1);
 
         ScheduledExecutorService executorSche = Executors.newSingleThreadScheduledExecutor();
         executorSche.scheduleAtFixedRate(this::load, 30, 30, TimeUnit.MINUTES);
+        loadVoice();
     }
 
     @Override
-    public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
+    public void onMessageReceived(MessageReceivedEvent event) {
         if (!event.isFromGuild() || event.getAuthor().isBot()) return;
 
         try {
@@ -61,7 +76,7 @@ public class UserstatsManager extends ListenerAdapter {
             cal.set(Calendar.MILLISECOND, 0);
 
             String primKey = cal.getTime().getTime() + "-" + event.getMessage().getAuthor().getId();
-            UserstatsConfig.Config conf = config.getOrElse(primKey, new UserstatsConfig.Config(0, new HashMap<>()));
+            UserstatsConfig.Config conf = config.getOrElse(primKey, new UserstatsConfig.Config(0L, 0L, new HashMap<>()));
 
             conf.setMessageCount(conf.getMessageCount() + 1);
 
@@ -70,7 +85,7 @@ public class UserstatsManager extends ListenerAdapter {
 
             config.put(primKey, conf);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.newError(e, getClass());
         }
 
     }
@@ -80,7 +95,9 @@ public class UserstatsManager extends ListenerAdapter {
         new Thread(() -> {
             try {
                 Set<Map.Entry<String, UserstatsConfig.Config>> saveConf = config.asMap().entrySet();
-                config.invalidateAll();
+                try {
+                    config.invalidateAll();
+                } catch (JedisDataException ignored) { }
 
                 Map<Long, UserstatsConfig> map = new HashMap<>();
 
@@ -101,7 +118,7 @@ public class UserstatsManager extends ListenerAdapter {
                         Log.newError(e, getClass());
                     }
                 }
-
+                
                 for (UserstatsConfig v : map.values()) {
                     UserstatsConfig dConf = userstatsDao.get(v.getDate());
                     if (dConf == null) {
@@ -109,8 +126,9 @@ public class UserstatsManager extends ListenerAdapter {
                     } else {
 
                         for (Map.Entry<String, UserstatsConfig.Config> entry : v.getMembers().entrySet()) {
-                            UserstatsConfig.Config c = dConf.getMembers().getOrDefault(entry.getKey(), new UserstatsConfig.Config(0L, new HashMap<>()));
+                            UserstatsConfig.Config c = dConf.getMembers().getOrDefault(entry.getKey(), new UserstatsConfig.Config(0L, 0L, new HashMap<>()));
                             c.setMessageCount(c.getMessageCount() + entry.getValue().getMessageCount());
+                            c.setVoiceTimestamp(c.getVoiceTimestamp() + entry.getValue().getVoiceTimestamp());
 
                             for (Map.Entry<String, Long> channelEntry : entry.getValue().getChannels().entrySet()) {
                                 long channelValue = c.getChannels().getOrDefault(channelEntry.getKey(), 0L);
@@ -120,13 +138,95 @@ public class UserstatsManager extends ListenerAdapter {
                             dConf.getMembers().put(entry.getKey(), c);
                         }
                         userstatsDao.save(dConf);
+                        
                     }
                 }
+
             } catch (Exception e) {
                 Log.newError(e, getClass());
             }
         }).start();
 
+    }
+
+    @Override
+    public void onGuildVoiceJoin(@NotNull GuildVoiceJoinEvent event) {
+        try {
+            if (event.getMember().getUser().isBot()) return;
+
+            VoiceStateConfig fvsc = voiceStateConfig.getIfPresent(event.getMember().getId());
+            if (fvsc == null) {
+                voiceStateConfig.put(event.getMember().getId(), new VoiceStateConfig(new Date().getTime(), 0L));
+            } else voiceStateConfig.put(event.getMember().getId(), new VoiceStateConfig(new Date().getTime(), fvsc.getFullTimestamp()));
+
+        } catch (Exception e) {
+            Log.newError(e, getClass());
+        }
+    }
+
+    @Override
+    public void onGuildVoiceLeave(@NotNull GuildVoiceLeaveEvent event) {
+        try {
+            if (event.getMember().getUser().isBot()) return;
+            String primKey = event.getMember().getId();
+            VoiceStateConfig vsc = voiceStateConfig.getIfPresent(primKey);
+            if (vsc == null) return;
+
+            vsc.setFullTimestamp(vsc.getFullTimestamp() + (vsc.getLastDate() - new Date().getTime()));
+            vsc.setLastDate(new Date().getTime());
+            voiceStateConfig.invalidate(primKey);
+
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(new Date());
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+
+            UserstatsConfig.Config conf = config.getOrElse(cal.getTimeInMillis() + "-" + primKey, new UserstatsConfig.Config(0L, 0L, new HashMap<>()));
+            conf.setVoiceTimestamp(conf.getVoiceTimestamp() + vsc.getFullTimestamp());
+            config.put(cal.getTimeInMillis() + "-" + primKey, conf);
+
+        } catch (Exception e) {
+            Log.newError(e, getClass());
+        }
+    }
+
+    public void loadVoice() {
+        try {
+            Guild g = api.getGuildById(Ustawienia.instance.bot.guildId);
+            if (g == null) {
+                Log.newError("Nie ma bota na serwerze docelowym", getClass());
+                throw new UnsupportedOperationException("Nie ma bota na serwerze docelowym");
+            }
+
+            ArrayList<String> existMembers = new ArrayList<>();
+            long date = new Date().getTime();
+            for (Map.Entry<String, VoiceStateConfig> entry : voiceStateConfig.asMap().entrySet()) {
+                String memberId = entry.getKey().split("::VoiceStateConfig:")[1];
+
+                Member member = g.getMemberById(memberId);
+                if (member == null || member.getVoiceState() == null || member.getVoiceState().getChannel() == null) {
+                    VoiceStateConfig value = entry.getValue();
+                    value.setFullTimestamp(value.getFullTimestamp() + (date - value.getLastDate()));
+                    value.setLastDate(date);
+                    voiceStateConfig.invalidate(memberId);
+
+                    UserstatsConfig.Config conf = config.getOrElse(date + "-" + memberId, new UserstatsConfig.Config(0L, 0L, new HashMap<>()));
+                    conf.setVoiceTimestamp(value.getFullTimestamp());
+                    config.put(date + "-" + memberId, conf);
+
+                } else existMembers.add(memberId);
+            }
+
+            for (GuildVoiceState entry : g.getVoiceStates()) {
+                if (!existMembers.contains(entry.getMember().getId())) {
+                    voiceStateConfig.put(entry.getMember().getId(), new VoiceStateConfig(new Date().getTime(), 0L));
+                }
+            }
+            
+        } catch (Exception e) {
+            Log.newError(e, getClass());
+        }
     }
 
 }

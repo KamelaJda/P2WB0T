@@ -28,6 +28,7 @@ import lombok.SneakyThrows;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -73,9 +74,6 @@ import pl.kamil0024.rekrutacyjny.RekruModule;
 import pl.kamil0024.stats.StatsModule;
 import pl.kamil0024.ticket.TicketModule;
 import pl.kamil0024.weryfikacja.WeryfikacjaModule;
-import pl.kamil0024.youtrack.YTModule;
-import pl.kamil0024.youtrack.YouTrack;
-import pl.kamil0024.youtrack.YouTrackBuilder;
 
 import javax.net.ssl.*;
 import javax.security.auth.login.LoginException;
@@ -170,21 +168,6 @@ public class B0T {
            option.setServerName("s1.p2w");
         });
 
-        YouTrackBuilder ytbuilder = new YouTrackBuilder();
-        ytbuilder.setApiUrl(Ustawienia.instance.yt.url);
-        ytbuilder.setHubUrl(Ustawienia.instance.yt.hub);
-        ytbuilder.setClientId(Ustawienia.instance.yt.ytId);
-        ytbuilder.setClientSecret(Ustawienia.instance.yt.clientSecret);
-        ytbuilder.setScope(Ustawienia.instance.yt.clientScope);
-
-        YouTrack youTrack = null;
-        try {
-            youTrack = ytbuilder.build();
-        } catch (Exception e) {
-            Log.newError("Nie udało się połączyć z YouTrackiem!", B0T.class);
-            e.printStackTrace();
-        }
-
         this.api = null;
         try {
             DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(token,
@@ -233,16 +216,19 @@ public class B0T {
         DatabaseManager databaseManager = new DatabaseManager();
         databaseManager.load();
 
-        try {
-            Thread.sleep(8000);
-        } catch (InterruptedException ignored) {}
+        Guild primGuild = api.getGuildById(Ustawienia.instance.bot.guildId);
+        if (primGuild == null) {
+            api.shutdown();
+            Log.newError("Nie ma bota na serwerze docelowym", B0T.class);
+            System.exit(1);
+        }
 
         this.socketManager = new SocketManager(eventBus, api, eventWaiter);
         SocketServer socketServer = new SocketServer(eventBus, socketManager);
         socketServer.start();
 
-        RedisManager     redisManager        = new RedisManager(getshard.getSelfUser().getIdLong());
-        EmbedRedisManager embedRedisManager  = new EmbedRedisManager(redisManager);
+        RedisManager       redisManager        = new RedisManager(getshard.getSelfUser().getIdLong());
+        EmbedRedisManager  embedRedisManager   = new EmbedRedisManager(redisManager);
 
         CaseDao            caseDao             = new CaseDao(databaseManager);
         UserDao            userDao             = new UserDao(databaseManager);
@@ -270,7 +256,7 @@ public class B0T {
         this.modulManager = new ModulManager();
         ModLog modLog = new ModLog(api, caseDao);
         NieobecnosciManager nieobecnosciManager = new NieobecnosciManager(api, nieobecnosciDao);
-        UserstatsManager    userstatsManager    = new UserstatsManager(redisManager, userstatsDao);
+        UserstatsManager    userstatsManager    = new UserstatsManager(redisManager, userstatsDao, api);
 
         api.addEventListener(modLog);
         api.addEventListener(userstatsManager);
@@ -285,7 +271,7 @@ public class B0T {
 //        modulManager.getModules().add(new StatusModule(api));
         modulManager.getModules().add(new NieobecnosciModule(api, nieobecnosciDao, nieobecnosciManager));
         modulManager.getModules().add(new LiczydloModule(api));
-        modulManager.getModules().add(new CommandsModule(commandManager, tlumaczenia, api, eventWaiter, karyJSON, caseDao, modulManager, commandExecute, userDao, modLog, nieobecnosciDao, remindDao, giveawayDao, statsModule, musicModule, multiDao, nieobecnosciManager, youTrack, ticketDao, apelacjeDao, ankietaDao, embedRedisManager, weryfikacjaDao, weryfikacjaModule, recordingDao, socketManager, deletedMessagesDao, acBanDao, userstatsManager));
+        modulManager.getModules().add(new CommandsModule(commandManager, tlumaczenia, api, eventWaiter, karyJSON, caseDao, modulManager, commandExecute, userDao, modLog, nieobecnosciDao, remindDao, giveawayDao, statsModule, musicModule, multiDao, ticketDao, apelacjeDao, ankietaDao, embedRedisManager, weryfikacjaDao, weryfikacjaModule, recordingDao, socketManager, deletedMessagesDao, acBanDao, userstatsManager));
         modulManager.getModules().add(new RekruModule(api, commandManager));
         modulManager.getModules().add(musicModule);
         modulManager.getModules().add(statsModule);
@@ -295,7 +281,6 @@ public class B0T {
         modulManager.getModules().add(new TicketModule(api, ticketDao, redisManager, eventWaiter));
         modulManager.getModules().add(new AntiRaidModule(api, antiRaidDao, redisManager, caseDao, modLog));
         modulManager.getModules().add(new ModerationModule(commandManager, eventWaiter, caseDao, statsModule, nieobecnosciManager, nieobecnosciDao, modLog, karyJSON, multiDao));
-        if (youTrack != null) modulManager.getModules().add(new YTModule(commandManager, api, eventWaiter, youTrack));
 
         for (Modul modul : modulManager.getModules()) {
             try {
@@ -324,12 +309,6 @@ public class B0T {
         api.setStatus(OnlineStatus.ONLINE);
         api.setActivity(Activity.playing(tlumaczenia.get("status.hi", WERSJA)));
         logger.info("Zalogowano jako {}", getshard.getSelfUser());
-
-        if (api.getGuildById(Ustawienia.instance.bot.guildId) == null) {
-            api.shutdown();
-            Log.newError("Nie ma bota na serwerze docelowym", B0T.class);
-            System.exit(1);
-        }
     }
 
     public void shutdownThread() {

@@ -70,7 +70,6 @@ public class EvalCommand extends Command {
     private final StatsModule statsModule;
     private final MultiDao multiDao;
     private final MusicModule musicModule;
-    private final YouTrack youTrack;
     private final TicketDao ticketDao;
     private final ApelacjeDao apelacjeDao;
     private final AnkietaDao ankietaDao;
@@ -82,7 +81,7 @@ public class EvalCommand extends Command {
     private final AcBanDao acBanDao;
     private final UserstatsManager userstatsManager;
 
-    public EvalCommand(EventWaiter eventWaiter, CommandManager commandManager, CaseDao caseDao, ModLog modLog, KaryJSON karyJSON, Tlumaczenia tlumaczenia, CommandExecute commandExecute, UserDao userDao, NieobecnosciDao nieobecnosciDao, RemindDao remindDao, ModulManager modulManager, GiveawayListener giveawayListener, GiveawayDao giveawayDao, StatsModule statsModule, MultiDao multiDao, MusicModule musicModule, YouTrack youTrack, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, WeryfikacjaDao weryfikacjaDao, WeryfikacjaModule weryfikacjaModule, SocketManager socketManager, DeletedMessagesDao deletedMessagesDao, AcBanDao acBanDao, UserstatsManager userstatsManager) {
+    public EvalCommand(EventWaiter eventWaiter, CommandManager commandManager, CaseDao caseDao, ModLog modLog, KaryJSON karyJSON, Tlumaczenia tlumaczenia, CommandExecute commandExecute, UserDao userDao, NieobecnosciDao nieobecnosciDao, RemindDao remindDao, ModulManager modulManager, GiveawayListener giveawayListener, GiveawayDao giveawayDao, StatsModule statsModule, MultiDao multiDao, MusicModule musicModule, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, WeryfikacjaDao weryfikacjaDao, WeryfikacjaModule weryfikacjaModule, SocketManager socketManager, DeletedMessagesDao deletedMessagesDao, AcBanDao acBanDao, UserstatsManager userstatsManager) {
         name = "eval";
         aliases.add("ev");
         category = CommandCategory.DEVS;
@@ -104,7 +103,6 @@ public class EvalCommand extends Command {
         this.statsModule = statsModule;
         this.multiDao = multiDao;
         this.musicModule = musicModule;
-        this.youTrack = youTrack;
         this.ticketDao = ticketDao;
         this.apelacjeDao = apelacjeDao;
         this.ankietaDao = ankietaDao;
@@ -143,7 +141,6 @@ public class EvalCommand extends Command {
         shell.setVariable("statsModule", statsModule);
         shell.setVariable("multiDao", multiDao);
         shell.setVariable("musicModule", musicModule);
-        shell.setVariable("youTrack", youTrack);
         shell.setVariable("ticketDao", ticketDao);
         shell.setVariable("apelacjeDao", apelacjeDao);
         shell.setVariable("ankietaDao", ankietaDao);

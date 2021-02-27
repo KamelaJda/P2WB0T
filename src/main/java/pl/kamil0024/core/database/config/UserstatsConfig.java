@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 @Table("userstats")
-@GIndex({"date", "members"})
+@GIndex({"date", "memberslist"})
 @Data
 @AllArgsConstructor
 public class UserstatsConfig {
@@ -57,6 +57,8 @@ public class UserstatsConfig {
         public Config() { }
 
         private long messageCount;
+        private Long voiceTimestamp = 0L;
+
         private Map<String, Long> channels;
     }
 
