@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import org.joda.time.DateTime;
 
+import pl.kamil0024.bdate.BDate;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
 import pl.kamil0024.core.command.enums.CommandCategory;
@@ -32,6 +33,7 @@ import pl.kamil0024.core.database.UserstatsDao;
 import pl.kamil0024.core.database.config.UserstatsConfig;
 import pl.kamil0024.core.util.BetterStringBuilder;
 import pl.kamil0024.core.util.UserUtil;
+import pl.kamil0024.moderation.listeners.ModLog;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
@@ -75,7 +77,7 @@ public class StatsCommand extends Command {
                 if (memStat == null) continue;
                 wszystkieWiadomosci += memStat.getMessageCount();
                 vcAll += memStat.getVoiceTimestamp();
-                if (Long.parseLong(entry.getDate()) >= getRawDate(0)) {
+                if (Long.parseLong(entry.getDate()) >= getRawDate(1)) {
                     vcDoba += memStat.getVoiceTimestamp();
                     dwadziescia += memStat.getMessageCount();
                 }
@@ -112,20 +114,19 @@ public class StatsCommand extends Command {
             eb.addField("Wiadomości", sb.toString(), false);
 
             sb = new BetterStringBuilder();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH : mm :: ss :::");
-            sb.appendLine(String.format(vs, "__30 dni__", format(longToTimespan(vcAll, formatter))));
-            sb.appendLine(String.format(vs, "14 dni", format(longToTimespan(vcCzternascie, formatter))));
-            sb.appendLine(String.format(vs, "7 dni", format(longToTimespan(vcSiedem, formatter))));
-            sb.appendLine(String.format(vs, "24 godz.", format(longToTimespan(vcDoba, formatter))));
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH . mm , ss :");
+            sb.appendLine(String.format(vs, "__30 dni__", format(vcAll)));
+            sb.appendLine(String.format(vs, "14 dni", format(vcCzternascie)));
+            sb.appendLine(String.format(vs, "7 dni", format(vcSiedem)));
+            sb.appendLine(String.format(vs, "24 godz.", format(vcDoba)));
             eb.addField("Kanały głosowe", sb.toString(), false);
 
             sb = new BetterStringBuilder();
             int i = 1;
             for (Map.Entry<String, Long> entry : sortByValue(kanaly).entrySet()) {
                 sb.appendLine(String.format("%s. <#%s>: `%s wiadomości`", i, entry.getKey(), entry.getValue()));
-                if (i > 3) break;
+                if (i == 3) break;
                 i++;
-
             }
             eb.addField("Najbardziej aktywne kanały", sb.build(), false);
 
@@ -158,10 +159,8 @@ public class StatsCommand extends Command {
         return cal.getTimeInMillis();
     }
 
-    private String format(String s) {
-        return s.replaceAll(":", "godz.")
-                .replaceAll("::", "min.")
-                .replaceAll(":::", "sel.");
+    private String format(long l) {
+        return new BDate(ModLog.getLang()).difference(new Date().getTime() + l);
     }
 
 }
