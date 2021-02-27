@@ -48,13 +48,11 @@ import pl.kamil0024.embedgenerator.entity.EmbedRedisManager;
 import pl.kamil0024.moderation.commands.StatusCommand;
 import pl.kamil0024.moderation.listeners.ModLog;
 import pl.kamil0024.music.MusicModule;
-import pl.kamil0024.nieobecnosci.NieobecnosciManager;
 import pl.kamil0024.stats.StatsModule;
 import pl.kamil0024.commands.dews.*;
 import pl.kamil0024.commands.system.*;
 import pl.kamil0024.core.database.*;
 import pl.kamil0024.weryfikacja.WeryfikacjaModule;
-import pl.kamil0024.youtrack.YouTrack;
 
 import java.util.ArrayList;
 import java.util.concurrent.Executors;

@@ -46,7 +46,6 @@ import pl.kamil0024.embedgenerator.entity.EmbedRedisManager;
 import pl.kamil0024.music.MusicModule;
 import pl.kamil0024.stats.StatsModule;
 import pl.kamil0024.weryfikacja.WeryfikacjaModule;
-import pl.kamil0024.youtrack.YouTrack;
 
 import java.awt.*;
 
