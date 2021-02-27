@@ -29,15 +29,20 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.jetbrains.annotations.NotNull;
 import pl.kamil0024.core.Ustawienia;
+import pl.kamil0024.core.userstats.config.VoiceStateConfig;
 import pl.kamil0024.core.database.UserstatsDao;
 import pl.kamil0024.core.database.config.UserstatsConfig;
 import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.redis.Cache;
 import pl.kamil0024.core.redis.RedisManager;
-import pl.kamil0024.core.userstats.config.VoiceStateConfig;
 import redis.clients.jedis.exceptions.JedisDataException;
 
 import java.util.*;
+import javax.annotation.Nonnull;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -46,6 +51,7 @@ public class UserstatsManager extends ListenerAdapter {
 
     public final RedisManager redisManager;
     public final UserstatsDao userstatsDao;
+
     public final ShardManager api;
 
     private final Cache<UserstatsConfig.Config> config;
@@ -65,7 +71,8 @@ public class UserstatsManager extends ListenerAdapter {
     }
 
     @Override
-    public void onMessageReceived(MessageReceivedEvent event) {
+    public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
+
         if (!event.isFromGuild() || event.getAuthor().isBot()) return;
 
         try {
@@ -76,7 +83,9 @@ public class UserstatsManager extends ListenerAdapter {
             cal.set(Calendar.MILLISECOND, 0);
 
             String primKey = cal.getTime().getTime() + "-" + event.getMessage().getAuthor().getId();
+
             UserstatsConfig.Config conf = config.getOrElse(primKey, new UserstatsConfig.Config(0L, 0L, new HashMap<>()));
+
 
             conf.setMessageCount(conf.getMessageCount() + 1);
 
@@ -222,6 +231,7 @@ public class UserstatsManager extends ListenerAdapter {
             
         } catch (Exception e) {
             Log.newError(e, getClass());
+
         }
 
     }
