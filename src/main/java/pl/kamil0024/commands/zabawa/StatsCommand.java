@@ -28,7 +28,6 @@ import pl.kamil0024.bdate.BDate;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
 import pl.kamil0024.core.command.enums.CommandCategory;
-import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.database.UserstatsDao;
 import pl.kamil0024.core.database.config.UserstatsConfig;
 import pl.kamil0024.core.util.BetterStringBuilder;
@@ -36,10 +35,11 @@ import pl.kamil0024.core.util.UserUtil;
 import pl.kamil0024.moderation.listeners.ModLog;
 
 import java.time.Instant;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class StatsCommand extends Command {
+
+    private static final String DATE = "27.02.2021";
 
     private final UserstatsDao userstatsDao;
 
@@ -99,6 +99,7 @@ public class StatsCommand extends Command {
             eb.setTimestamp(Instant.now());
             eb.setFooter("Statystyki: " + UserUtil.getMcNick(context.getMember(), true));
             eb.setThumbnail(context.getUser().getAvatarUrl());
+            eb.setDescription("Statystyki liczone od: `" + DATE + "`");
 
             BetterStringBuilder sb = new BetterStringBuilder();
 
@@ -111,7 +112,6 @@ public class StatsCommand extends Command {
             eb.addField("Wiadomości", sb.toString(), false);
 
             sb = new BetterStringBuilder();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH . mm , ss :");
             sb.appendLine(String.format(vs, "__30 dni__", format(vcAll)));
             sb.appendLine(String.format(vs, "14 dni", format(vcCzternascie)));
             sb.appendLine(String.format(vs, "7 dni", format(vcSiedem)));
