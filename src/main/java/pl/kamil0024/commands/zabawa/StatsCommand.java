@@ -128,7 +128,7 @@ public class StatsCommand extends Command {
             eb.addField("Najbardziej aktywne kanały", sb.build(), false);
 
             MessageBuilder mb = new MessageBuilder();
-            mb.setContent("Twoje statystyki z ostatnich **30** dni");
+            mb.setContent(null);
             mb.setEmbed(eb.build());
             msg.editMessage(mb.build()).queue();
         }).start();
