@@ -31,7 +31,6 @@ import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.database.UserstatsDao;
 import pl.kamil0024.core.database.config.UserstatsConfig;
 import pl.kamil0024.core.util.BetterStringBuilder;
-
 import pl.kamil0024.core.util.UserUtil;
 
 import java.time.Instant;
@@ -102,15 +101,6 @@ public class StatsCommand extends Command {
             eb.setThumbnail(context.getUser().getAvatarUrl());
 
             BetterStringBuilder sb = new BetterStringBuilder();
-            int i = 1;
-            for (Map.Entry<String, Long> entry : sortByValue(kanaly).entrySet()) {
-                sb.appendLine(String.format("%s. <#%s>: `%s wiadomości`", i, entry.getKey(), entry.getValue()));
-                if (i > 3) break;
-                i++;
-            }
-            eb.addField("Najbardziej aktywne kanały", sb.build(), false);
-
-            sb = new BetterStringBuilder();
 
             String s = "%s: `%s wiadomości`";
             String vs = "%s: `%s`";
@@ -126,6 +116,16 @@ public class StatsCommand extends Command {
             sb.appendLine(String.format(vs, "7 dni", longToTimespan(vcSiedem)));
             sb.appendLine(String.format(vs, "24 godz.", longToTimespan(vcDoba)));
             eb.addField("Kanały głosowe", sb.toString(), false);
+
+            sb = new BetterStringBuilder();
+            int i = 1;
+            for (Map.Entry<String, Long> entry : sortByValue(kanaly).entrySet()) {
+                sb.appendLine(String.format("%s. <#%s>: `%s wiadomości`", i, entry.getKey(), entry.getValue()));
+                if (i > 3) break;
+                i++;
+
+            }
+            eb.addField("Najbardziej aktywne kanały", sb.build(), false);
 
             MessageBuilder mb = new MessageBuilder();
             mb.setContent("Twoje statystyki z ostatnich **30** dni");
