@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import org.joda.time.DateTime;
-import pl.kamil0024.bdate.BDate;
+
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
 import pl.kamil0024.core.command.enums.CommandCategory;
@@ -31,7 +31,7 @@ import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.database.UserstatsDao;
 import pl.kamil0024.core.database.config.UserstatsConfig;
 import pl.kamil0024.core.util.BetterStringBuilder;
-import pl.kamil0024.core.util.Duration;
+
 import pl.kamil0024.core.util.UserUtil;
 
 import java.time.Instant;
@@ -111,6 +111,7 @@ public class StatsCommand extends Command {
             eb.addField("Najbardziej aktywne kanały", sb.build(), false);
 
             sb = new BetterStringBuilder();
+
             String s = "%s: `%s wiadomości`";
             String vs = "%s: `%s`";
             sb.appendLine(String.format(s, "__30 dni__", wszystkieWiadomosci));
