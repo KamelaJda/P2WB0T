@@ -120,7 +120,11 @@ public class QueueCommand extends Command {
     }
 
     public static String longToTimespan(Number milins) {
-        return FORMATTER.format(LocalDateTime.ofInstant(Instant.ofEpochMilli(milins.longValue()), ZoneId.of("GMT")));
+        return longToTimespan(milins, FORMATTER);
+    }
+
+    public static String longToTimespan(Number milins, DateTimeFormatter formatter) {
+        return formatter.format(LocalDateTime.ofInstant(Instant.ofEpochMilli(milins.longValue()), ZoneId.of("GMT")));
     }
 
 }

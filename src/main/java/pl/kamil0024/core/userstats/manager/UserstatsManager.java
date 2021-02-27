@@ -171,8 +171,8 @@ public class UserstatsManager extends ListenerAdapter {
             String primKey = event.getMember().getId();
             VoiceStateConfig vsc = voiceStateConfig.getIfPresent(primKey);
             if (vsc == null) return;
-
-            vsc.setFullTimestamp(vsc.getFullTimestamp() + (vsc.getLastDate() - new Date().getTime()));
+            
+            vsc.setFullTimestamp(vsc.getFullTimestamp() + (new Date().getTime() - vsc.getLastDate()));
             vsc.setLastDate(new Date().getTime());
             voiceStateConfig.invalidate(primKey);
 

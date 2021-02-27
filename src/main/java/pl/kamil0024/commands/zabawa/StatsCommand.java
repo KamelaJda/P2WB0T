@@ -34,6 +34,7 @@ import pl.kamil0024.core.util.BetterStringBuilder;
 import pl.kamil0024.core.util.UserUtil;
 
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static pl.kamil0024.music.commands.QueueCommand.longToTimespan;
@@ -111,10 +112,11 @@ public class StatsCommand extends Command {
             eb.addField("Wiadomości", sb.toString(), false);
 
             sb = new BetterStringBuilder();
-            sb.appendLine(String.format(vs, "__30 dni__", longToTimespan(vcAll)));
-            sb.appendLine(String.format(vs, "14 dni", longToTimespan(vcCzternascie)));
-            sb.appendLine(String.format(vs, "7 dni", longToTimespan(vcSiedem)));
-            sb.appendLine(String.format(vs, "24 godz.", longToTimespan(vcDoba)));
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH : mm :: ss :::");
+            sb.appendLine(String.format(vs, "__30 dni__", format(longToTimespan(vcAll, formatter))));
+            sb.appendLine(String.format(vs, "14 dni", format(longToTimespan(vcCzternascie, formatter))));
+            sb.appendLine(String.format(vs, "7 dni", format(longToTimespan(vcSiedem, formatter))));
+            sb.appendLine(String.format(vs, "24 godz.", format(longToTimespan(vcDoba, formatter))));
             eb.addField("Kanały głosowe", sb.toString(), false);
 
             sb = new BetterStringBuilder();
@@ -154,6 +156,12 @@ public class StatsCommand extends Command {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         return cal.getTimeInMillis();
+    }
+
+    private String format(String s) {
+        return s.replaceAll(":", "godz.")
+                .replaceAll("::", "min.")
+                .replaceAll(":::", "sel.");
     }
 
 }
