@@ -153,12 +153,7 @@ public class UserstatsManager extends ListenerAdapter {
     public void onGuildVoiceJoin(@NotNull GuildVoiceJoinEvent event) {
         try {
             if (event.getMember().getUser().isBot()) return;
-
-            VoiceStateConfig fvsc = voiceStateConfig.getIfPresent(event.getMember().getId());
-            if (fvsc == null) {
-                voiceStateConfig.put(event.getMember().getId(), new VoiceStateConfig(new Date().getTime(), 0L));
-            } else voiceStateConfig.put(event.getMember().getId(), new VoiceStateConfig(new Date().getTime(), fvsc.getFullTimestamp()));
-
+            voiceStateConfig.put(event.getMember().getId(), new VoiceStateConfig(new Date().getTime(), 0L));
         } catch (Exception e) {
             Log.newError(e, getClass());
         }
@@ -171,7 +166,7 @@ public class UserstatsManager extends ListenerAdapter {
             String primKey = event.getMember().getId();
             VoiceStateConfig vsc = voiceStateConfig.getIfPresent(primKey);
             if (vsc == null) return;
-            
+
             vsc.setFullTimestamp(vsc.getFullTimestamp() + (new Date().getTime() - vsc.getLastDate()));
             vsc.setLastDate(new Date().getTime());
             voiceStateConfig.invalidate(primKey);
@@ -189,6 +184,7 @@ public class UserstatsManager extends ListenerAdapter {
         } catch (Exception e) {
             Log.newError(e, getClass());
         }
+
     }
 
     public void loadVoice() {
@@ -227,6 +223,7 @@ public class UserstatsManager extends ListenerAdapter {
         } catch (Exception e) {
             Log.newError(e, getClass());
         }
+
     }
 
 }

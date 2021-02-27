@@ -39,8 +39,6 @@ import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static pl.kamil0024.music.commands.QueueCommand.longToTimespan;
-
 public class StatsCommand extends Command {
 
     private final UserstatsDao userstatsDao;
@@ -48,7 +46,6 @@ public class StatsCommand extends Command {
     public StatsCommand(UserstatsDao userstatsDao) {
         name = "stats";
         cooldown = 60;
-        permLevel = PermLevel.MODERATOR;
         category = CommandCategory.ZABAWA;
         enabledInRekru = true;
         this.userstatsDao = userstatsDao;
