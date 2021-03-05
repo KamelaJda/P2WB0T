@@ -149,6 +149,8 @@ public class APIModule implements Modul {
 
         routes.post("api/case/put", new CasePuyHandler(statusModule, karyJSON, modLog, statsModule, api, caseDao));
 
+        routes.post("api/statusy/get", new StatusyGetHandler(statusModule));
+
         this.server = Undertow.builder()
                 .addHttpListener(Ustawienia.instance.api.port, "0.0.0.0")
                 .setHandler(path()

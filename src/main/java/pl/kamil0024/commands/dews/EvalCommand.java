@@ -45,6 +45,7 @@ import pl.kamil0024.core.util.kary.KaryJSON;
 import pl.kamil0024.embedgenerator.entity.EmbedRedisManager;
 import pl.kamil0024.music.MusicModule;
 import pl.kamil0024.stats.StatsModule;
+import pl.kamil0024.status.StatusModule;
 import pl.kamil0024.weryfikacja.WeryfikacjaModule;
 
 import java.awt.*;
@@ -79,8 +80,9 @@ public class EvalCommand extends Command {
     private final DeletedMessagesDao deletedMessagesDao;
     private final AcBanDao acBanDao;
     private final UserstatsManager userstatsManager;
+    private final StatusModule statusModule;
 
-    public EvalCommand(EventWaiter eventWaiter, CommandManager commandManager, CaseDao caseDao, ModLog modLog, KaryJSON karyJSON, Tlumaczenia tlumaczenia, CommandExecute commandExecute, UserDao userDao, NieobecnosciDao nieobecnosciDao, RemindDao remindDao, ModulManager modulManager, GiveawayListener giveawayListener, GiveawayDao giveawayDao, StatsModule statsModule, MultiDao multiDao, MusicModule musicModule, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, WeryfikacjaDao weryfikacjaDao, WeryfikacjaModule weryfikacjaModule, SocketManager socketManager, DeletedMessagesDao deletedMessagesDao, AcBanDao acBanDao, UserstatsManager userstatsManager) {
+    public EvalCommand(EventWaiter eventWaiter, CommandManager commandManager, CaseDao caseDao, ModLog modLog, KaryJSON karyJSON, Tlumaczenia tlumaczenia, CommandExecute commandExecute, UserDao userDao, NieobecnosciDao nieobecnosciDao, RemindDao remindDao, ModulManager modulManager, GiveawayListener giveawayListener, GiveawayDao giveawayDao, StatsModule statsModule, MultiDao multiDao, MusicModule musicModule, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, WeryfikacjaDao weryfikacjaDao, WeryfikacjaModule weryfikacjaModule, SocketManager socketManager, DeletedMessagesDao deletedMessagesDao, AcBanDao acBanDao, UserstatsManager userstatsManager, StatusModule statusModule) {
         name = "eval";
         aliases.add("ev");
         category = CommandCategory.DEVS;
@@ -112,6 +114,7 @@ public class EvalCommand extends Command {
         this.deletedMessagesDao = deletedMessagesDao;
         this.acBanDao = acBanDao;
         this.userstatsManager = userstatsManager;
+        this.statusModule = statusModule;
     }
 
     @Override
@@ -151,6 +154,7 @@ public class EvalCommand extends Command {
         shell.setVariable("deletedMessagesDao", deletedMessagesDao);
         shell.setVariable("acBanDao", acBanDao);
         shell.setVariable("userstatsManager", userstatsManager);
+        shell.setVariable("statusModule", statusModule);
 
         long ms = System.currentTimeMillis();
         Object value;

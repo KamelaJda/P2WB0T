@@ -274,7 +274,7 @@ public class B0T {
         modulManager.getModules().add(statusModule);
         modulManager.getModules().add(new NieobecnosciModule(api, nieobecnosciDao, nieobecnosciManager));
         modulManager.getModules().add(new LiczydloModule(api));
-        modulManager.getModules().add(new CommandsModule(commandManager, tlumaczenia, api, eventWaiter, karyJSON, caseDao, modulManager, commandExecute, userDao, modLog, nieobecnosciDao, remindDao, giveawayDao, statsModule, musicModule, multiDao, ticketDao, apelacjeDao, ankietaDao, embedRedisManager, weryfikacjaDao, weryfikacjaModule, recordingDao, socketManager, deletedMessagesDao, acBanDao, userstatsManager));
+        modulManager.getModules().add(new CommandsModule(commandManager, tlumaczenia, api, eventWaiter, karyJSON, caseDao, modulManager, commandExecute, userDao, modLog, nieobecnosciDao, remindDao, giveawayDao, statsModule, musicModule, multiDao, ticketDao, apelacjeDao, ankietaDao, embedRedisManager, weryfikacjaDao, weryfikacjaModule, recordingDao, socketManager, deletedMessagesDao, acBanDao, userstatsManager, statusModule));
         modulManager.getModules().add(new RekruModule(api, commandManager));
         modulManager.getModules().add(musicModule);
         modulManager.getModules().add(statsModule);
