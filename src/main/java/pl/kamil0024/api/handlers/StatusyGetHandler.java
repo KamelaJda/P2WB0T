@@ -22,31 +22,46 @@ package pl.kamil0024.api.handlers;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import lombok.AllArgsConstructor;
+import lombok.Data;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import pl.kamil0024.api.Response;
+import pl.kamil0024.core.database.config.UserinfoConfig;
 import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.status.StatusModule;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @AllArgsConstructor
 public class StatusyGetHandler implements HttpHandler {
 
     private final StatusModule statusModule;
+    private final ShardManager api;
 
     @Override
     public void handleRequest(HttpServerExchange ex) {
         if (!Response.checkIp(ex)) return;
 
-        Map<String, String> mapa = new HashMap<>();
+        List<Encoder> lista = new ArrayList<>();
         for (Map.Entry<String, String> entry : statusModule.cache.asMap().entrySet()) {
             String key = entry.getKey().split("::String:")[1];
-            Log.debug("key: " + key);
-            mapa.put(key, entry.getValue());
+            Encoder encoder = new Encoder();
+            encoder.setMember(MemberHistoryHandler.getWhateverConfig(key, api));
+            encoder.setStatus(entry.getValue());
+            lista.add(encoder);
         }
 
-        Response.sendObjectResponse(ex, mapa);
+        Response.sendObjectResponse(ex, lista);
 
+    }
+
+    @Data
+    private static class Encoder {
+        public Encoder() { }
+        private UserinfoConfig member;
+        private String status;
     }
 
 }
