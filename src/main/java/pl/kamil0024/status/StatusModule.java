@@ -44,7 +44,7 @@ public class StatusModule implements Modul {
 
     public StatusModule(ShardManager api, RedisManager redisManager) {
         this.api = api;
-        this.cache = redisManager.new CacheRetriever<String>() {}.getCache(7200);
+        this.cache = redisManager.new CacheRetriever<String>() {}.getCache(300);
     }
 
     private boolean start = false;
@@ -53,7 +53,7 @@ public class StatusModule implements Modul {
     @Override
     public boolean startUp() {
         ScheduledExecutorService executorSche = Executors.newSingleThreadScheduledExecutor();
-        executorSche.scheduleAtFixedRate(() -> check(api), 0, 30, TimeUnit.MINUTES);
+        executorSche.scheduleAtFixedRate(() -> check(api), 0, 5, TimeUnit.MINUTES);
 
         setStart(true);
         return true;
@@ -77,8 +77,6 @@ public class StatusModule implements Modul {
                 }
 
                 for (Map.Entry<String, String> entry : statusy.entrySet()) {
-                    Log.debug("Dodaje membera " + entry.getKey() + " do cache");
-                    Log.debug(entry.getValue());
                     cache.put(entry.getKey(), entry.getValue());
                 }
 
