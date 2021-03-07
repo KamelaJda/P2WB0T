@@ -59,7 +59,7 @@ public class StatusModule implements Modul {
         return true;
     }
 
-    private void check(ShardManager api) {
+    public void check(ShardManager api) {
         try {
             Map<String, String> statusy = new HashMap<>();
             Guild g = api.getGuildById(Ustawienia.instance.bot.guildId);
@@ -74,11 +74,12 @@ public class StatusModule implements Modul {
                         swear = wulgarneStatusy.containsLink(atc);
                         if (swear != null) statusy.put(member.getId(), swear);
                     }
-                    if (swear != null) cache.put(member.getId(), swear);
                 }
 
-                if (!statusy.isEmpty()) {
-                    NetworkUtil.post(Ustawienia.instance.dash.baseUrl + "/api/statusy/put", statusy);
+                for (Map.Entry<String, String> entry : statusy.entrySet()) {
+                    Log.debug("Dodaje membera " + entry.getKey() + " do cache");
+                    Log.debug(entry.getValue());
+                    cache.put(entry.getKey(), entry.getValue());
                 }
 
             }

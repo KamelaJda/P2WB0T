@@ -227,8 +227,4 @@ public class Ustawienia {
         public String dns = def;
     }
 
-    public static class Dash {
-        public String baseUrl = def;
-    }
-
 }
