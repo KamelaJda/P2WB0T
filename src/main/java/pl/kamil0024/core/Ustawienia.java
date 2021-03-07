@@ -51,7 +51,6 @@ public class Ustawienia {
     public Rekrutacyjny rekrutacyjny = new Rekrutacyjny();
     public Zespoly zespoly = new Zespoly();
     public Sentry sentry = new Sentry();
-    public Dash dash = new Dash();
 
     public static class Roles {
         public String helperRole = def;
