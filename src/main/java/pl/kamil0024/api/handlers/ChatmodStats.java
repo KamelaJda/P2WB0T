@@ -22,6 +22,7 @@ package pl.kamil0024.api.handlers;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import lombok.AllArgsConstructor;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import pl.kamil0024.api.Response;
@@ -29,6 +30,7 @@ import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.database.StatsDao;
 import pl.kamil0024.core.database.config.StatsConfig;
 import pl.kamil0024.core.database.config.UserinfoConfig;
+import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.util.UserUtil;
 import pl.kamil0024.stats.commands.ChatmodStatsCommand;
 import pl.kamil0024.stats.commands.TopCommand;
@@ -70,13 +72,15 @@ public class ChatmodStats implements HttpHandler {
            }
 
            Map<String, TopCommand.Suma> finalStats = new HashMap<>();
+           Guild g = api.getGuildById(Ustawienia.instance.bot.guildId);
            for (Map.Entry<String, Integer> entry : sortByValue(top).entrySet()) {
                try {
-                   String user = UserUtil.getMcNick(api.getGuildById(Ustawienia.instance.bot.guildId).getMemberById(entry.getKey()));
-                   if (user == null || user.equals("-")) continue;
+                   String user = UserUtil.getMcNick(g.getMemberById(entry.getKey()));
+                   if (user == null || user.equals("-") || user.isEmpty()) continue;
                    finalStats.put(user, mapa.get(entry.getKey()));
                } catch (Exception ignored) { }
            }
+           finalStats.entrySet().removeIf(a -> a.getKey() == null || a.getKey().isEmpty() || a.getKey().trim().isEmpty() || a.equals("null"));
            Response.sendObjectResponse(ex, finalStats);
 
        } catch (Exception e) {
