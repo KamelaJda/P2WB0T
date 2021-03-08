@@ -22,11 +22,14 @@ package pl.kamil0024.api.handlers;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import lombok.AllArgsConstructor;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import pl.kamil0024.api.Response;
+import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.database.StatsDao;
 import pl.kamil0024.core.database.config.StatsConfig;
 import pl.kamil0024.core.database.config.UserinfoConfig;
+import pl.kamil0024.core.util.UserUtil;
 import pl.kamil0024.stats.commands.ChatmodStatsCommand;
 import pl.kamil0024.stats.commands.TopCommand;
 import pl.kamil0024.stats.entities.Statystyka;
@@ -69,9 +72,9 @@ public class ChatmodStats implements HttpHandler {
            Map<String, TopCommand.Suma> finalStats = new HashMap<>();
            for (Map.Entry<String, Integer> entry : sortByValue(top).entrySet()) {
                try {
-                   UserinfoConfig user = MemberHistoryHandler.getWhateverConfig(entry.getKey(), api);
-                   if (user.getMcNick() == null) continue;
-                   finalStats.put(user.getMcNick(), mapa.get(entry.getKey()));
+                   String user = UserUtil.getMcNick(api.getGuildById(Ustawienia.instance.bot.guildId).getMemberById(entry.getKey()));
+                   if (user == null || user.equals("-")) continue;
+                   finalStats.put(user, mapa.get(entry.getKey()));
                } catch (Exception ignored) { }
            }
            Response.sendObjectResponse(ex, finalStats);
