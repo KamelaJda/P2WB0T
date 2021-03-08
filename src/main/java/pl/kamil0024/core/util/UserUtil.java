@@ -110,10 +110,7 @@ public class UserUtil {
     public static String getMcNick(@Nullable Member member, boolean seeNick) {
         if (member == null) return "-";
         String nick = member.getNickname();
-        if (nick == null) {
-            if (seeNick) return getName(member.getUser());
-            else return "-";
-        }
+        if (nick == null) return seeNick ? getName(member.getUser()) : "-";
         if (nick.contains("[")) nick = nick.split("] ")[1];
         return nick;
     }
