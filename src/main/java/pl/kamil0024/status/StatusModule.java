@@ -27,7 +27,6 @@ import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.module.Modul;
 import pl.kamil0024.core.redis.Cache;
 import pl.kamil0024.core.redis.RedisManager;
-import pl.kamil0024.core.util.NetworkUtil;
 import pl.kamil0024.status.statusy.WulgarneStatusy;
 
 import java.util.HashMap;

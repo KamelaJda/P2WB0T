@@ -241,15 +241,17 @@ public class VoiceChatListener extends ListenerAdapter {
 
     @SuppressWarnings("ConstantConditions")
     private void checkRemoveTicket(@Nullable VoiceChannel voiceChannel) {
-        if (voiceChannel == null) return;
-        if (voiceChannel.getMembers().size() == 0
-                && voiceChannel.getParent().getId().equals(Ustawienia.instance.ticket.createChannelCategory)
-                && !voiceChannel.getId().equals(Ustawienia.instance.ticket.vcToCreate)) {
-            try {
-                voiceChannel.delete().complete();
-            } catch (Exception e) {
-                Log.newError("Nie udało się usunąć kanału z ticketem!", VoiceChatListener.class);
-                Log.newError(e, VoiceChatListener.class);
+        synchronized (this) {
+            if (voiceChannel == null) return;
+            if (voiceChannel.getMembers().size() == 0
+                    && voiceChannel.getParent().getId().equals(Ustawienia.instance.ticket.createChannelCategory)
+                    && !voiceChannel.getId().equals(Ustawienia.instance.ticket.vcToCreate)) {
+                try {
+                    voiceChannel.delete().complete();
+                } catch (Exception e) {
+                    Log.newError("Nie udało się usunąć kanału z ticketem!", VoiceChatListener.class);
+                    Log.newError(e, VoiceChatListener.class);
+                }
             }
         }
     }

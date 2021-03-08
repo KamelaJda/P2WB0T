@@ -61,6 +61,7 @@ public class Kara {
     // dowody
     private List<Dowod> dowody = new ArrayList<>();
 
+    @Nullable
     public static String check(CommandContext context, User karany) {
         if (UserUtil.getPermLevel(context.getMember()).getNumer() <= UserUtil.getPermLevel(karany).getNumer()) {
             return context.getTranslate("check.hierarchy");
@@ -72,7 +73,7 @@ public class Kara {
 
     public static synchronized CaseConfig put(CaseDao caseDao, Kara kara, ModLog modLog) {
         if (kara.getTypKary() == KaryEnum.UNBAN || kara.getTypKary() == KaryEnum.UNMUTE || kara.getTypKary() == KaryEnum.KICK) {
-            kara.setAktywna(false); // kary un(ban|mute)/kick nie muszą być aktywne
+            kara.setAktywna(false); // kary un(ban|mute)/kick nie mogą być aktywne
         }
         CaseConfig cc = new CaseConfig();
         int lastId = getNextId(caseDao.getAll());
@@ -84,11 +85,9 @@ public class Kara {
         return cc;
     }
 
-    public static synchronized void put(CaseDao caseDao, Kara kara, ModLog modLog, EventWaiter eventWaiter, String userId, @Nullable TextChannel channel, CaseDao cd) {
+    public static synchronized void put(CaseDao caseDao, Kara kara, ModLog modLog, @Nullable EventWaiter eventWaiter, String userId, @Nullable TextChannel channel, CaseDao cd) {
         CaseConfig cc = put(caseDao, kara, modLog);
-        if (eventWaiter != null && channel != null) {
-            new DowodWaiter(userId, cc, cd, channel, eventWaiter, null).start();
-        }
+        if (eventWaiter != null && channel != null) new DowodWaiter(userId, cc, cd, channel, eventWaiter, null).start();
     }
 
     public static synchronized int getNextId(List<CaseConfig> cc) {
