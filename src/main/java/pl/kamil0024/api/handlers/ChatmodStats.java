@@ -75,7 +75,7 @@ public class ChatmodStats implements HttpHandler {
            Guild g = api.getGuildById(Ustawienia.instance.bot.guildId);
            for (Map.Entry<String, Integer> entry : sortByValue(top).entrySet()) {
                try {
-                   finalStats.put(UserUtil.getMcNick(g.getMemberById(entry.getKey()), true), mapa.get(entry.getKey()));
+                   finalStats.put(UserUtil.getMcNick(g.getMemberById(entry.getKey())), mapa.get(entry.getKey()));
                } catch (Exception ignored) { }
            }
            Response.sendObjectResponse(ex, finalStats);

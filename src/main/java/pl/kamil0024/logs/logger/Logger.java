@@ -103,6 +103,11 @@ public class Logger extends ListenerAdapter {
         EmbedBuilder eb = getLogMessage(Action.EDITED, msg, null);
         eb.addField("Stara treść wiadomości:", msg.getContent(), false);
         eb.addField("Nowa treść wiadomości:", event.getMessage().getContentRaw(), false);
+
+        if (msg.getEmojiList() != null && !msg.getEmojiList().isEmpty()) {
+            eb.addField("Wysłane emoji:", String.join("\n", msg.getEmojiList()), false);
+        }
+
         sendLog(eb);
         manager.edit(event.getMessage());
     }
@@ -122,6 +127,11 @@ public class Logger extends ListenerAdapter {
         if (action == Action.DELETED && deletedBy != null) {
             eb.addField("Usunięte przez", UserUtil.getLogName(deletedBy), false);
         }
+
+        if (message.getEmojiList() != null && !message.getEmojiList().isEmpty()) {
+            eb.addField("Wysłane emoji:", String.join("\n", message.getEmojiList()), false);
+        }
+
         eb.addField("Kanał:", String.format("%s (%s) [%s]",
                 kanal.getAsMention(), "#" + kanal.getName(), kanal.getId()), false);
 
