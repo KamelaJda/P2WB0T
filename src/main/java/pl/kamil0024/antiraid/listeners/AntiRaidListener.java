@@ -101,7 +101,7 @@ public class AntiRaidListener extends ListenerAdapter {
 
         String tak = TempbanCommand.tempban(member.getUser(), event.getUser(),
                 String.format("Raid (%s)", arc.getReason()), "1d", caseDao, modLog, false,
-                event.getGuild(), member.getNickname() == null ? "-" : member.getNickname(), 1);
+                event.getGuild(), UserUtil.getMcNick(member), 1);
 
         if (tak != null) event.getChannel().sendMessage(tak).complete();
         msg.delete().complete();

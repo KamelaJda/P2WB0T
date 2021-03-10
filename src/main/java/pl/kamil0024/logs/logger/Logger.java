@@ -19,6 +19,7 @@
 
 package pl.kamil0024.logs.logger;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.audit.ActionType;
@@ -103,6 +104,11 @@ public class Logger extends ListenerAdapter {
         EmbedBuilder eb = getLogMessage(Action.EDITED, msg, null);
         eb.addField("Stara treść wiadomości:", msg.getContent(), false);
         eb.addField("Nowa treść wiadomości:", event.getMessage().getContentRaw(), false);
+
+        if (msg.getEmojiList() != null && !msg.getEmojiList().isEmpty()) {
+            eb.addField("Wysłane emoji:", String.join("\n", msg.getEmojiList()), false);
+        }
+
         sendLog(eb);
         manager.edit(event.getMessage());
     }
@@ -122,6 +128,11 @@ public class Logger extends ListenerAdapter {
         if (action == Action.DELETED && deletedBy != null) {
             eb.addField("Usunięte przez", UserUtil.getLogName(deletedBy), false);
         }
+
+        if (message.getEmojiList() != null && !message.getEmojiList().isEmpty()) {
+            eb.addField("Wysłane emoji:", String.join("\n", message.getEmojiList()), false);
+        }
+
         eb.addField("Kanał:", String.format("%s (%s) [%s]",
                 kanal.getAsMention(), "#" + kanal.getName(), kanal.getId()), false);
 
@@ -137,14 +148,13 @@ public class Logger extends ListenerAdapter {
         channel.sendMessage(em.build()).queue();
     }
 
+    @AllArgsConstructor
     public enum Action {
 
         DELETED("Wiadomość usunięta"),
         EDITED("Wiadomość edytowana");
 
         @Getter private final String slownie;
-
-        Action(String slownie) { this.slownie = slownie; }
 
     }
 

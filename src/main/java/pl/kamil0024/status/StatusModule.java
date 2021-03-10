@@ -76,6 +76,11 @@ public class StatusModule implements Modul {
                 }
 
                 for (Map.Entry<String, String> entry : statusy.entrySet()) {
+                    try {
+                        String[] s = entry.getValue().split("-");
+                        Integer.parseInt(s[0]);
+                        if (s.length == 2) continue;
+                    } catch (Exception ignored) { }
                     cache.put(entry.getKey(), entry.getValue());
                 }
 

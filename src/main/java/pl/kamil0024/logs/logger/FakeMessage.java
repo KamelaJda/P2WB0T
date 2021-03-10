@@ -21,9 +21,12 @@ package pl.kamil0024.logs.logger;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Message;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @AllArgsConstructor
 @Data
@@ -34,12 +37,17 @@ public class FakeMessage {
     private final String content;
     private final String channel;
     private final OffsetDateTime createdAt;
+    private final List<String> emojiList;
 
     public static FakeMessage convert(Message msg) {
+        List<String> e = new ArrayList<>();
+        for (Emote emote : msg.getEmotes()) {
+            e.add(emote.getImageUrl());
+        }
         return new FakeMessage(msg.getId(),
                 msg.getAuthor().getId(),
                 msg.getContentRaw(),
-                msg.getTextChannel().getId(), msg.getTimeCreated());
+                msg.getTextChannel().getId(), msg.getTimeCreated(), e);
     }
 
 }
