@@ -19,6 +19,7 @@
 
 package pl.kamil0024.logs.logger;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.audit.ActionType;
@@ -147,14 +148,13 @@ public class Logger extends ListenerAdapter {
         channel.sendMessage(em.build()).queue();
     }
 
+    @AllArgsConstructor
     public enum Action {
 
         DELETED("Wiadomość usunięta"),
         EDITED("Wiadomość edytowana");
 
         @Getter private final String slownie;
-
-        Action(String slownie) { this.slownie = slownie; }
 
     }
 
