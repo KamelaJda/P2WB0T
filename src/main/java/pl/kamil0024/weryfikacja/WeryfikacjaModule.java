@@ -116,7 +116,7 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
         }
 
         WeryfikacjaConfig werc = weryfikacjaDao.getByDiscordId(userId);
-        if (werc != null) {
+        if (werc != null && !werc.getMcnick().equals(config.getNick())) {
             channel.sendMessage(member.getAsMention() + ", powinieneś zweryfikować się z nicku `" + werc.getMcnick() + "`, a nie `" + config.getNick() + "`. Zmieniłeś konto? Napisz do nas!")
                     .queue(m -> m.delete().queueAfter(20, TimeUnit.SECONDS));
             apiModule.getDcCache().invalidate(config.getKod());
