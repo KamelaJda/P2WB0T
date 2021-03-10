@@ -115,6 +115,14 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
             return;
         }
 
+        WeryfikacjaConfig werc = weryfikacjaDao.getByDiscordId(userId);
+        if (werc != null) {
+            channel.sendMessage(member.getAsMention() + ", powinieneś zweryfikować się z nicku `" + werc.getMcnick() + "`, a nie `" + config.getNick() + "`. Zmieniłeś konto? Napisz do nas!")
+                    .queue(m -> m.delete().queueAfter(20, TimeUnit.SECONDS));
+            apiModule.getDcCache().invalidate(config.getKod());
+            return;
+        }
+
         Role ranga = null;
         String nickname = null;
 
@@ -198,10 +206,10 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
             mk.check();
         }
 
-        WeryfikacjaConfig werc = new WeryfikacjaConfig(config.getNick());
-        werc.setDiscordId(member.getId());
-        werc.setTime(new Date().getTime());
-        weryfikacjaDao.save(werc);
+        WeryfikacjaConfig nwc = new WeryfikacjaConfig(config.getNick());
+        nwc.setDiscordId(member.getId());
+        nwc.setTime(new Date().getTime());
+        weryfikacjaDao.save(nwc);
 
         apiModule.getDcCache().invalidate(config.getKod());
     }
@@ -220,7 +228,7 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
 
     @Override
     public void onMessageReactionAdd(MessageReactionAddEvent event) {
-        if (!event.getChannel().getId().equals("740157959207780362") || event.getUser().isBot() || !event.isFromGuild()) return;
+        if (!event.getChannel().getId().equals("740157959207780362") || !event.isFromGuild() || event.getUser().isBot()) return;
 
         try {
             if (UserUtil.getPermLevel(event.getMember()).getNumer() < PermLevel.MODERATOR.getNumer()) {

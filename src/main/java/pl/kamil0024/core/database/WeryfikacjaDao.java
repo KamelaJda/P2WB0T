@@ -41,6 +41,12 @@ public class WeryfikacjaDao implements Dao<WeryfikacjaConfig> {
         return mapper.load(mcnick).orElse(null);
     }
 
+    @Nullable
+    public WeryfikacjaConfig getByDiscordId(String userId) {
+        List<WeryfikacjaConfig> lista = mapper.loadRaw("SELECT * FROM %s WHERE data::jsonb @> '{\"discordId\": \"" + userId + "\"}'");
+        return lista.isEmpty() ? null : lista.get(0);
+    }
+
     @Override
     public void save(WeryfikacjaConfig toCos) {
         mapper.save(toCos);
