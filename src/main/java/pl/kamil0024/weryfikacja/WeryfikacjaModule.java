@@ -92,35 +92,37 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
         this.start = bol;
     }
 
-    public void executeCode(Member member, MessageChannel channel, String code, Guild g) {
+    public void executeCode(Member member, MessageChannel channel, String code, Guild g, boolean bypass) {
         DiscordInviteConfig dc = apiModule.getDiscordConfig(code);
         if (dc == null) {
             channel.sendMessage(member.getAsMention() + ", podałeś zły kod! Sprawdź swój kod jeszcze raz na serwerze lub wygeneruj nowy.")
                     .queue(m -> m.delete().queueAfter(11, TimeUnit.SECONDS));
             return;
         }
-        executeCode(member.getId(), dc, channel, g);
+        executeCode(member.getId(), dc, channel, g, bypass);
     }
 
-    public void executeCode(String userId, DiscordInviteConfig config, MessageChannel channel, Guild g) {
+    public void executeCode(String userId, DiscordInviteConfig config, MessageChannel channel, Guild g, boolean bypass) {
 
         Member member = g.getMemberById(userId);
         if (member == null) return;
 
-        WeryfikacjaConfig wc = weryfikacjaDao.get(config.getNick());
-        if (wc != null && !wc.getDiscordId().equals(userId)) {
-            channel.sendMessage(member.getAsMention() + " nick, na którym próbujesz wejść ma już przypisane konto Discord. Jedno konto Minecraft może być przypisane **tylko** do jednego konta Discord! Jeżeli straciłeś/aś dostęp do starego konta, napisz do nas!")
-                    .queue(m -> m.delete().queueAfter(30, TimeUnit.SECONDS));
-            apiModule.getDcCache().invalidate(config.getKod());
-            return;
-        }
+        if (!bypass) {
+            WeryfikacjaConfig wc = weryfikacjaDao.get(config.getNick());
+            if (wc != null && !wc.getDiscordId().equals(userId)) {
+                channel.sendMessage(member.getAsMention() + " nick, na którym próbujesz wejść ma już przypisane konto Discord. Jedno konto Minecraft może być przypisane **tylko** do jednego konta Discord! Jeżeli straciłeś/aś dostęp do starego konta, napisz do nas!")
+                        .queue(m -> m.delete().queueAfter(30, TimeUnit.SECONDS));
+                apiModule.getDcCache().invalidate(config.getKod());
+                return;
+            }
 
-        WeryfikacjaConfig werc = weryfikacjaDao.getByDiscordId(userId);
-        if (werc != null && !werc.getMcnick().equals(config.getNick())) {
-            channel.sendMessage(member.getAsMention() + ", powinieneś zweryfikować się z nicku `" + werc.getMcnick() + "`, a nie `" + config.getNick() + "`. Zmieniłeś konto? Napisz do nas!")
-                    .queue(m -> m.delete().queueAfter(20, TimeUnit.SECONDS));
-            apiModule.getDcCache().invalidate(config.getKod());
-            return;
+            WeryfikacjaConfig werc = weryfikacjaDao.getByDiscordId(userId);
+            if (werc != null && !werc.getMcnick().equals(config.getNick())) {
+                channel.sendMessage(member.getAsMention() + ", powinieneś zweryfikować się z nicku `" + werc.getMcnick() + "`, a nie `" + config.getNick() + "`. Zmieniłeś konto? Napisz do nas!")
+                        .queue(m -> m.delete().queueAfter(20, TimeUnit.SECONDS));
+                apiModule.getDcCache().invalidate(config.getKod());
+                return;
+            }
         }
 
         Role ranga = null;
@@ -223,7 +225,7 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
             event.getMessage().delete().complete();
         } catch (Exception ignored) { }
 
-        executeCode(event.getMember(), event.getChannel(), msg, event.getGuild());
+        executeCode(event.getMember(), event.getChannel(), msg, event.getGuild(), false);
     }
 
     @Override
@@ -239,7 +241,7 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
         DiscordInviteConfig conf = apiModule.getNewWery().getIfPresent(event.getUserId());
         if (conf == null) return;
 
-        executeCode(event.getUserId(), conf, event.getChannel(), event.getGuild());
+        executeCode(event.getUserId(), conf, event.getChannel(), event.getGuild(), false);
         apiModule.getNewWery().invalidate(event.getUserId());
     }
 

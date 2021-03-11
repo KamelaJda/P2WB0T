@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import pl.kamil0024.api.APIModule;
 import pl.kamil0024.commands.kolkoikrzyzyk.KolkoIKrzyzykManager;
 import pl.kamil0024.commands.listener.GiveawayListener;
 import pl.kamil0024.commands.listener.GuildListener;
@@ -91,6 +92,7 @@ public class CommandsModule implements Modul {
     private final AcBanDao acBanDao;
     private final UserstatsManager userstatsManager;
     private final StatusModule statusModule;
+    private final APIModule apiModule;
 
     private boolean start = false;
     private final ModLog modLog;
@@ -100,7 +102,7 @@ public class CommandsModule implements Modul {
     GuildListener guildListener;
     GiveawayListener giveawayListener;
 
-    public CommandsModule(CommandManager commandManager, Tlumaczenia tlumaczenia, ShardManager api, EventWaiter eventWaiter, KaryJSON karyJSON, CaseDao caseDao, ModulManager modulManager, CommandExecute commandExecute, UserDao userDao, ModLog modLog, NieobecnosciDao nieobecnosciDao, RemindDao remindDao, GiveawayDao giveawayDao, StatsModule statsModule, MusicModule musicModule, MultiDao multiDao, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, WeryfikacjaDao weryfikacjaDao, WeryfikacjaModule weryfikacjaModule, RecordingDao recordingDao, SocketManager socketManager, DeletedMessagesDao deletedMessagesDao, AcBanDao acBanDao, UserstatsManager userstatsManager, StatusModule statusModule) {
+    public CommandsModule(CommandManager commandManager, Tlumaczenia tlumaczenia, ShardManager api, EventWaiter eventWaiter, KaryJSON karyJSON, CaseDao caseDao, ModulManager modulManager, CommandExecute commandExecute, UserDao userDao, ModLog modLog, NieobecnosciDao nieobecnosciDao, RemindDao remindDao, GiveawayDao giveawayDao, StatsModule statsModule, MusicModule musicModule, MultiDao multiDao, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, WeryfikacjaDao weryfikacjaDao, WeryfikacjaModule weryfikacjaModule, RecordingDao recordingDao, SocketManager socketManager, DeletedMessagesDao deletedMessagesDao, AcBanDao acBanDao, UserstatsManager userstatsManager, StatusModule statusModule, APIModule apiModule) {
         this.commandManager = commandManager;
         this.tlumaczenia = tlumaczenia;
         this.api = api;
@@ -129,6 +131,7 @@ public class CommandsModule implements Modul {
         this.acBanDao = acBanDao;
         this.userstatsManager = userstatsManager;
         this.statusModule = statusModule;
+        this.apiModule = apiModule;
 
         ScheduledExecutorService executorSche = Executors.newSingleThreadScheduledExecutor();
         executorSche.scheduleWithFixedDelay(() -> tak(api), 0, 5, TimeUnit.MINUTES);
@@ -164,6 +167,7 @@ public class CommandsModule implements Modul {
         cmd.add(new RecordingCommand(recordingDao, eventWaiter));
         cmd.add(new SasinCommand());
         cmd.add(new StatsCommand(userstatsManager.userstatsDao));
+        cmd.add(new WeryfikacjaCommand(apiModule, weryfikacjaModule));
 
         cmd.forEach(commandManager::registerCommand);
         setStart(true);
