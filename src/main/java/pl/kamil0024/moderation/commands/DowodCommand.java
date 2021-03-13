@@ -20,9 +20,11 @@
 package pl.kamil0024.moderation.commands;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageActivity;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.internal.entities.AbstractMessage;
 import org.jetbrains.annotations.NotNull;
 import pl.kamil0024.core.Ustawienia;
@@ -32,6 +34,7 @@ import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.database.CaseDao;
 import pl.kamil0024.core.database.config.CaseConfig;
+import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.util.DynamicEmbedPageinator;
 import pl.kamil0024.core.util.EventWaiter;
 import pl.kamil0024.core.util.UsageException;
@@ -204,20 +207,13 @@ public class DowodCommand extends Command {
 
         int id = 1;
         boolean deleteMsg = true;
-        Message m = null;
-        TextChannel txt = msg.getJDA().getTextChannelById(Ustawienia.instance.channel.logidowodow);
 
         if (!at.isEmpty()) {
             for (Message.Attachment entry : at) {
-                if (txt != null) {
-                    try {
-                        InputStream f = entry.retrieveInputStream().get();
-                        m = txt.sendFile(f, entry.getFileName()).complete();
-                        if (m.getAttachments().isEmpty()) { // Czyli nigdy
-                            m = null;
-                        }
-                    } catch (Exception e) { deleteMsg = false; }
-                }
+                Message m = null;
+                List<Message> msgs = uploadImages(Collections.singletonList(entry), msg.getJDA());
+                if (msgs == null) deleteMsg = false;
+                else m = msgs.get(0);
 
                 Dowod d = new Dowod();
                 d.setImage(m == null ? entry.getUrl() : m.getAttachments().get(0).getUrl());
@@ -232,6 +228,27 @@ public class DowodCommand extends Command {
 
         if (deleteMsg && !inCmd) msg.delete().queue();
         return dowody;
+    }
+
+    @Nullable
+    public static List<Message> uploadImages(List<Message.Attachment> attachments, JDA api) {
+        TextChannel txt = api.getTextChannelById(Ustawienia.instance.channel.logidowodow);
+        if (txt == null) {
+            Log.newError("Ustawienia.instance.channel.logidowodow jest nullem!", DowodCommand.class);
+            return null;
+        }
+        List<Message> msg = new ArrayList<>();
+
+        for (Message.Attachment entry : attachments) {
+            try {
+                InputStream f = entry.retrieveInputStream().get();
+                Message m = txt.sendFile(f, entry.getFileName()).complete();
+                if (!m.getAttachments().isEmpty()) { // Czyli zawsze
+                    msg.add(m);
+                }
+            } catch (Exception ignored) { }
+        }
+        return msg;
     }
 
 }

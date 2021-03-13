@@ -18,16 +18,14 @@
 package pl.kamil0024.core.util;
 
 import lombok.Getter;
-import okhttp3.*;
 import okhttp3.Response;
+import okhttp3.*;
 import org.json.JSONArray;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Map;
 
-@SuppressWarnings("ConstantConditions")
 public class NetworkUtil {
     private NetworkUtil() {}
 
@@ -99,4 +97,5 @@ public class NetworkUtil {
         Response res = downloadResponse(url);
         return res.body() == null ? new byte[0] : res.body().bytes();
     }
+
 }

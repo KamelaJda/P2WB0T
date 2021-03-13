@@ -132,6 +132,9 @@ public class Logger extends ListenerAdapter {
         if (message.getEmojiList() != null && !message.getEmojiList().isEmpty()) {
             eb.addField("Wysłane emoji:", String.join("\n", message.getEmojiList()), false);
         }
+        if (message.getEmojiList() != null && !message.getAttachments().isEmpty()) {
+            eb.addField("Zamieszczone zdjęcia:", String.join("\n", message.getAttachments()), false);
+        }
 
         eb.addField("Kanał:", String.format("%s (%s) [%s]",
                 kanal.getAsMention(), "#" + kanal.getName(), kanal.getId()), false);

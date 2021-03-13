@@ -146,7 +146,7 @@ public class ChatListener extends ListenerAdapter {
                 .replaceAll("v", "u")
                 .replaceAll("<#(\\d+)>", "");
         Action action = new Action();
-        action.setMsg(FakeMessage.convert(msg));
+        action.setMsg(FakeMessage.convertWithoutImage(msg));
 
         String przeklenstwa = msgRaw;
 

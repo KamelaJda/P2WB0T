@@ -23,10 +23,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Message;
+import pl.kamil0024.moderation.commands.DowodCommand;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Data
@@ -38,8 +40,29 @@ public class FakeMessage {
     private final String channel;
     private final OffsetDateTime createdAt;
     private final List<String> emojiList;
+    private final List<String> attachments;
 
     public static FakeMessage convert(Message msg) {
+        List<String> e = new ArrayList<>();
+        List<String> at = new ArrayList<>();
+        for (Emote emote : msg.getEmotes()) {
+            e.add(emote.getImageUrl());
+        }
+
+        if (!msg.getAttachments().isEmpty()) {
+            List<Message> msgs = DowodCommand.uploadImages(msg.getAttachments(), msg.getJDA());
+            if (msgs != null) {
+                at = msgs.stream().map(m -> m.getAttachments().get(0).getUrl()).collect(Collectors.toList());
+            }
+        }
+
+        return new FakeMessage(msg.getId(),
+                msg.getAuthor().getId(),
+                msg.getContentRaw(),
+                msg.getTextChannel().getId(), msg.getTimeCreated(), e, at);
+    }
+
+    public static FakeMessage convertWithoutImage(Message msg) {
         List<String> e = new ArrayList<>();
         for (Emote emote : msg.getEmotes()) {
             e.add(emote.getImageUrl());
@@ -47,7 +70,7 @@ public class FakeMessage {
         return new FakeMessage(msg.getId(),
                 msg.getAuthor().getId(),
                 msg.getContentRaw(),
-                msg.getTextChannel().getId(), msg.getTimeCreated(), e);
+                msg.getTextChannel().getId(), msg.getTimeCreated(), e, new ArrayList<>());
     }
 
 }
