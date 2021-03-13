@@ -57,12 +57,10 @@ public class WeryfikacjaJoinHandler implements HttpHandler {
             try {
                 Objects.requireNonNull(api.getGuildById(Ustawienia.instance.bot.guildId)).addMember(token, user).complete();
             } catch (Exception e) {
-                if (e.getMessage().equals("User is already in this guild")) {
-                    Response.sendErrorResponse(ex, "Błąd!", "Jesteś już na serwerze. Aby się zweryfikować, musisz go opuścić!");
-                } else {
+                if (!e.getMessage().equals("User is already in this guild")) {
                     Response.sendErrorResponse(ex, "Błąd!", "Nie udało się dodać Ciebie na serwer! Spróbuj zalogować się ponownie.");
+                    return;
                 }
-                return;
             }
 
             Response.sendResponse(ex, "Akcja przebiegła pomyślnie!");
