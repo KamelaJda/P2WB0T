@@ -48,7 +48,10 @@ public class AntiRaidListener extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
-        if (!event.isFromGuild() || event.getAuthor().isBot() || UserUtil.getPermLevel(event.getMember()).getNumer() > PermLevel.MEMBER.getNumer() || event.getMessage().getContentRaw().isEmpty())
+        if (!event.isFromGuild() || event.getAuthor().isBot()
+                || UserUtil.getPermLevel(event.getMember()).getNumer() > PermLevel.MEMBER.getNumer()
+                || event.getMessage().getContentRaw().isEmpty()
+                || event.getChannel().getId().equals("426864003562864641"))
             return;
         try {
             antiRaidManager.saveMessage(event.getAuthor().getId(), event.getMessage());
@@ -60,10 +63,9 @@ public class AntiRaidListener extends ListenerAdapter {
     @SuppressWarnings("DuplicatedCode")
     @Override
     public void onGuildMessageReactionAdd(@Nonnull GuildMessageReactionAddEvent event) {
-        if (!event.getGuild().getId().equals(Ustawienia.instance.bot.guildId)
+        if (event.getMember().getUser().isBot() || !event.getGuild().getId().equals(Ustawienia.instance.bot.guildId)
                 || !event.getChannel().getId().equals(Ustawienia.instance.channel.moddc)) return;
         if (UserUtil.getPermLevel(event.getMember()).getNumer() == PermLevel.MEMBER.getNumer()) return;
-        if (event.getMember().getUser().isBot()) return;
 
         AntiRaidConfig arc = dao.get(event.getMessageId());
         if (arc == null) return;

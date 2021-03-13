@@ -36,7 +36,7 @@ public class WeryfikacjaCommand extends Command {
     private final WeryfikacjaModule weryfikacjaModule;
 
     public WeryfikacjaCommand(APIModule apiModule, WeryfikacjaModule weryfikacjaModule) {
-        name = "command";
+        name = "weryfikacja";
         aliases.add("wer");
         permLevel = PermLevel.ADMINISTRATOR;
         category = CommandCategory.DEVS;
@@ -82,7 +82,7 @@ public class WeryfikacjaCommand extends Command {
                 context.getGuild().modifyNickname(member, context.getArgs().get(2)).complete();
                 context.send("Pomyślnie zweryfikowano!").complete();
             } catch (Exception e) {
-                context.send("O nie, wystąpiłb błąd: " + e.getLocalizedMessage());
+                context.send("O nie, wystąpił błąd: " + e.getLocalizedMessage());
             }
         }
 
