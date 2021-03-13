@@ -84,8 +84,10 @@ public class Logger extends ListenerAdapter {
         }
         EmbedBuilder eb = getLogMessage(Action.DELETED, msg, deletedBy);
         String content = msg.getContent();
-        if (content.length() > 1024) { content = content.substring(0, 1024); }
-        eb.addField("Treść wiadomości:", content, false);
+        if (content != null) {
+            if (content.length() > 1024) { content = content.substring(0, 1024); }
+            eb.addField("Treść wiadomości:", content, false);
+        }
         sendLog(eb);
         manager.getMap().invalidate(event.getMessageId());
 
@@ -145,7 +147,7 @@ public class Logger extends ListenerAdapter {
     public void sendLog(EmbedBuilder em) {
         TextChannel channel = jda.getTextChannelById(Ustawienia.instance.channel.wiadomosci);
         if (channel == null) {
-            Log.error("Kanał do logów jest null!");
+            Log.newError("Kanał do logów jest nullem!", getClass());
             return;
         }
         channel.sendMessage(em.build()).queue();
