@@ -52,19 +52,13 @@ public class CommandManager extends ListenerAdapter {
 
     public void registerAliases(Command command) {
         if (command.getAliases().isEmpty()) return;
-        command.getAliases().forEach(alias -> {
-            getAliases().put(alias, command);
-            aliases.put(alias, command);
-        });
+        command.getAliases().forEach(alias -> getAliases().put(alias, command));
     }
 
     public void unregisterCommands(List<Command> cmds) {
         for (Command command : cmds) {
-            commands.values().removeIf(cmd -> command == cmd);
-            registered.removeIf(cmd -> command == cmd);
-
-            commands.values().removeIf(cmd -> cmd.toString().equals(command.toString()));
-            registered.removeIf(cmd -> cmd.toString().equals(command.toString()));
+            commands.values().removeIf(cmd -> command == cmd || cmd.toString().equals(command.toString()));
+            registered.removeIf(cmd -> command == cmd || cmd.toString().equals(command.toString()));
         }
     }
 

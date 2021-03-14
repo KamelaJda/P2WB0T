@@ -57,10 +57,10 @@ public class CommandExecute extends ListenerAdapter {
 
     private final Logger logger = LoggerFactory.getLogger(CommandExecute.class);
 
-    ArgumentManager argumentManager;
-    CommandManager commandManager;
-    Tlumaczenia tlumaczenia;
-    UserDao userDao;
+    private final ArgumentManager argumentManager;
+    private final CommandManager commandManager;
+    private final Tlumaczenia tlumaczenia;
+    private final UserDao userDao;
 
     @Getter HashMap<String, UserConfig> userConfig;
 

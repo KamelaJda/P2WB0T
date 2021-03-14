@@ -45,12 +45,7 @@ public class MessageManager extends ListenerAdapter {
         add(message);
     }
 
-    public boolean exists(String id) {
-        return map.getIfPresent(id) != null;
-    }
-
     public FakeMessage get(String id) {
-        if (!exists(id)) return null;
         return map.getIfPresent(id);
     }
 
@@ -59,7 +54,7 @@ public class MessageManager extends ListenerAdapter {
         if (event.getAuthor().isBot() || event.getMessage().isWebhookMessage()) return;
         if (event.getMessage().getAttachments().isEmpty() && event.getMessage().getContentRaw().isEmpty()) return;
         add(event.getMessage());
-    }
+    } // j
 
 }
 
