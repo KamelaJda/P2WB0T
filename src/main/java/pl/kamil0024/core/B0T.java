@@ -154,7 +154,7 @@ public class B0T {
             eventWaiter = new EventWaiter();
             karyJSON = new KaryJSON();
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.newError(e, getClass());
             System.exit(1);
             return; // super jestes idea
         }

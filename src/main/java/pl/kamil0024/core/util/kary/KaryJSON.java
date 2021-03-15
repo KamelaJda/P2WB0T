@@ -19,6 +19,9 @@
 
 package pl.kamil0024.core.util.kary;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.SneakyThrows;
@@ -32,8 +35,9 @@ import pl.kamil0024.core.logger.Log;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Data
 public class KaryJSON {
@@ -42,9 +46,9 @@ public class KaryJSON {
 
     private ArrayList<Kara> kary;
 
-    InputStream is;
-    JSONTokener tokener;
-    JSONObject object = null;
+    private InputStream is;
+    private JSONTokener tokener;
+    private JSONObject object = null;
 
     @SneakyThrows
     public KaryJSON() {
@@ -55,62 +59,44 @@ public class KaryJSON {
             if (is == null) throw new NullPointerException("kary.json jest nullem");
             this.tokener = new JSONTokener(is);
             this.object = new JSONObject(tokener).getJSONObject("list");
+            loadKary();
         } catch (Exception e) {
-            e.printStackTrace();
-            Log.newError("Przy ladowaniu kary \n" + e.getLocalizedMessage(), KaryJSON.class);
+            Log.newError(e, getClass());
         }
-        loadKary();
     }
 
     @SneakyThrows
     private void loadKary() {
         if (object == null) throw new UnsupportedOperationException("object przy ladowaniu kary jest nullem");
-        
-        Iterator<String> keys = object.keys();
-        ArrayList<String> ids = new ArrayList<>();
-        while (keys.hasNext()) { ids.add(keys.next()); }
-        logger.debug("Ładuje kary {}", ids.size());
+        Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
 
-        for (int i = 1; i < ids.size(); i++) {
-            try {
-                JSONObject obj = object.getJSONObject(String.valueOf(i));
-                String powod = repla(obj.getString("name"));
-                ArrayList<Tiery> tieryList = new ArrayList<>();
+        Map<String, Kara> kary = gson.fromJson(object.toString(), new TypeToken<Map<String, Kara>>() {}.getType());
+        Log.debug(gson.toJson(kary));
 
-                Iterator<String> tierKeys = obj.keys();
-                ArrayList<String> tierIds = new ArrayList<>();
-                while (tierKeys.hasNext()) { tierIds.add(tierKeys.next()); }
-                for (int ii = 1; ii < tierIds.size(); ii++) {
-                    try {
-                        JSONObject tier = obj.getJSONObject("tier_" + ii);
-                        tieryList.add(new Tiery(tier.getInt("maxWarns"), tier.getString("time"), KaryEnum.getKara(tier.getString("type"))));
-                    } catch (Exception ignored) {}
-                }
-                Kara kara = new Kara(i, powod, tieryList);
-                logger.debug("------------------------");
-                logger.debug("ID: " + kara.getId());
-                logger.debug("Powod: " + kara.getPowod());
-                for (Tiery entry : kara.getTiery()) {
-                    logger.debug("  Duration:" + entry.getDuration());
-                    logger.debug("  Type:" + entry.getType());
-                    logger.debug("  MaxWarns:" + entry.getMaxWarns());
-                }
-                logger.debug("------------------------");
-                getKary().add(kara);
-            } catch (Exception e) {
-                Log.newError("Nie udało się załadować kary nr:" + i, getClass());
-                Log.newError(e, getClass());
+        for (Map.Entry<String, Kara> entry : kary.entrySet()) {
+            Kara kara = entry.getValue();
+            if (kara.getPowod() == null || kara.getTiery() == null || kara.getId() == null) {
+                Log.newError("Kara o ID " + kara.getId() + " została źle wpisana!", getClass());
+                continue;
             }
+            kara.setPowod(repla(kara.getPowod()));
+            logger.debug("------------------------");
+            logger.debug("ID: " + kara.getId());
+            logger.debug("Powod: " + kara.getPowod() + "\n");
+            for (Tiery entryT : kara.getTiery()) {
+                logger.debug("  Duration:" + entryT.getDuration());
+                logger.debug("  Type:" + entryT.getType());
+                logger.debug("  MaxWarns:" + entryT.getMaxWarns());
+            }
+            logger.debug("------------------------");
+            getKary().add(kara);
         }
 
     }
 
     @Nullable
     public Kara getByName(String name) {
-        for (Kara kara : getKary()) {
-            if (kara.getPowod().equalsIgnoreCase(name)) return kara;
-        }
-        return null;
+        return getKary().stream().filter(k -> k.getPowod().equalsIgnoreCase(name)).findAny().orElse(null);
     }
 
     private static String repla(String s) {
@@ -130,7 +116,7 @@ public class KaryJSON {
     public static class Kara {
         public Kara() {}
 
-        private int id;
+        private Integer id;
         private String powod;
         private List<Tiery> tiery;
 
