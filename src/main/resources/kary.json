@@ -4,37 +4,37 @@
       "name": "Wszelkiej maści wyzwiska, obraza, wulgaryzmy, prowokacje, groźby i inne formy przemocy",
       "tier_1": {
         "maxWarns": 1,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "1h"
       },
       "tier_2": {
         "maxWarns": 2,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "2h"
       },
       "tier_3": {
         "maxWarns": 3,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "3h"
       },
       "tier_4": {
         "maxWarns": 4,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "1d"
       },
       "tier_5": {
         "maxWarns": 5,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "3d"
       },
       "tier_6": {
         "maxWarns": 6,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "4d"
       },
       "tier_7": {
         "maxWarns": 7,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "5d"
       }
     },
@@ -42,17 +42,17 @@
       "name": "Nadmierny spam, flood lub caps lock wiadomościami lub emotikonami",
       "tier_1": {
         "maxWarns": 1,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "1h"
       },
       "tier_2": {
         "maxWarns": 2,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "2h"
       },
       "tier_3": {
         "maxWarns": 3,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "1d"
       }
     },
@@ -60,22 +60,22 @@
       "name": "Umieszczanie zdjęć zawierających wulgarne napisy na kanale #obrazki",
       "tier_1": {
         "maxWarns": 1,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "2h"
       },
       "tier_2": {
         "maxWarns": 2,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "4h"
       },
       "tier_3": {
         "maxWarns": 3,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "12h"
       },
       "tier_4": {
         "maxWarns": 4,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "1d"
       }
     },
@@ -83,22 +83,22 @@
       "name": "Niestosowanie się do wytycznych kanałów",
       "tier_1": {
         "maxWarns": 1,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "1h"
       },
       "tier_2": {
         "maxWarns": 2,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "3h"
       },
       "tier_3": {
         "maxWarns": 3,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "3h"
       },
       "tier_4": {
         "maxWarns": 4,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "1d"
       }
     },
@@ -106,7 +106,7 @@
       "name": "Niestosowanie się do wytycznych kanału #filmy",
       "tier_1": {
         "maxWarns": 1,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "1d"
       }
     },
@@ -114,17 +114,17 @@
       "name": "Niestosowne, niecenzuralne oraz nieprzyzwoite nazewnictwo sieci, jak i wulgarne oraz nieodpowiednie zachowanie (niewłaściwe nazewnictwo, ubliżanie, grożenie i wszelkie tego typu zachowania) skierowane wobec administratorów serwerów P2W.pl",
       "tier_1": {
         "maxWarns": 1,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "1d"
       },
       "tier_2": {
         "maxWarns": 2,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "2d"
       },
       "tier_3": {
         "maxWarns": 3,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "3d"
       }
     },
@@ -132,17 +132,17 @@
       "name": "Próba wymiany środków serwerowych, itemów, lub sprzedaży konta znajdujących się na sieci serwerów P2W.pl w zamian za walutę realną",
       "tier_1": {
         "maxWarns": 1,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "3h"
       },
       "tier_2": {
         "maxWarns": 2,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "1d"
       },
       "tier_3": {
         "maxWarns": 3,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "2d"
       }
     },
@@ -150,7 +150,7 @@
       "name": "Reklama stron, serwisów lub serwerów gier/Discord niepowiązanych w żaden sposób z P2W.pl",
       "tier_1": {
         "maxWarns": 1,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "7d"
       }
     },
@@ -158,7 +158,7 @@
       "name": "Rozpowszechnianie danych osobowych, adresów zamieszkania i innych wrażliwych informacji",
       "tier_1": {
         "maxWarns": 1,
-        "type": "Ban",
+        "type": "BAN",
         "time": "-"
       }
     },
@@ -166,7 +166,7 @@
       "name": "Działanie na szkodę sieci serwerów P2W.pl",
       "tier_1": {
         "maxWarns": 1,
-        "type": "Ban",
+        "type": "BAN",
         "time": "-"
       }
     },
@@ -174,7 +174,7 @@
       "name": "Podszywanie się pod graczy lub członków ekipy P2W",
       "tier_1": {
         "maxWarns": 1,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "3d"
       }
     },
@@ -182,7 +182,7 @@
       "name": "Proszenie o przywileje, bonusy lub rangi",
       "tier_1": {
         "maxWarns": 1,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "2h"
       }
     },
@@ -190,7 +190,7 @@
       "name": "Wulgarny i/lub nieodpowiedni nickname (z połączonego konta Minecraft)",
       "tier_1": {
         "maxWarns": 1,
-        "type": "Ban",
+        "type": "BAN",
         "time": "-"
       }
     },
@@ -198,22 +198,22 @@
       "name": "Wulgarny, nieodpowiedni lub reklamujący serwery gry Minecraft/strony powiązane z tą tematyką awatar, status, aktualnie włączona gra na Discord",
       "tier_1": {
         "maxWarns": 1,
-        "type": "Kick",
+        "type": "KICK",
         "time": "-"
       },
       "tier_2": {
         "maxWarns": 2,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "1h"
       },
       "tier_3": {
         "maxWarns": 3,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "2h"
       },
       "tier_4": {
         "maxWarns": 4,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "3h"
       }
     },
@@ -221,7 +221,7 @@
       "name": "Rozsyłanie scamlinków na kanałach tekstowych",
       "tier_1": {
         "maxWarns": 1,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "3d"
       }
     },
@@ -229,22 +229,22 @@
       "name": "Oznaczanie grup administracyjnych lub członków ekipy bez powodu, spam oznaczeniami utrudniający funkcjonowanie innym użytkownikom serwisu",
       "tier_1": {
         "maxWarns": 1,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "1h"
       },
       "tier_2": {
         "maxWarns": 2,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "2h"
       },
       "tier_3": {
         "maxWarns": 3,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "1d"
       },
       "tier_4": {
         "maxWarns": 4,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "5d"
       }
     },
@@ -252,7 +252,7 @@
       "name": "Brak kultury na publicznych lub prywatnych kanałach głosowych",
       "tier_1": {
         "maxWarns": 1,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "3h"
       }
     },
@@ -260,7 +260,7 @@
       "name": "Celowe utrudnianie rozmowy na publicznych lub prywatnych kanałach głosowych, wliczając w to puszczanie muzyki, bindów lub dmuchanie w mikrofon",
       "tier_1": {
         "maxWarns": 1,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "3h"
       }
     },
@@ -268,7 +268,7 @@
       "name": "Nagrywanie osób na kanale bez ich wcześniejszej zgody",
       "tier_1": {
         "maxWarns": 1,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "5h"
       }
     },
@@ -276,7 +276,7 @@
       "name": "Wulgarna lub nieodpowiednia nazwa kanału głosowego",
       "tier_1": {
         "maxWarns": 1,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "3h"
       }
     },
@@ -284,7 +284,7 @@
       "name": "Używanie modulatorów głosu i programów podobnych",
       "tier_1": {
         "maxWarns": 1,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "3h"
       }
     },
@@ -292,22 +292,22 @@
       "name": "Dublowanie kont przebywających na serwisie Discord",
       "tier_1": {
         "maxWarns": 1,
-        "type": "Kick",
+        "type": "KICK",
         "time": "-"
       },
       "tier_2": {
         "maxWarns": 2,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "3h"
       },
       "tier_3": {
         "maxWarns": 3,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "5h"
       },
       "tier_4": {
         "maxWarns": 4,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "8h"
       }
     },
@@ -315,32 +315,32 @@
       "name": "Propagowanie piractwa, nienawiści, treści pornograficznych, rasistowskich, pedofilii i innych szerko pojętych za nieetyczne lub niezgodne z obowiązującym polskim prawem",
       "tier_1": {
         "maxWarns": 1,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "3h"
       },
       "tier_2": {
         "maxWarns": 2,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "4h"
       },
       "tier_3": {
         "maxWarns": 3,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "5h"
       },
       "tier_4": {
         "maxWarns": 4,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "6h"
       },
       "tier_5": {
         "maxWarns": 5,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "8h"
       },
       "tier_6": {
         "maxWarns": 6,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "10h"
       }
     },
@@ -348,22 +348,22 @@
       "name": "Zaśmiecanie chatu",
       "tier_1": {
         "maxWarns": 1,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "1h"
       },
       "tier_2": {
         "maxWarns": 2,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "2h"
       },
       "tier_3": {
         "maxWarns": 3,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "5h"
       },
       "tier_4": {
         "maxWarns": 4,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "12h"
       }
     },
@@ -371,22 +371,22 @@
       "name": "Wykorzystywanie błędów Discorda, jak i wszelakich bugów botów znajdujących się na serwerze Discord sieci P2W.pl",
       "tier_1": {
         "maxWarns": 1,
-        "type": "Kick",
+        "type": "KICK",
         "time": "-"
       },
       "tier_2": {
         "maxWarns": 2,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "3h"
       },
       "tier_3": {
         "maxWarns": 3,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "12h"
       },
       "tier_4": {
         "maxWarns": 4,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "3d"
       }
     },
@@ -394,7 +394,7 @@
       "name": "Propagowanie piractwa, nienawiści, treści pornograficznych, rasistowskich, pedofilii i innych szeroko pojętych za nieetyczne lub niezgodne z obowiązującym polskim prawem.",
       "tier_1": {
         "maxWarns": 1,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "24h"
       }
     },
@@ -402,27 +402,27 @@
       "name": "xd",
       "tier_1": {
         "maxWarns": 2,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "1h"
       },
       "tier_2": {
         "maxWarns": 2,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "2h"
       },
       "tier_3": {
         "maxWarns": 3,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "3h"
       },
       "tier_4": {
         "maxWarns": 4,
-        "type": "Tempmute",
+        "type": "TEMPMUTE",
         "time": "4h"
       },
       "tier_5": {
         "maxWarns": 5,
-        "type": "Tempban",
+        "type": "TEMPBAN",
         "time": "1d"
       }
     }

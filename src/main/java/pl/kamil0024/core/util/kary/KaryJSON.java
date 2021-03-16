@@ -76,9 +76,9 @@ public class KaryJSON {
 
             for (int ii = 1; ii < 30; ii++) {
                 JsonElement je = jsonKara.get("tier_" + ii);
+                if (je == null) continue;
                 Log.debug("Nowy tier");
                 Log.debug(GsonUtil.GSON.toJson(je));
-                if (je == null) continue;
                 kara.getTiery().add(GsonUtil.GSON.fromJson(je, Tiery.class));
             }
             Log.debug("-----------------------------");
