@@ -86,6 +86,14 @@ public class WeryfikacjaCommand extends Command {
             }
         }
 
+        if (arg.equalsIgnoreCase("bypass")) {
+            String user = context.getArgs().get(1);
+            if (user == null) throw new UsageException();
+            weryfikacjaModule.weryfikacjaDao.bypass(user);
+            context.send("Użytkownik <@" + user + "> może już wejśc!");
+            return true;
+        }
+
         throw new UsageException();
     }
 

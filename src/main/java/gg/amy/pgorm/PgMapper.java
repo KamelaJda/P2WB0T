@@ -217,23 +217,6 @@ public class PgMapper<T> {
         return data;
     }
 
-    public List<T> loadWhere(String where) {
-        final List<T> data = new ArrayList<>();
-        store.sql("SELECT * FROM " + table.value() + ";", c -> {
-            final ResultSet resultSet = c.executeQuery();
-            if (resultSet.isBeforeFirst()) {
-                while(resultSet.next()) {
-                    try {
-                        data.add(loadFromResultSet(resultSet));
-                    } catch(final IllegalStateException e) {
-                        Log.error("Load error: %s", e);
-                    }
-                }
-            }
-        });
-        return data;
-    }
-
     public List<T> sum(final String columnName, final String where) {
         final List<T> data = new ArrayList<>();
         store.sql("SELECT SUM(" + columnName + ") FROM " + table.value() + " WHERE " + where + " ;", c -> {

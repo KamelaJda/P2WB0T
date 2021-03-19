@@ -51,7 +51,7 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
     private final MultiDao multiDao;
     private final ModLog modLog;
     private final CaseDao caseDao;
-    private final WeryfikacjaDao weryfikacjaDao;
+    public final WeryfikacjaDao weryfikacjaDao;
 
     private boolean start = false;
     private ChangeNickname changeNickname;
@@ -109,7 +109,7 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
 
         if (!bypass) {
             WeryfikacjaConfig wc = weryfikacjaDao.get(config.getNick());
-            if (wc != null && !wc.getDiscordId().equals(userId)) {
+            if (wc != null && !wc.isDisabled() && !wc.getDiscordId().equals(userId)) {
                 channel.sendMessage(member.getAsMention() + " nick, na którym próbujesz wejść ma już przypisane konto Discord. Jedno konto Minecraft może być przypisane **tylko** do jednego konta Discord! Jeżeli straciłeś/aś dostęp do starego konta, napisz do nas!")
                         .queue(m -> m.delete().queueAfter(30, TimeUnit.SECONDS));
                 apiModule.getDcCache().invalidate(config.getKod());
@@ -117,7 +117,7 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
             }
 
             WeryfikacjaConfig werc = weryfikacjaDao.getByDiscordId(userId);
-            if (werc != null && !werc.getMcnick().equals(config.getNick())) {
+            if (werc != null && !werc.isDisabled() &&  !werc.getMcnick().equals(config.getNick())) {
                 channel.sendMessage(member.getAsMention() + ", powinieneś zweryfikować się z nicku `" + werc.getMcnick() + "`, a nie `" + config.getNick() + "`. Zmieniłeś konto? Napisz do nas!")
                         .queue(m -> m.delete().queueAfter(20, TimeUnit.SECONDS));
                 apiModule.getDcCache().invalidate(config.getKod());

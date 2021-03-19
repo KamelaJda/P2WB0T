@@ -25,6 +25,8 @@ import pl.kamil0024.core.database.config.Dao;
 import pl.kamil0024.core.database.config.WeryfikacjaConfig;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class WeryfikacjaDao implements Dao<WeryfikacjaConfig> {
 
@@ -55,6 +57,15 @@ public class WeryfikacjaDao implements Dao<WeryfikacjaConfig> {
     @Override
     public List<WeryfikacjaConfig> getAll() {
         return mapper.loadAll();
+    }
+
+    public void bypass(String user) {
+        List<WeryfikacjaConfig> lista = mapper.loadRaw("SELECT * FROM %s WHERE data::jsonb @> '{\"discordId\": \"" + user + "\"}'");
+        for (WeryfikacjaConfig entry : lista) {
+            entry.setDisabled(true);
+            save(entry);
+        }
+
     }
 
 }

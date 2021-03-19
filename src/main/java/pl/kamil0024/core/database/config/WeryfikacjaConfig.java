@@ -41,5 +41,6 @@ public class WeryfikacjaConfig {
 
     private String discordId;
     private long time;
+    private boolean disabled = false;
 
 }
