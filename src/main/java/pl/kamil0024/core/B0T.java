@@ -226,7 +226,8 @@ public class B0T {
             System.exit(1);
         }
 
-        this.socketManager = new SocketManager(eventBus, api, eventWaiter);
+        this.voiceStateDao  = new VoiceStateDao(databaseManager);
+        this.socketManager = new SocketManager(eventBus, api, eventWaiter, voiceStateDao);
         SocketServer socketServer = new SocketServer(eventBus, socketManager);
         socketServer.start();
 
@@ -239,7 +240,6 @@ public class B0T {
         RemindDao          remindDao           = new RemindDao(databaseManager);
         GiveawayDao        giveawayDao         = new GiveawayDao(databaseManager);
         StatsDao           statsDao            = new StatsDao(databaseManager);
-                           this.voiceStateDao  = new VoiceStateDao(databaseManager);
         MultiDao           multiDao            = new MultiDao(databaseManager);
         TicketDao          ticketDao           = new TicketDao(databaseManager);
         ApelacjeDao        apelacjeDao         = new ApelacjeDao(databaseManager);
