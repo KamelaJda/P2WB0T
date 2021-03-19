@@ -43,6 +43,7 @@ import pl.kamil0024.antiraid.AntiRaidModule;
 import pl.kamil0024.api.APIModule;
 import pl.kamil0024.chat.ChatModule;
 import pl.kamil0024.commands.CommandsModule;
+import pl.kamil0024.core.database.config.VoiceStateConfig;
 import pl.kamil0024.core.userstats.manager.UserstatsManager;
 import pl.kamil0024.moderation.ModerationModule;
 import pl.kamil0024.moderation.listeners.ModLog;
@@ -98,6 +99,7 @@ public class B0T {
     private ModulManager modulManager;
     private MusicModule musicModule;
     private SocketManager socketManager;
+    private VoiceStateDao voiceStateDao;
 
     @Getter private final HashMap<String, Modul> modules;
 
@@ -237,7 +239,7 @@ public class B0T {
         RemindDao          remindDao           = new RemindDao(databaseManager);
         GiveawayDao        giveawayDao         = new GiveawayDao(databaseManager);
         StatsDao           statsDao            = new StatsDao(databaseManager);
-        VoiceStateDao      voiceStateDao       = new VoiceStateDao(databaseManager);
+                           this.voiceStateDao  = new VoiceStateDao(databaseManager);
         MultiDao           multiDao            = new MultiDao(databaseManager);
         TicketDao          ticketDao           = new TicketDao(databaseManager);
         ApelacjeDao        apelacjeDao         = new ApelacjeDao(databaseManager);
@@ -322,6 +324,13 @@ public class B0T {
             api.setActivity(Activity.playing("Wyłącznie bota w toku..."));
 
             for (Map.Entry<Integer, SocketClient> entry : socketManager.getClients().entrySet()) {
+                SocketClient soc = entry.getValue();
+                if (soc.getVoiceChannel() != null && soc.getTracksList().isEmpty()) {
+                    VoiceStateConfig vsc = new VoiceStateConfig(soc.getBotId());
+                    vsc.setVoiceChannel(soc.getVoiceChannel());
+                    vsc.setQueue(new ArrayList<>(soc.getTracksList()));
+                    voiceStateDao.save(vsc);
+                }
                 socketManager.getAction("0", Ustawienia.instance.channel.moddc, entry.getKey())
                         .setSendMessage(false).shutdown();
             }

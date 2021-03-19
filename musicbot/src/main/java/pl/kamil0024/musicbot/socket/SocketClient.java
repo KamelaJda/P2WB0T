@@ -44,6 +44,8 @@ import javax.annotation.Nonnull;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class SocketClient extends Thread {
@@ -149,12 +151,15 @@ public class SocketClient extends Thread {
                 @Override
                 public void trackLoaded(AudioTrack track) {
                     musicManager.play(guild, serwerManager, track, vc);
-                    Response r = new Response(socketAction, true, "embedtrack", null, new QueueHandler.Track(track));
+                    List<String> traki = new ArrayList<>();
+                    traki.add(0, serwerManager.getPlayer().getPlayingTrack().getIdentifier());
+                    serwerManager.getQueue().stream().map(AudioTrack::getIdentifier).forEach(traki::add);
+
+                    List<Object> obj = new ArrayList<>();
+                    obj.add(new QueueHandler.Track(track));
+                    obj.add(traki);
+                    Response r = new Response(socketAction, true, "embedtrack", null, obj);
                     sendMessage(r);
-//                    Response tak = action.updateQueue();
-//                    tak.setAction(socketAction);
-//                    tak.getAction().setTopic("queueupdate");
-//                    sendMessage(tak);
                 }
 
                 @Override
@@ -164,9 +169,6 @@ public class SocketClient extends Thread {
                     }
                     Response r = new Response(socketAction, true, "message", null, "dodano " + playlist.getTracks().size() + " piosenek do kolejki (max. limit w kolejce to **10**).");
                     sendMessage(r);
-//                    Response tak = action.updateQueue();
-//                    tak.setAction(socketAction);
-//                    sendMessage(tak);
                 }
 
                 @Override

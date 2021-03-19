@@ -60,7 +60,7 @@ public class PrivatePlayCommand extends Command {
             return false;
         }
 
-        SocketClient client = socketManager.getClientFromChanne(context);
+        SocketClient client = socketManager.getClientFromChannel(context);
 
         if (client != null) {
             socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId())

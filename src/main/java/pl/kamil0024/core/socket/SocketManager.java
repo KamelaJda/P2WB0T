@@ -21,6 +21,8 @@ package pl.kamil0024.core.socket;
 
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.Subscribe;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -29,11 +31,15 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
+import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.CommandContext;
 import pl.kamil0024.core.command.CommandExecute;
+import pl.kamil0024.core.database.VoiceStateDao;
+import pl.kamil0024.core.database.config.VoiceStateConfig;
 import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.socket.actions.*;
 import pl.kamil0024.core.util.EmbedPageintaor;
@@ -52,13 +58,15 @@ public class SocketManager {
 
     private final ShardManager api;
     private final EventWaiter eventWaiter;
+    private final VoiceStateDao voiceStateDao;
 
-    public SocketManager(AsyncEventBus eventBus, ShardManager api, EventWaiter eventWaiter) {
+    public SocketManager(AsyncEventBus eventBus, ShardManager api, EventWaiter eventWaiter, VoiceStateDao voiceStateDao) {
         clients = new HashMap<>();
         botIds = new HashMap<>();
         eventBus.register(this);
         this.api = api;
         this.eventWaiter = eventWaiter;
+        this.voiceStateDao = voiceStateDao;
     }
 
     @Subscribe
@@ -69,6 +77,18 @@ public class SocketManager {
             String id = socketJson.getJson().split("setBotId: ")[1];
             clients.get(socketJson.getId()).setBotId(id);
             botIds.put(socketJson.getId(), id);
+
+            VoiceStateConfig vsc = voiceStateDao.get(id);
+            if (vsc != null && !vsc.getQueue().isEmpty()) {
+                VoiceChannel vc = api.getVoiceChannelById(vsc.getVoiceChannel());
+                if (vc != null) {
+                    Action act = getAction("0", Ustawienia.instance.channel.moddc, socketJson.getId())
+                            .setSendMessage(false);
+                    act.connect(vc.getId());
+                    vsc.getQueue().forEach(act::play);
+                }
+            }
+
             return;
         } else if (socketJson.getJson().startsWith("setChannel:")) {
             String channelId = socketJson.getJson().split("setChannel: ")[1];
@@ -120,13 +140,17 @@ public class SocketManager {
                     break;
                 }
                 case "embedtrack": {
-                    PrivateQueueCommand.Track t = GsonUtil.fromJSON(GsonUtil.toJSON(response.getData()), PrivateQueueCommand.Track.class);
+                    Object[] obj = GsonUtil.fromJSON(GsonUtil.toJSON(response.getData()), Object[].class);
+                    PrivateQueueCommand.Track t = GsonUtil.fromJSON(GsonUtil.toJSON(obj[0]), PrivateQueueCommand.Track.class);
                     EmbedBuilder track = new PrivateQueueCommand.DecodeTrack(t, false).create();
                     MessageBuilder mb = new MessageBuilder();
                     mb.setContent(ping + ", dodano do kolejki!");
                     mb.setEmbed(track.build());
                     Message msg = txt.sendMessage(mb.build()).complete();
                     msg.addReaction(CommandExecute.getReaction(msg.getAuthor(), true)).queue();
+
+                    List<String> queue = GsonUtil.fromJSON(GsonUtil.toJSON(obj[1]), new TypeToken<List<String>>(){}.getType());
+                    getClients().get(socketJson.getId()).setTracksList(queue);
                     break;
                 }
                 case "queuelist":
@@ -177,7 +201,7 @@ public class SocketManager {
     }
 
     @Nullable
-    public SocketClient getClientFromChanne(CommandContext context) {
+    public SocketClient getClientFromChannel(CommandContext context) {
         for (Member member : PlayCommand.getVc(context.getMember()).getMembers()) {
             if (member.getUser().isBot()) {
                 SocketClient agent = getClientFromId(member.getId());

@@ -42,7 +42,7 @@ public class VoiceStateConfig {
     private String id;
 
     private String voiceChannel = null;
-    ArrayList<String> queue = null;
-    String aktualnaPiosenka = null;
+    private ArrayList<String> queue = null;
+    private String aktualnaPiosenka = null;
 
 }
