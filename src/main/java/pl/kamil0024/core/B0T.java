@@ -325,7 +325,7 @@ public class B0T {
 
             for (Map.Entry<Integer, SocketClient> entry : socketManager.getClients().entrySet()) {
                 SocketClient soc = entry.getValue();
-                if (soc.getVoiceChannel() != null && soc.getTracksList().isEmpty()) {
+                if (soc.getVoiceChannel() != null && !soc.getTracksList().isEmpty()) {
                     VoiceStateConfig vsc = new VoiceStateConfig(soc.getBotId());
                     vsc.setVoiceChannel(soc.getVoiceChannel());
                     vsc.setQueue(new ArrayList<>(soc.getTracksList()));
