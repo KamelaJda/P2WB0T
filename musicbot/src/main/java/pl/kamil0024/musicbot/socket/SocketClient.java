@@ -217,6 +217,7 @@ public class SocketClient extends Thread {
         } catch (Exception e) {
             e.printStackTrace();
             response = new Response();
+            response.setAction(socketAction);
             response.setMessageType("message");
             response.setSuccess(false);
             response.setErrorMessage("Wystąpił błąd podczas wysyłania requesta do socketa. Error: " + e.getLocalizedMessage());

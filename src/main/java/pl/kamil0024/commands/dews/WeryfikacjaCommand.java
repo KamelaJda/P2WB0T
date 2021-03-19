@@ -29,7 +29,6 @@ import pl.kamil0024.core.database.config.DiscordInviteConfig;
 import pl.kamil0024.core.util.UsageException;
 import pl.kamil0024.weryfikacja.WeryfikacjaModule;
 
-@SuppressWarnings("ConstantConditions")
 public class WeryfikacjaCommand extends Command {
 
     private final APIModule apiModule;
@@ -78,6 +77,10 @@ public class WeryfikacjaCommand extends Command {
         if (arg.equalsIgnoreCase("manual")) {
             try {
                 Member member = context.getParsed().getMember(context.getArgs().get(1));
+                if (member == null) {
+                    context.send("Nie ma takiego użytkownika!").queue();
+                    return false;
+                }
                 context.getGuild().addRoleToMember(member, context.getGuild().getRoleById(context.getArgs().get(3))).complete();
                 context.getGuild().modifyNickname(member, context.getArgs().get(2)).complete();
                 context.send("Pomyślnie zweryfikowano!").complete();
