@@ -105,6 +105,11 @@ public class SocketManager {
                 return;
             }
 
+            if (response.getAction() == null || response.getAction().getTopic() == null || response.getAction().getTopic().isEmpty()) {
+                Log.newError("Nie ma actiona/topica w requeście od socketa! JSON: " + SocketServer.GSON.toJson(socketJson), getClass());
+                return;
+            }
+
             if (response.getAction().getTopic().equals("shutdown")) return;
 
             if (response.getAction().getTopic().equals("queueupdate")) {
