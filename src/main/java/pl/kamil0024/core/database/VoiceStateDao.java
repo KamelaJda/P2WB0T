@@ -36,7 +36,6 @@ public class VoiceStateDao implements Dao<VoiceStateConfig> {
     }
 
     @Override
-    @Nullable
     public VoiceStateConfig get(String id) {
         return mapper.load(id).orElse(new VoiceStateConfig(id));
     }

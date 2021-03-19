@@ -78,7 +78,7 @@ public class SocketManager {
             botIds.put(socketJson.getId(), id);
 
             VoiceStateConfig vsc = voiceStateDao.get(id);
-            if (vsc != null && !vsc.getQueue().isEmpty()) {
+            if (vsc.getQueue() != null) {
                 VoiceChannel vc = api.getVoiceChannelById(vsc.getVoiceChannel());
                 if (vc != null) {
                     Action act = getAction("0", Ustawienia.instance.channel.moddc, socketJson.getId())
