@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.audit.AuditLogEntry;
 import net.dv8tion.jda.api.audit.AuditLogOption;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -94,6 +95,27 @@ public class Logger extends ListenerAdapter {
         if (event.getChannel().getParent() != null && Arrays.asList("425673488456482817", "494507499739676686", "502831202332573707", "506210855231291393").contains(event.getChannel().getParent().getId())) {
             deletedMessagesDao.save(DeletedMessagesConfig.convert(msg, new Date().getTime()));
         }
+    }
+
+    @Override
+    public void onMessageBulkDelete(@Nonnull MessageBulkDeleteEvent event) {
+        for (String message : event.getMessageIds()) {
+            FakeMessage msg = manager.get(message);
+            if (msg == null) continue;
+            EmbedBuilder eb = getLogMessage(Action.DELETED, msg, null);
+            String content = msg.getContent();
+            if (content != null) {
+                if (content.length() > 1024) { content = content.substring(0, 1024); }
+                eb.addField("Treść wiadomości:", content, false);
+            }
+            sendLog(eb);
+            manager.getMap().invalidate(message);
+
+            if (event.getChannel().getParent() != null && Arrays.asList("425673488456482817", "494507499739676686", "502831202332573707", "506210855231291393").contains(event.getChannel().getParent().getId())) {
+                deletedMessagesDao.save(DeletedMessagesConfig.convert(msg, new Date().getTime()));
+            }
+        }
+
     }
 
     @Override
