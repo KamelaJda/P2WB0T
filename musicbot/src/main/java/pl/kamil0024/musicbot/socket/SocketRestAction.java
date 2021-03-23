@@ -124,27 +124,6 @@ public class SocketRestAction {
         return response;
     }
 
-    public SocketClient.Response updateQueue() {
-        SocketClient.Response response = new SocketClient.Response();
-        GuildMusicManager manager = musicManager.getGuildAudioPlayer(Connect.getGuild(api));
-        List<AudioTrack> klele = new ArrayList<>(manager.getQueue());
-        if (manager.getPlayer().getPlayingTrack() != null) {
-            klele.add(manager.getPlayer().getPlayingTrack());
-        }
-        if (klele.isEmpty()) {
-            response.setSuccess(false);
-            response.setMessageType("message");
-            response.setErrorMessage("kolejka jest pusta!");
-            return response;
-        }
-        List<String> traki = new ArrayList<>();
-        klele.forEach(t -> traki.add(t.getIdentifier()));
-        response.setSuccess(true);
-        response.setMessageType("list");
-        response.setData(traki);
-        return response;
-    }
-
     public SocketClient.Response shutdown() {
         SocketClient.Response response = new SocketClient.Response();
         response.setMessageType("message");

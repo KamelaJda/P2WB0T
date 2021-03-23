@@ -78,8 +78,6 @@ public class GuildMusicManager extends AudioEventAdapter {
             destroy();
             return null;
         }
-        SocketRestAction action = new SocketRestAction(socketClient.api, socketClient.musicManager);
-        socketClient.sendMessage(action.updateQueue());
 
         player.startTrack(next, false);
         setAktualnaPiosenka(next);

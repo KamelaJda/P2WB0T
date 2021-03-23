@@ -93,7 +93,7 @@ public class WeryfikacjaCommand extends Command {
             String user = context.getArgs().get(1);
             if (user == null) throw new UsageException();
             weryfikacjaModule.weryfikacjaDao.bypass(user);
-            context.send("Użytkownik <@" + user + "> może już wejśc!");
+            context.send("Użytkownik <@" + user + "> może już wejść").queue();
             return true;
         }
 

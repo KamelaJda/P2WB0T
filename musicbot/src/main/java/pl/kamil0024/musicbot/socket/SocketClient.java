@@ -204,9 +204,6 @@ public class SocketClient extends Thread {
                 case "queue":
                     response = action.queue();
                     break;
-                case "queueupdate":
-                    response = action.updateQueue();
-                    break;
                 case "shutdown":
                     response = action.shutdown();
                     break;
