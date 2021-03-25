@@ -98,7 +98,7 @@ public class MuteCommand extends Command {
     public static boolean hasMute(Member mem) {
         Role r = mem.getGuild().getRoleById(Ustawienia.instance.muteRole);
         if (r == null) throw new NullPointerException("rola muteRole jest nullem");
-        return mem.getRoles().contains(r);
+        return mem.getGuild().retrieveMemberById(mem.getId()).complete().getRoles().contains(r);
     }
 
 }
