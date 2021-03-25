@@ -144,14 +144,14 @@ public class PunishCommand extends Command {
         if (arg.contains(",")) {
             for (String s : arg.split(",")) {
                 Member tak = context.getParsed().getMember(s);
-                if (tak != null && check(context, tak)) {
+                if (check(context, tak)) {
                     if (!osoby.contains(tak)) osoby.add(tak);
                 }
             }
 
         } else {
             Member mem = context.getParsed().getMember(arg);
-            if (mem != null) osoby.add(mem);
+            if (check(context, mem)) osoby.add(mem);
         }
 
         StringBuilder sb = new StringBuilder();
@@ -219,8 +219,8 @@ public class PunishCommand extends Command {
         return true;
     }
 
-    private static boolean check(CommandContext context, Member osoba) {
-        return Kara.check(context, osoba.getUser()) == null && !MuteCommand.hasMute(osoba);
+    private static boolean check(CommandContext context, @Nullable Member osoba) {
+        return osoba != null && Kara.check(context, osoba.getUser()) == null && !MuteCommand.hasMute(osoba);
     }
 
     public static void putPun(KaryJSON.Kara kara, List<Member> osoby, Member member, @Nullable TextChannel txt, CaseDao caseDao, ModLog modLog, StatsModule statsModule, @Nullable Dowod dowod, @Nullable EventWaiter eventWaiter) {
