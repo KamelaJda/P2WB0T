@@ -153,7 +153,6 @@ public class PunishCommand extends Command {
             Member mem = context.getParsed().getMember(arg);
             if (mem != null) osoby.add(mem);
         }
-        }
 
         StringBuilder sb = new StringBuilder();
         for (Member member : osoby) {
