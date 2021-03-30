@@ -160,8 +160,8 @@ public class PunishCommand extends Command {
         }
 
         if (osoby.isEmpty()) {
-            msg.editMessage("Nie masz osób do ukarania! Przyczyn może być wiele, te najczęściej spotykany błąd to " +
-                    "osoby są już wyciszone, bądź nie ma ich na serwerze").queue();
+            msg.editMessage("Nie masz osób do ukarania! Przyczyn może być wiele, te najczęściej spotykane błądy to " +
+                    "osoby są już wyciszone, bądź nie ma ich na serwerze.").queue();
             return false;
         }
 

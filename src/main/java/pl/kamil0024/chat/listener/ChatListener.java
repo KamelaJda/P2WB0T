@@ -30,9 +30,6 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.chat.Action;
-import pl.kamil0024.moderation.listeners.ModLog;
-import pl.kamil0024.moderation.commands.MuteCommand;
-import pl.kamil0024.moderation.commands.PunishCommand;
 import pl.kamil0024.core.Main;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.enums.PermLevel;
@@ -43,17 +40,26 @@ import pl.kamil0024.core.util.UserUtil;
 import pl.kamil0024.core.util.kary.Dowod;
 import pl.kamil0024.core.util.kary.KaryJSON;
 import pl.kamil0024.logs.logger.FakeMessage;
+import pl.kamil0024.moderation.commands.MuteCommand;
+import pl.kamil0024.moderation.commands.PunishCommand;
+import pl.kamil0024.moderation.listeners.ModLog;
 import pl.kamil0024.stats.StatsModule;
-import java.io.*;
+
+import javax.annotation.Nonnull;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
+import java.util.stream.Collectors;
 
-
-import static java.nio.charset.StandardCharsets.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 @SuppressWarnings("DuplicatedCode")
 public class ChatListener extends ListenerAdapter {
@@ -239,6 +245,11 @@ public class ChatListener extends ListenerAdapter {
             }
         }
 
+        if (msg.getMentionedMembers().stream().map(Member::getId).collect(Collectors.toList()).contains("371532684716933120")) {
+            action.setKara(Action.ListaKar.PING);
+            action.send(karyListener, msg.getGuild());
+        }
+
     }
 
     @Nullable
@@ -333,12 +344,8 @@ public class ChatListener extends ListenerAdapter {
         return count;
     }
 
-    private static int checkEmote(List<String> list, JDA api) {
-        int count = 0;
-        for (String s : list) {
-            if (Emoji.resolve(s, api) != null) count++;
-        }
-        return count;
+    private static long checkEmote(List<String> list, JDA api) {
+        return list.stream().filter(m -> Emoji.resolve(m, api) != null).count();
     }
 
 }
