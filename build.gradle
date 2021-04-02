@@ -64,7 +64,7 @@ dependencies {
     compile 'io.undertow:undertow-core:2.0.28.Final'
 
     implementation 'io.sentry:sentry:4.0.0'
-    implementation 'com.sedmelluq:lavaplayer:1.3.55'
+    implementation 'com.sedmelluq:lavaplayer:1.3.75'
     implementation 'com.github.KAMIL0024:Bdate:-SNAPSHOT'
     implementation 'com.squareup.okhttp3:okhttp:3.13.0'
 
@@ -97,9 +97,10 @@ class Version {
     String major
 
     static String getCommit() {
-        def proc = 'git rev-list --count HEAD'.execute()
-        proc.waitFor()
-        return proc.text.trim()
+//        def proc = 'git rev-list --count HEAD'.execute()
+//        proc.waitFor()
+//        return proc.text.trim()
+        return "xd"
     }
 
     static String getBuild() {
