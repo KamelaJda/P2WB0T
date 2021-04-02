@@ -33,7 +33,7 @@ def jdaVersion = '4.2.0_222'
 repositories {
     mavenCentral()
     mavenLocal()
-    jcenter()
+    maven { url = uri("https://dl.bintray.com/sedmelluq/com.sedmelluq") }
     maven { url "https://plugins.gradle.org/m2/" }
     maven { url 'https://jitpack.io' }
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
@@ -54,8 +54,6 @@ dependencies {
     implementation 'com.sedmelluq:lavaplayer-ext-youtube-rotator:0.2.3'
 
     annotationProcessor 'org.projectlombok:lombok:1.18.10'
-
-    testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
 build.dependsOn jar
