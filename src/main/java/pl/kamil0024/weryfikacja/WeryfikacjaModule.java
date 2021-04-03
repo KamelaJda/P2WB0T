@@ -25,9 +25,6 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import pl.kamil0024.api.APIModule;
 import pl.kamil0024.bdate.BDate;
-import pl.kamil0024.core.command.enums.PermLevel;
-import pl.kamil0024.core.util.UserUtil;
-import pl.kamil0024.moderation.listeners.ModLog;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.database.CaseDao;
 import pl.kamil0024.core.database.MultiDao;
@@ -37,24 +34,30 @@ import pl.kamil0024.core.database.config.MultiConfig;
 import pl.kamil0024.core.database.config.WeryfikacjaConfig;
 import pl.kamil0024.core.module.Modul;
 import pl.kamil0024.core.util.Nick;
+import pl.kamil0024.moderation.listeners.ModLog;
 import pl.kamil0024.status.listeners.ChangeNickname;
 import pl.kamil0024.weryfikacja.listeners.CheckMk;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class WeryfikacjaModule extends ListenerAdapter implements Modul {
 
-    public final APIModule apiModule;
     private final MultiDao multiDao;
     private final ModLog modLog;
     private final CaseDao caseDao;
+
     public final WeryfikacjaDao weryfikacjaDao;
+    public final APIModule apiModule;
 
     private boolean start = false;
     private ChangeNickname changeNickname;
+
+    private final List<String> userCooldown;
 
     public WeryfikacjaModule(APIModule apiModule, MultiDao multiDao, ModLog modLog, CaseDao caseDao, WeryfikacjaDao weryfikacjaDao) {
         this.apiModule = apiModule;
@@ -62,6 +65,7 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
         this.modLog = modLog;
         this.caseDao = caseDao;
         this.weryfikacjaDao = weryfikacjaDao;
+        this.userCooldown = new ArrayList<>();
     }
 
     @Override
@@ -232,14 +236,19 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
     public void onMessageReactionAdd(MessageReactionAddEvent event) {
         if (!event.getChannel().getId().equals("740157959207780362") || !event.isFromGuild() || event.getUser().isBot()) return;
 
-        try {
-            if (UserUtil.getPermLevel(event.getMember()).getNumer() < PermLevel.MODERATOR.getNumer()) {
-                event.getReaction().removeReaction().queue();
-            }
-        } catch (Exception ignored) { }
-
         DiscordInviteConfig conf = apiModule.getNewWery().getIfPresent(event.getUserId());
-        if (conf == null) return;
+        if (conf == null) {
+            userCooldown.add(event.getUserId());
+            event.getChannel()
+                    .sendMessage(event.getUser().getAsMention() + ", nie znaleziono o Tobie informacji! Musisz wpisać **/discord** na jednym z naszych serwerów " +
+                    "i wejść w podany link. Jeżeli posiadasz kilka kont Discord, zaloguj się na stronie z dobrego konta wchodząc w ten link **https://discord.p2w.pl/api/user/login**")
+                    .allowedMentions(Collections.singleton(Message.MentionType.USER))
+                    .queue(m -> {
+                        m.delete().queueAfter(15, TimeUnit.SECONDS);
+                        userCooldown.remove(event.getUserId());
+                    });
+            return;
+        }
 
         executeCode(event.getUserId(), conf, event.getChannel(), event.getGuild(), false);
         apiModule.getNewWery().invalidate(event.getUserId());
