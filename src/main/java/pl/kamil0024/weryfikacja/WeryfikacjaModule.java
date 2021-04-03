@@ -249,8 +249,8 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
                         .sendMessage(user.getAsMention() + ", nie znaleziono o Tobie informacji! Musisz wpisać **/discord** na jednym z naszych serwerów " +
                                 "i wejść w podany link. Jeżeli posiadasz kilka kont Discord, zaloguj się na stronie z dobrego konta wchodząc w ten link **https://discord.p2w.pl/api/user/login**")
                         .allowedMentions(Collections.singleton(Message.MentionType.USER))
-                        .queue(m -> {
-                            m.delete().queueAfter(15, TimeUnit.SECONDS);
+                        .queueAfter(15, TimeUnit.SECONDS, m -> {
+                            m.delete().queue();
                             userCooldown.remove(finalUser.getId());
                         });
             }
