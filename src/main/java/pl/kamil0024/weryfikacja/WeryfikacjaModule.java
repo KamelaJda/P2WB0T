@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.joda.time.DateTime;
 import pl.kamil0024.api.APIModule;
 import pl.kamil0024.bdate.BDate;
 import pl.kamil0024.core.Ustawienia;
@@ -32,10 +33,12 @@ import pl.kamil0024.core.database.WeryfikacjaDao;
 import pl.kamil0024.core.database.config.DiscordInviteConfig;
 import pl.kamil0024.core.database.config.MultiConfig;
 import pl.kamil0024.core.database.config.WeryfikacjaConfig;
+import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.module.Modul;
 import pl.kamil0024.core.util.Nick;
 import pl.kamil0024.moderation.listeners.ModLog;
 import pl.kamil0024.status.listeners.ChangeNickname;
+import pl.kamil0024.ticket.listener.VoiceChatListener;
 import pl.kamil0024.weryfikacja.listeners.CheckMk;
 
 import javax.annotation.Nonnull;
@@ -43,6 +46,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class WeryfikacjaModule extends ListenerAdapter implements Modul {
@@ -249,9 +254,11 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
                         .sendMessage(user.getAsMention() + ", nie znaleziono o Tobie informacji! Musisz wpisać **/discord** na jednym z naszych serwerów " +
                                 "i wejść w podany link. Jeżeli posiadasz kilka kont Discord, zaloguj się na stronie z dobrego konta wchodząc w ten link **https://discord.p2w.pl/api/user/login**")
                         .allowedMentions(Collections.singleton(Message.MentionType.USER))
-                        .queueAfter(15, TimeUnit.SECONDS, m -> {
-                            m.delete().queue();
-                            userCooldown.remove(finalUser.getId());
+                        .queue(m -> {
+                            m.delete().queueAfter(15, TimeUnit.SECONDS);
+                            Runnable task = () -> userCooldown.remove(finalUser.getId());
+                            ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+                            ses.schedule(task, 15, TimeUnit.SECONDS);
                         });
             }
             return;
