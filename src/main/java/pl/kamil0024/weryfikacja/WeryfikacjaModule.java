@@ -234,19 +234,26 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
 
     @Override
     public void onMessageReactionAdd(MessageReactionAddEvent event) {
-        if (!event.getChannel().getId().equals("740157959207780362") || !event.isFromGuild() || event.getUser().isBot()) return;
+        if (!event.getChannel().getId().equals("740157959207780362") || !event.isFromGuild()) return;
+        User user = event.getUser();
+        if (user == null) {
+            user = event.getJDA().retrieveUserById(event.getUserId()).complete();
+        }
 
-        DiscordInviteConfig conf = apiModule.getNewWery().getIfPresent(event.getUserId());
+        DiscordInviteConfig conf = apiModule.getNewWery().getIfPresent(event.getUser());
         if (conf == null) {
-            userCooldown.add(event.getUserId());
-            event.getChannel()
-                    .sendMessage(event.getUser().getAsMention() + ", nie znaleziono o Tobie informacji! Musisz wpisać **/discord** na jednym z naszych serwerów " +
-                    "i wejść w podany link. Jeżeli posiadasz kilka kont Discord, zaloguj się na stronie z dobrego konta wchodząc w ten link **https://discord.p2w.pl/api/user/login**")
-                    .allowedMentions(Collections.singleton(Message.MentionType.USER))
-                    .queue(m -> {
-                        m.delete().queueAfter(15, TimeUnit.SECONDS);
-                        userCooldown.remove(event.getUserId());
-                    });
+            if (!userCooldown.contains(event.getUserId())) {
+                userCooldown.add(event.getUserId());
+                User finalUser = user;
+                event.getChannel()
+                        .sendMessage(user.getAsMention() + ", nie znaleziono o Tobie informacji! Musisz wpisać **/discord** na jednym z naszych serwerów " +
+                                "i wejść w podany link. Jeżeli posiadasz kilka kont Discord, zaloguj się na stronie z dobrego konta wchodząc w ten link **https://discord.p2w.pl/api/user/login**")
+                        .allowedMentions(Collections.singleton(Message.MentionType.USER))
+                        .queue(m -> {
+                            m.delete().queueAfter(15, TimeUnit.SECONDS);
+                            userCooldown.remove(finalUser.getId());
+                        });
+            }
             return;
         }
 
