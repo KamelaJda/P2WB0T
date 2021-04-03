@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
+import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.enums.PermLevel;
@@ -117,6 +118,7 @@ public class SyncListener extends ListenerAdapter {
         try {
             if (nickname != null) mem.getGuild().modifyNickname(mem, nickname.replaceAll("STAŻ", "REKRUT")).complete();
             rolesToAdd.forEach(r -> mem.getGuild().addRoleToMember(mem, r).complete());
+        } catch (HierarchyException ignored) {
         } catch (Exception e) {
             Log.newError(e, SyncListener.class);
         }

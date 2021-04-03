@@ -115,11 +115,19 @@ public class CommandContext {
         if (checkUrl && URLPATTERN.matcher(msg).matches()) {
             message = message.replaceAll(String.valueOf(URLPATTERN), "[LINK]");
         }
-        return event.getChannel().sendMessage(message.replaceAll("@(everyone|here)", "@\u200b$1")).referenceById(getMessage().getIdLong());
+        MessageAction ma = event.getChannel().sendMessage(message.replaceAll("@(everyone|here)", "@\u200b$1"));
+        try {
+            ma = ma.referenceById(getMessage().getIdLong());
+        } catch (Exception ignored) { }
+        return ma;
     }
 
     public MessageAction send(MessageEmbed message) {
-        return event.getChannel().sendMessage(message).referenceById(getMessage().getIdLong());
+        MessageAction ma = event.getChannel().sendMessage(message);
+        try {
+            ma = ma.referenceById(getMessage().getIdLong());
+        } catch (Exception ignored) { }
+        return ma;
     }
 
     public MessageAction sendTranslate(String key, Object... obj) {

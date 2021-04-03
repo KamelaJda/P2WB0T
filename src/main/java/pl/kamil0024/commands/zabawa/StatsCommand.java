@@ -37,6 +37,7 @@ import pl.kamil0024.moderation.listeners.ModLog;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class StatsCommand extends Command {
 
@@ -164,7 +165,12 @@ public class StatsCommand extends Command {
     }
 
     private String format(long l) {
-        return new BDate(ModLog.getLang()).difference(new Date().getTime() + l);
+        long millis = new Date().getTime() + l;
+        return String.format("%02d min, %02d sec",
+                TimeUnit.MILLISECONDS.toMinutes(millis),
+                TimeUnit.MILLISECONDS.toSeconds(millis) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
+        );
     }
 
 }

@@ -156,7 +156,13 @@ public class VoiceChatListener extends ListenerAdapter {
 
         Runnable task = () -> {
             try {
-                GuildVoiceState state = channelJoined.getGuild().retrieveMemberById(memId).complete().getVoiceState();
+                GuildVoiceState state;
+                try {
+                    state = channelJoined.getGuild().retrieveMemberById(memId).complete().getVoiceState();
+                } catch (Exception e) {
+                    return;
+                }
+
                 if (state != null && state.getChannel() != null && state.getChannel().getId().equals(id)) {
                     Long col = cooldownCache.getIfPresent(memId);
                     if (col == null || col - new Date().getTime() <= 0) {
@@ -241,6 +247,7 @@ public class VoiceChatListener extends ListenerAdapter {
 
     @SuppressWarnings("ConstantConditions")
     private void checkRemoveTicket(@Nullable VoiceChannel voiceChannel) {
+        if (voiceChannel == null) return;
         synchronized (this) {
             if (voiceChannel == null) return;
             if (voiceChannel.getMembers().size() == 0
