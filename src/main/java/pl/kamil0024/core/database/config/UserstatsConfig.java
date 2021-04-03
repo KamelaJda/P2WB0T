@@ -57,8 +57,6 @@ public class UserstatsConfig {
         public Config() { }
 
         private long messageCount;
-        private Long voiceTimestamp = 0L;
-
         private Map<String, Long> channels;
     }
 

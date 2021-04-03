@@ -67,7 +67,6 @@ public class UserstatsManager extends ListenerAdapter {
 
         ScheduledExecutorService executorSche = Executors.newSingleThreadScheduledExecutor();
         executorSche.scheduleWithFixedDelay(this::load, 30, 30, TimeUnit.MINUTES);
-        loadVoice();
     }
 
     @Override
@@ -105,10 +104,12 @@ public class UserstatsManager extends ListenerAdapter {
                 Map<String, VoiceStateConfig> voiceConf = voiceStateConfig.asMap();
                 try {
                     config.invalidateAll();
-                } catch (JedisDataException ignored) { }
+                } catch (JedisDataException ignored) {
+                }
                 try {
                     voiceStateConfig.invalidateAll();
-                } catch (JedisDataException ignored) { }
+                } catch (JedisDataException ignored) {
+                }
 
                 Date date = new Date();
                 for (Map.Entry<String, VoiceStateConfig> entry : voiceConf.entrySet()) {
@@ -126,9 +127,6 @@ public class UserstatsManager extends ListenerAdapter {
                         long ldate = Long.parseLong(sdate);
 
                         VoiceStateConfig vsc = voiceConf.get(sdate + "-" + member);
-                        if (vsc != null) {
-                            entry.getValue().setVoiceTimestamp(vsc.getFullTimestamp());
-                        }
 
                         UserstatsConfig conf = map.getOrDefault(ldate, new UserstatsConfig(ldate));
                         conf.getMembers().put(member, entry.getValue());
@@ -150,7 +148,6 @@ public class UserstatsManager extends ListenerAdapter {
                         for (Map.Entry<String, UserstatsConfig.Config> entry : v.getMembers().entrySet()) {
                             UserstatsConfig.Config c = dConf.getMembers().getOrDefault(entry.getKey(), new UserstatsConfig.Config(0L, 0L, new HashMap<>()));
                             c.setMessageCount(c.getMessageCount() + entry.getValue().getMessageCount());
-                            c.setVoiceTimestamp(c.getVoiceTimestamp() + entry.getValue().getVoiceTimestamp());
 
                             for (Map.Entry<String, Long> channelEntry : entry.getValue().getChannels().entrySet()) {
                                 long channelValue = c.getChannels().getOrDefault(channelEntry.getKey(), 0L);
@@ -160,93 +157,13 @@ public class UserstatsManager extends ListenerAdapter {
                             dConf.getMembers().put(entry.getKey(), c);
                         }
                         userstatsDao.save(dConf);
-                        
+
                     }
                 }
-
-                loadVoice();
             } catch (Exception e) {
                 Log.newError(e, getClass());
             }
         }).start();
-
-    }
-
-    @Override
-    public void onGuildVoiceJoin(@NotNull GuildVoiceJoinEvent event) {
-        try {
-            if (event.getMember().getUser().isBot()) return;
-            voiceStateConfig.put(event.getMember().getId(), new VoiceStateConfig(new Date().getTime(), 0L));
-        } catch (Exception e) {
-            Log.newError(e, getClass());
-        }
-    }
-
-    @Override
-    public void onGuildVoiceLeave(@NotNull GuildVoiceLeaveEvent event) {
-        try {
-            if (event.getMember().getUser().isBot()) return;
-            String primKey = event.getMember().getId();
-            VoiceStateConfig vsc = voiceStateConfig.getIfPresent(primKey);
-            if (vsc == null) return;
-
-            vsc.setFullTimestamp(vsc.getFullTimestamp() + (new Date().getTime() - vsc.getLastDate()));
-            vsc.setLastDate(new Date().getTime());
-            voiceStateConfig.invalidate(primKey);
-
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(new Date());
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
-
-            UserstatsConfig.Config conf = config.getOrElse(cal.getTimeInMillis() + "-" + primKey, new UserstatsConfig.Config(0L, 0L, new HashMap<>()));
-            conf.setVoiceTimestamp(conf.getVoiceTimestamp() + vsc.getFullTimestamp());
-            config.put(cal.getTimeInMillis() + "-" + primKey, conf);
-
-        } catch (Exception e) {
-            Log.newError(e, getClass());
-        }
-
-    }
-
-    public void loadVoice() {
-        try {
-            Guild g = api.getGuildById(Ustawienia.instance.bot.guildId);
-            if (g == null) {
-                Log.newError("Nie ma bota na serwerze docelowym", getClass());
-                throw new UnsupportedOperationException("Nie ma bota na serwerze docelowym");
-            }
-
-            ArrayList<String> existMembers = new ArrayList<>();
-            long date = new Date().getTime();
-            for (Map.Entry<String, VoiceStateConfig> entry : voiceStateConfig.asMap().entrySet()) {
-                String memberId = entry.getKey().split("::VoiceStateConfig:")[1];
-
-                Member member = g.getMemberById(memberId);
-                if (member == null || member.getVoiceState() == null || member.getVoiceState().getChannel() == null) {
-                    VoiceStateConfig value = entry.getValue();
-                    value.setFullTimestamp(value.getFullTimestamp() + (date - value.getLastDate()));
-                    value.setLastDate(date);
-                    voiceStateConfig.invalidate(memberId);
-
-                    UserstatsConfig.Config conf = config.getOrElse(date + "-" + memberId, new UserstatsConfig.Config(0L, 0L, new HashMap<>()));
-                    conf.setVoiceTimestamp(value.getFullTimestamp());
-                    config.put(date + "-" + memberId, conf);
-
-                } else existMembers.add(memberId);
-            }
-
-            for (GuildVoiceState entry : g.getVoiceStates()) {
-                if (!existMembers.contains(entry.getMember().getId())) {
-                    voiceStateConfig.put(entry.getMember().getId(), new VoiceStateConfig(new Date().getTime(), 0L));
-                }
-            }
-            
-        } catch (Exception e) {
-            Log.newError(e, getClass());
-
-        }
 
     }
 

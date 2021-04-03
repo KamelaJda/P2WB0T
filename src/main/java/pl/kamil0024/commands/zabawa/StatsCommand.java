@@ -23,8 +23,6 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import org.joda.time.DateTime;
-
-import pl.kamil0024.bdate.BDate;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
 import pl.kamil0024.core.command.enums.CommandCategory;
@@ -33,7 +31,6 @@ import pl.kamil0024.core.database.config.UserstatsConfig;
 import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.util.BetterStringBuilder;
 import pl.kamil0024.core.util.UserUtil;
-import pl.kamil0024.moderation.listeners.ModLog;
 
 import java.time.Instant;
 import java.util.*;
@@ -61,7 +58,6 @@ public class StatsCommand extends Command {
         new Thread(() -> {
             try {
                 long wszystkieWiadomosci = 0, cztery = 0, siedem = 0, dwadziescia = 0;
-                long vcAll = 0, vcCzternascie = 0, vcSiedem = 0, vcDoba = 0;
 
                 Map<String, Long> kanaly = new HashMap<>();
 
@@ -75,17 +71,13 @@ public class StatsCommand extends Command {
                     UserstatsConfig.Config memStat = entry.getMembers().get(context.getUser().getId());
                     if (memStat == null) continue;
                     wszystkieWiadomosci += memStat.getMessageCount();
-                    vcAll += memStat.getVoiceTimestamp();
                     if (Long.parseLong(entry.getDate()) >= getRawDate(1)) {
-                        vcDoba += memStat.getVoiceTimestamp();
                         dwadziescia += memStat.getMessageCount();
                     }
                     if (Long.parseLong(entry.getDate()) >= getRawDate(7)) {
-                        vcSiedem += memStat.getVoiceTimestamp();
                         siedem += memStat.getMessageCount();
                     }
                     if (Long.parseLong(entry.getDate()) >= getRawDate(14)) {
-                        vcCzternascie += memStat.getVoiceTimestamp();
                         cztery += memStat.getMessageCount();
                     }
 
@@ -112,15 +104,6 @@ public class StatsCommand extends Command {
                 sb.appendLine(String.format(s, "7 dni", siedem));
                 sb.appendLine(String.format(s, "24 godz.", dwadziescia));
                 eb.addField("Wiadomości", sb.toString(), false);
-
-                if (vcAll != 0) {
-                    sb = new BetterStringBuilder();
-                    sb.appendLine(String.format(vs, "__30 dni__", format(vcAll)));
-                    sb.appendLine(String.format(vs, "14 dni", format(vcCzternascie)));
-                    sb.appendLine(String.format(vs, "7 dni", format(vcSiedem)));
-                    sb.appendLine(String.format(vs, "24 godz.", format(vcDoba)));
-                    eb.addField("Kanały głosowe", sb.toString(), false);
-                }
 
                 sb = new BetterStringBuilder();
                 int i = 1;
