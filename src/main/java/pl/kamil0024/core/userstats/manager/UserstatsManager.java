@@ -82,7 +82,7 @@ public class UserstatsManager extends ListenerAdapter {
             cal.set(Calendar.MILLISECOND, 0);
 
             String primKey = cal.getTime().getTime() + "-" + event.getMessage().getAuthor().getId();
-            UserstatsConfig.Config conf = config.getOrElse(primKey, new UserstatsConfig.Config(0L, 0L, new HashMap<>()));
+            UserstatsConfig.Config conf = config.getOrElse(primKey, new UserstatsConfig.Config(0L, new HashMap<>()));
 
             conf.setMessageCount(conf.getMessageCount() + 1);
 
@@ -146,7 +146,7 @@ public class UserstatsManager extends ListenerAdapter {
                     } else {
 
                         for (Map.Entry<String, UserstatsConfig.Config> entry : v.getMembers().entrySet()) {
-                            UserstatsConfig.Config c = dConf.getMembers().getOrDefault(entry.getKey(), new UserstatsConfig.Config(0L, 0L, new HashMap<>()));
+                            UserstatsConfig.Config c = dConf.getMembers().getOrDefault(entry.getKey(), new UserstatsConfig.Config(0L, new HashMap<>()));
                             c.setMessageCount(c.getMessageCount() + entry.getValue().getMessageCount());
 
                             for (Map.Entry<String, Long> channelEntry : entry.getValue().getChannels().entrySet()) {

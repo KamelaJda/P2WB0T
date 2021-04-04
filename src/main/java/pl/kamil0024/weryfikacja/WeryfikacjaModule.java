@@ -245,22 +245,20 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
             user = event.getJDA().retrieveUserById(event.getUserId()).complete();
         }
 
-        DiscordInviteConfig conf = apiModule.getNewWery().getIfPresent(event.getUser());
-        if (conf == null) {
-            if (!userCooldown.contains(event.getUserId())) {
-                userCooldown.add(event.getUserId());
-                User finalUser = user;
-                event.getChannel()
-                        .sendMessage(user.getAsMention() + ", nie znaleziono o Tobie informacji! Musisz wpisać **/discord** na jednym z naszych serwerów " +
-                                "i wejść w podany link. Jeżeli posiadasz kilka kont Discord, zaloguj się na stronie z dobrego konta wchodząc w ten link **https://discord.p2w.pl/api/user/login**")
-                        .allowedMentions(Collections.singleton(Message.MentionType.USER))
-                        .queue(m -> {
-                            m.delete().queueAfter(15, TimeUnit.SECONDS);
-                            Runnable task = () -> userCooldown.remove(finalUser.getId());
-                            ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
-                            ses.schedule(task, 15, TimeUnit.SECONDS);
-                        });
-            }
+        DiscordInviteConfig conf = apiModule.getNewWery().getIfPresent(event.getUser().getId());
+        if (conf == null && !userCooldown.contains(event.getUserId())) {
+            userCooldown.add(event.getUserId());
+            User finalUser = user;
+            event.getChannel()
+                    .sendMessage(user.getAsMention() + ", nie znaleziono o Tobie informacji! Musisz wpisać **/discord** na jednym z naszych serwerów " +
+                            "i wejść w podany link. Jeżeli posiadasz kilka kont Discord, zaloguj się na stronie z dobrego konta wchodząc w ten link **https://discord.p2w.pl/api/user/login**")
+                    .allowedMentions(Collections.singleton(Message.MentionType.USER))
+                    .queue(m -> {
+                        m.delete().queueAfter(15, TimeUnit.SECONDS);
+                        Runnable task = () -> userCooldown.remove(finalUser.getId());
+                        ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+                        ses.schedule(task, 15, TimeUnit.SECONDS);
+                    });
             return;
         }
 
