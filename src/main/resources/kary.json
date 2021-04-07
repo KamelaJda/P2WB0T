@@ -57,7 +57,7 @@
       }
     },
     "3": {
-      "name": "Umieszczanie zdjęć zawierających wulgarne napisy na kanale #obrazki",
+      "name": "Umieszczanie zdjęć zawierających wulgaryzmy",
       "tier_1": {
         "maxWarns": 1,
         "type": "TEMPMUTE",
