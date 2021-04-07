@@ -109,21 +109,23 @@ public class ChatListener extends ListenerAdapter {
     @Override
     public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent e) {
         if (!e.getGuild().getId().equals(Ustawienia.instance.bot.guildId) || e.getAuthor().isBot()) return;
-        if (e.getChannel().getParent() != null && e.getChannel().getParent().getId().equals("539819570358386698")) return;
-        if (UserUtil.getPermLevel(e.getAuthor()).getNumer() >= PermLevel.CHATMOD.getNumer()) return;
-        if (e.getAuthor().isBot() || e.getMessage().getContentRaw().isEmpty()) return;
-        if (e.getChannel().getId().equals("426809411378479105") || e.getChannel().getId().equals("503294063064121374") || e.getChannel().getId().equals("573873102757429256")) return;
-
-        char kurwa = 'a';
-        try {
-            kurwa = e.getMessage().getContentRaw().toCharArray()[1];
-        } catch (Exception ignored) { }
-
-        if (e.getChannel().getId().equals("426864003562864641") && !e.getAuthor().isBot() &&
-                !e.getMessage().getContentRaw().isEmpty() && kurwa == 'p') {
-            return;
+//        if (e.getChannel().getParent() != null && e.getChannel().getParent().getId().equals("539819570358386698")) return;
+//        if (UserUtil.getPermLevel(e.getAuthor()).getNumer() >= PermLevel.CHATMOD.getNumer()) return;
+//        if (e.getAuthor().isBot() || e.getMessage().getContentRaw().isEmpty()) return;
+//        if (e.getChannel().getId().equals("426809411378479105") || e.getChannel().getId().equals("503294063064121374") || e.getChannel().getId().equals("573873102757429256")) return;
+//
+//        char kurwa = 'a';
+//        try {
+//            kurwa = e.getMessage().getContentRaw().toCharArray()[1];
+//        } catch (Exception ignored) { }
+//
+//        if (e.getChannel().getId().equals("426864003562864641") && !e.getAuthor().isBot() &&
+//                !e.getMessage().getContentRaw().isEmpty() && kurwa == 'p') {
+//            return;
+//        }
+        if (e.getAuthor().getId().equals("343467373417857025")) {
+            checkMessage(e.getMember(), e.getMessage(), karyJSON, caseDao, modLog);
         }
-        checkMessage(e.getMember(), e.getMessage(), karyJSON, caseDao, modLog);
     }
 
     @Override
@@ -252,7 +254,8 @@ public class ChatListener extends ListenerAdapter {
             return;
         }
 
-        if (msg.getAttachments().size() != 0) {
+        Log.debug("ok");
+        if (msg.getAttachments().size() > 0) {
             Log.debug("Zawiera zdjecia");
             String finalPrzeklenstwa = przeklenstwa;
             ImageUtil.readFile(msg.getAttachments().get(0)).thenAcceptAsync(st -> {
