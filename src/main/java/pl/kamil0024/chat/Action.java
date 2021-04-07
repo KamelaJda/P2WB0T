@@ -63,7 +63,7 @@ public class Action {
         if (!isDeleted) eb.addField("Link do wiadomości", String.format("[%s](%s)", "KLIK",
                 String.format("https://discord.com/channels/%s/%s/%s", api.getId(), getMsg().getChannel(), getMsg().getId())), false);
 
-        if (imageUrl != null) eb.setThumbnail(imageUrl);
+        if (imageUrl != null) eb.setImage(imageUrl);
 
         TextChannel txt = api.getTextChannelById(Ustawienia.instance.channel.moddc);
         if (txt == null) throw new NullPointerException("Kanał do modów dc jest nullem");
