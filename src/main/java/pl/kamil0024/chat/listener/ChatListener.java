@@ -36,6 +36,7 @@ import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.database.CaseDao;
 import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.util.Emoji;
+import pl.kamil0024.core.util.ImageUtil;
 import pl.kamil0024.core.util.UserUtil;
 import pl.kamil0024.core.util.kary.Dowod;
 import pl.kamil0024.core.util.kary.KaryJSON;
@@ -248,6 +249,31 @@ public class ChatListener extends ListenerAdapter {
         if (msg.getMentionedMembers().stream().map(Member::getId).collect(Collectors.toList()).contains("371532684716933120")) {
             action.setKara(Action.ListaKar.PING);
             action.send(karyListener, msg.getGuild());
+            return;
+        }
+
+        if (msg.getAttachments().size() != 0) {
+            Log.debug("Zawiera zdjecia");
+            String finalPrzeklenstwa = przeklenstwa;
+            ImageUtil.readFile(msg.getAttachments().get(0)).thenAcceptAsync(st -> {
+                Log.debug("Mam tekst");
+                if (st == null) return;
+                Log.debug(st);
+
+                action.setKara(Action.ListaKar.TEXT_SWEAR);
+                if (containsSwear(st.split(" ")) != null) {
+                    action.send(karyListener, msg.getGuild());
+                    return;
+                }
+
+                for (String s : getPrzeklenstwa()) {
+                    if (finalPrzeklenstwa.toLowerCase().contains(s) || finalPrzeklenstwa.replaceAll(" ", "").toLowerCase().contains(s)) {
+                        action.send(karyListener, msg.getGuild());
+                        return;
+                    }
+                }
+
+            });
         }
 
     }

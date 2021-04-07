@@ -26,6 +26,7 @@ import pl.kamil0024.core.logger.Log;
 
 import java.io.File;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @SuppressWarnings("unused")
@@ -33,8 +34,7 @@ public class ImageUtil {
 
     private final static Random RANDOM = new Random();
 
-    @Nullable
-    public static String readFile(Message.Attachment ath) {
+    public static CompletableFuture<String> readFile(Message.Attachment ath) {
         String fileName = RANDOM.nextInt(Integer.MAX_VALUE) + "." + ath.getFileExtension();
 
         try {
@@ -50,14 +50,14 @@ public class ImageUtil {
                     ShellCommand.shell("rm " + outFile + ".txt");
                 }).start();
 
-                return ret;
+                return CompletableFuture.completedFuture(ret);
 
             } else Log.error("Nie Istnieje!");
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
 
-        return null;
+        return CompletableFuture.completedFuture(null);
     }
 
 }

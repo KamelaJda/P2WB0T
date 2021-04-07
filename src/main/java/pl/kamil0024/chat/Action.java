@@ -42,6 +42,7 @@ public class Action {
     private boolean pewnosc = true;
     private boolean isDeleted = true;
     private String botMsg = null;
+    private String imageUrl = null;
 
     public Action() { }
 
@@ -61,6 +62,9 @@ public class Action {
         }
         if (!isDeleted) eb.addField("Link do wiadomości", String.format("[%s](%s)", "KLIK",
                 String.format("https://discord.com/channels/%s/%s/%s", api.getId(), getMsg().getChannel(), getMsg().getId())), false);
+
+        if (imageUrl != null) eb.setThumbnail(imageUrl);
+
         TextChannel txt = api.getTextChannelById(Ustawienia.instance.channel.moddc);
         if (txt == null) throw new NullPointerException("Kanał do modów dc jest nullem");
         txt.sendMessage(eb.build()).queue(m -> {
@@ -76,7 +80,8 @@ public class Action {
         ZACHOWANIE("Wszelkiej maści wyzwiska, obraza, wulgaryzmy, prowokacje, groźby i inne formy przemocy"),
         FLOOD("Nadmierny spam, flood lub caps lock wiadomościami lub emotikonami"),
         LINK("Reklama stron, serwisów lub serwerów gier/Discord niepowiązanych w żaden sposób z P2W.pl"),
-        PING("Znieważanie osoby zmrałej");
+        PING("Znieważanie osoby zmrałej"),
+        TEXT_SWEAR("Umieszczanie zdjęć zawierających wulgaryzmy");
 
         @Getter private final String powod;
 
