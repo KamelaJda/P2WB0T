@@ -111,7 +111,7 @@ public class ChatListener extends ListenerAdapter {
         if (!e.getGuild().getId().equals(Ustawienia.instance.bot.guildId) || e.getAuthor().isBot()) return;
         if (e.getChannel().getParent() != null && e.getChannel().getParent().getId().equals("539819570358386698")) return;
         if (UserUtil.getPermLevel(e.getAuthor()).getNumer() >= PermLevel.CHATMOD.getNumer()) return;
-        if (e.getAuthor().isBot() || e.getMessage().getContentRaw().isEmpty()) return;
+        if (e.getAuthor().isBot()) return;
         if (e.getChannel().getId().equals("426809411378479105") || e.getChannel().getId().equals("503294063064121374") || e.getChannel().getId().equals("573873102757429256")) return;
 
         char kurwa = 'a';
@@ -138,137 +138,137 @@ public class ChatListener extends ListenerAdapter {
     public void checkMessage(Member member, Message msg, KaryJSON karyJSON, CaseDao caseDao, ModLog modLog) {
         if (MuteCommand.hasMute(member)) return;
 
-        String czystaWiadomosc = msg.getContentRaw();
-        String[] split = czystaWiadomosc.split("\n");
-        if (czystaWiadomosc.startsWith("> ") && split.length >= 1) {
-            try {
-                czystaWiadomosc = czystaWiadomosc.replaceAll(split[0], "");
-            } catch (Exception ignored) { }
-        }
-
-        String msgRaw = czystaWiadomosc.replaceAll("<@!?([0-9])*>", "")
-                .replaceAll("3", "e")
-                .replaceAll("1", "i")
-                .replaceAll("0", "o")
-                .replaceAll("v", "u")
-                .replaceAll("<#(\\d+)>", "");
         Action action = new Action();
         action.setMsg(FakeMessage.convertWithoutImage(msg));
 
-        String przeklenstwa = msgRaw;
+        if (!msg.getContentRaw().isEmpty()) {
+            String czystaWiadomosc = msg.getContentRaw();
+            String[] split = czystaWiadomosc.split("\n");
+            if (czystaWiadomosc.startsWith("> ") && split.length >= 1) {
+                try {
+                    czystaWiadomosc = czystaWiadomosc.replaceAll(split[0], "");
+                } catch (Exception ignored) { }
+            }
 
-        String[] tak = new String[] {"a;ą", "c;ć","e;ę", "l;ł", "n;ń", "o;ó", "s;ś", "z;ź", "z;ż"};
-        for (String s : tak) {
-            String[] kurwa = s.split(";");
-            przeklenstwa = przeklenstwa.replaceAll(kurwa[1], kurwa[0]);
-        }
-        przeklenstwa = przeklenstwa.replaceAll("[^\\u0020\\u0030-\\u0039\\u0041-\\u005A\\u0061-\\u007A\\u00C0-\\u1D99]", "");
+            String msgRaw = czystaWiadomosc.replaceAll("<@!?([0-9])*>", "")
+                    .replaceAll("3", "e")
+                    .replaceAll("1", "i")
+                    .replaceAll("0", "o")
+                    .replaceAll("v", "u")
+                    .replaceAll("<#(\\d+)>", "");
 
-        if (containsSwear(przeklenstwa.split(" ")) != null) {
-            msg.delete().queue();
+            String przeklenstwa = msgRaw;
+
+            String[] tak = new String[] {"a;ą", "c;ć","e;ę", "l;ł", "n;ń", "o;ó", "s;ś", "z;ź", "z;ż"};
+            for (String s : tak) {
+                String[] kurwa = s.split(";");
+                przeklenstwa = przeklenstwa.replaceAll(kurwa[1], kurwa[0]);
+            }
+            przeklenstwa = przeklenstwa.replaceAll("[^\\u0020\\u0030-\\u0039\\u0041-\\u005A\\u0061-\\u007A\\u00C0-\\u1D99]", "");
+
+            if (containsSwear(przeklenstwa.split(" ")) != null) {
+                msg.delete().queue();
 //                msg.getChannel().sendMessage(String.format("<@%s>, ładnie to tak przeklinać?", msg.getAuthor().getId())).queue();
 
-            KaryJSON.Kara kara = karyJSON.getByName("Wszelkiej maści wyzwiska, obraza, wulgaryzmy, prowokacje, groźby i inne formy przemocy");
-            Dowod d = new Dowod(1, msg.getGuild().getSelfMember().getId(), msg.getContentDisplay(), null);
-            if (kara == null) {
-                Log.newError("Powod przy nadawaniu kary za przeklenstwa jest nullem", ChatListener.class);
-            } else {
-                PunishCommand.putPun(kara,
-                        Collections.singletonList(member),
-                        member.getGuild().getSelfMember(),
-                        msg.getTextChannel(),
-                        caseDao, modLog, statsModule, d, null);
-                return;
-            }
-        }
-
-        if (containsLink(msgRaw.split(" ")) && !msg.getChannel().getId().equals("426864003562864641")) {
-            action.setKara(Action.ListaKar.LINK);
-            action.send(karyListener, msg.getGuild());
-            return;
-        }
-
-        if (containsInvite(msgRaw.split(" "))) {
-            msg.delete().queue();
-            action.setKara(Action.ListaKar.LINK);
-            action.send(karyListener, msg.getGuild());
-            return;
-        }
-
-        if (YOUTUBE_LINK.matcher(msgRaw).find()) {
-            if (!msg.getChannel().getId().equals("426864003562864641")) {
-                Role miniyt = member.getGuild().getRoleById("425670776272715776");
-                Role yt = member.getGuild().getRoleById("425670600049295360");
-                if (miniyt == null || yt == null) {
-                    Log.newError("Rola miniyt/yt jest nullem", ChatListener.class);
+                KaryJSON.Kara kara = karyJSON.getByName("Wszelkiej maści wyzwiska, obraza, wulgaryzmy, prowokacje, groźby i inne formy przemocy");
+                Dowod d = new Dowod(1, msg.getGuild().getSelfMember().getId(), msg.getContentDisplay(), null);
+                if (kara == null) {
+                    Log.newError("Powod przy nadawaniu kary za przeklenstwa jest nullem", ChatListener.class);
+                } else {
+                    PunishCommand.putPun(kara,
+                            Collections.singletonList(member),
+                            member.getGuild().getSelfMember(),
+                            msg.getTextChannel(),
+                            caseDao, modLog, statsModule, d, null);
                     return;
                 }
-                if (!member.getRoles().contains(miniyt) || !member.getRoles().contains(yt)) {
+            }
+
+            if (containsLink(msgRaw.split(" ")) && !msg.getChannel().getId().equals("426864003562864641")) {
+                action.setKara(Action.ListaKar.LINK);
+                action.send(karyListener, msg.getGuild());
+                return;
+            }
+
+            if (containsInvite(msgRaw.split(" "))) {
+                msg.delete().queue();
+                action.setKara(Action.ListaKar.LINK);
+                action.send(karyListener, msg.getGuild());
+                return;
+            }
+
+            if (YOUTUBE_LINK.matcher(msgRaw).find()) {
+                if (!msg.getChannel().getId().equals("426864003562864641")) {
+                    Role miniyt = member.getGuild().getRoleById("425670776272715776");
+                    Role yt = member.getGuild().getRoleById("425670600049295360");
+                    if (miniyt == null || yt == null) {
+                        Log.newError("Rola miniyt/yt jest nullem", ChatListener.class);
+                        return;
+                    }
+                    if (!member.getRoles().contains(miniyt) || !member.getRoles().contains(yt)) {
+                        msg.delete().queue();
+                        action.setKara(Action.ListaKar.LINK);
+                        action.send(karyListener, msg.getGuild());
+                    }
+                }
+
+            }
+
+            String takMsg = czystaWiadomosc.replaceAll("<@(&?)(!?)([0-9])*>", "")
+                    .replaceAll("<#(\\d+)>", "");
+
+            String bezEmotek = takMsg.replaceAll(EMOJI.toString(), "");
+            String capsMsg = bezEmotek.replaceAll("[^\\w\\s]*", "");
+
+            if (!msg.getChannel().getId().equals("652927860943880224")) {
+                if (containsCaps(capsMsg) >= 50 || emoteCount(takMsg, msg.getJDA()) >= 10) {
                     msg.delete().queue();
-                    action.setKara(Action.ListaKar.LINK);
+                    action.setKara(Action.ListaKar.FLOOD);
                     action.send(karyListener, msg.getGuild());
+                    return;
+                }
+                if (containsFlood(bezEmotek) >= 10) {
+                    action.setPewnosc(false);
+                    action.setDeleted(false);
+                    action.setKara(Action.ListaKar.FLOOD);
+                    action.send(karyListener, msg.getGuild());
+                    return;
                 }
             }
 
-        }
+            // Może to nie być w 100% prawdziwe
+            action.setPewnosc(false);
+            action.setDeleted(false);
 
-        String takMsg = czystaWiadomosc.replaceAll("<@(&?)(!?)([0-9])*>", "")
-                .replaceAll("<#(\\d+)>", "");
-
-        String bezEmotek = takMsg.replaceAll(EMOJI.toString(), "");
-        String capsMsg = bezEmotek.replaceAll("[^\\w\\s]*", "");
-
-        if (!msg.getChannel().getId().equals("652927860943880224")) {
-            if (containsCaps(capsMsg) >= 50 || emoteCount(takMsg, msg.getJDA()) >= 10) {
-                msg.delete().queue();
-                action.setKara(Action.ListaKar.FLOOD);
-                action.send(karyListener, msg.getGuild());
-                return;
+            for (String s : getPrzeklenstwa()) {
+                if (przeklenstwa.toLowerCase().contains(s) || przeklenstwa.replaceAll(" ", "").toLowerCase().contains(s)) {
+                    action.setKara(Action.ListaKar.ZACHOWANIE);
+                    action.send(karyListener, msg.getGuild());
+                    return;
+                }
             }
-            if (containsFlood(bezEmotek) >= 10) {
-                action.setPewnosc(false);
-                action.setDeleted(false);
-                action.setKara(Action.ListaKar.FLOOD);
+
+            if (msg.getMentionedMembers().stream().map(Member::getId).collect(Collectors.toList()).contains("371532684716933120")) {
+                action.setKara(Action.ListaKar.PING);
                 action.send(karyListener, msg.getGuild());
                 return;
             }
         }
 
-        // Może to nie być w 100% prawdziwe
-        action.setPewnosc(false);
-        action.setDeleted(false);
-
-        for (String s : getPrzeklenstwa()) {
-            if (przeklenstwa.toLowerCase().contains(s) || przeklenstwa.replaceAll(" ", "").toLowerCase().contains(s)) {
-                action.setKara(Action.ListaKar.ZACHOWANIE);
-                action.send(karyListener, msg.getGuild());
-                return;
-            }
-        }
-
-        if (msg.getMentionedMembers().stream().map(Member::getId).collect(Collectors.toList()).contains("371532684716933120")) {
-            action.setKara(Action.ListaKar.PING);
-            action.send(karyListener, msg.getGuild());
-            return;
-        }
-
-        Log.debug("ok");
         if (msg.getAttachments().size() > 0) {
-            Log.debug("Zawiera zdjecia");
-            String finalPrzeklenstwa = przeklenstwa;
             ImageUtil.readFile(msg.getAttachments().get(0)).thenAcceptAsync(st -> {
-                Log.debug("Mam tekst");
                 if (st == null) return;
-                Log.debug(st);
 
                 action.setKara(Action.ListaKar.TEXT_SWEAR);
+                action.setImageUrl(msg.getAttachments().get(0).getUrl());
+
                 if (containsSwear(st.split(" ")) != null) {
                     action.send(karyListener, msg.getGuild());
                     return;
                 }
 
                 for (String s : getPrzeklenstwa()) {
-                    if (finalPrzeklenstwa.toLowerCase().contains(s) || finalPrzeklenstwa.replaceAll(" ", "").toLowerCase().contains(s)) {
+                    if (st.toLowerCase().contains(s) || st.replaceAll(" ", "").toLowerCase().contains(s)) {
                         action.send(karyListener, msg.getGuild());
                         return;
                     }
