@@ -16,20 +16,20 @@
  */
 package pl.kamil0024.core.redis;
 
-import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.function.Function;
+import org.jetbrains.annotations.NotNull;
 
 public interface Cache<V> {
-    V getIfPresent(@Nonnull Object key);
-    V getOrElse(@Nonnull Object key, @Nonnull V value);
-    V get(@Nonnull String key, @Nonnull Function<? super String, ? extends V> mappingFunction);
-    Map<String, V> getAllPresent(@Nonnull Iterable<?> keys);
-    void put(@Nonnull String key, @Nonnull V value);
-    void putAll(@Nonnull Map<? extends String,? extends V> map);
-    void invalidate(@Nonnull Object key);
-    long getTTL(@Nonnull Object key);
+    V getIfPresent(@NotNull Object key);
+    V getOrElse(@NotNull Object key, @NotNull V value);
+    V get(@NotNull String key, @NotNull Function<? super String, ? extends V> mappingFunction);
+    Map<String, V> getAllPresent(@NotNull Iterable<?> keys);
+    void put(@NotNull String key, @NotNull V value);
+    void putAll(@NotNull Map<? extends String,? extends V> map);
+    void invalidate(@NotNull Object key);
+    long getTTL(@NotNull Object key);
     void invalidateAll();
-    void invalidateAll(@Nonnull Iterable<?> keys);
+    void invalidateAll(@NotNull Iterable<?> keys);
     Map<String, V> asMap();
 }

@@ -37,7 +37,6 @@ import pl.kamil0024.nieobecnosci.NieobecnosciManager;
 import pl.kamil0024.nieobecnosci.config.Nieobecnosc;
 import pl.kamil0024.nieobecnosci.config.Zmiana;
 
-import javax.annotation.Nonnull;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -56,7 +55,7 @@ public class NieobecnosciListener extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent e) {
+    public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
         if (!e.getChannel().getId().equals(Ustawienia.instance.channel.nieobecnosci) || e.getAuthor().isBot()) return;
 
         String[] msg = e.getMessage().getContentRaw().split("\n");
@@ -146,7 +145,7 @@ public class NieobecnosciListener extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildMessageReactionAdd(@Nonnull GuildMessageReactionAddEvent e) {
+    public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent e) {
         synchronized (e.getGuild().getId()) {
             if (!e.getChannel().getId().equals(Ustawienia.instance.channel.nieobecnosci) || e.getMember().getUser().isBot()) return;
 

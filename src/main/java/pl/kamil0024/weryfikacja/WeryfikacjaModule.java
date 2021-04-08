@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.joda.time.DateTime;
 import pl.kamil0024.api.APIModule;
 import pl.kamil0024.bdate.BDate;
 import pl.kamil0024.core.Ustawienia;
@@ -33,15 +32,12 @@ import pl.kamil0024.core.database.WeryfikacjaDao;
 import pl.kamil0024.core.database.config.DiscordInviteConfig;
 import pl.kamil0024.core.database.config.MultiConfig;
 import pl.kamil0024.core.database.config.WeryfikacjaConfig;
-import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.module.Modul;
 import pl.kamil0024.core.util.Nick;
 import pl.kamil0024.moderation.listeners.ModLog;
 import pl.kamil0024.status.listeners.ChangeNickname;
-import pl.kamil0024.ticket.listener.VoiceChatListener;
 import pl.kamil0024.weryfikacja.listeners.CheckMk;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -226,7 +222,7 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
     }
 
     @Override
-    public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
+    public void onMessageReceived(MessageReceivedEvent event) {
         if (!event.getChannel().getId().equals("740157959207780362") || event.getAuthor().isBot() || !event.isFromGuild()) return;
 
         String msg = event.getMessage().getContentRaw();

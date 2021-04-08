@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.internal.entities.AbstractMessage;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
@@ -41,8 +42,6 @@ import pl.kamil0024.core.util.UsageException;
 import pl.kamil0024.core.util.UserUtil;
 import pl.kamil0024.core.util.kary.Dowod;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -180,7 +179,7 @@ public class DowodCommand extends Command {
                 return 0;
             }
 
-            @Nonnull
+            @NotNull
             @Override
             public List<Attachment> getAttachments() {
                 return Collections.emptyList();

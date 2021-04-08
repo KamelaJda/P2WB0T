@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.stats.StatsModule;
 
-import javax.annotation.Nonnull;
 import java.util.Objects;
 
 public class StatsListener extends ListenerAdapter {
@@ -37,7 +36,7 @@ public class StatsListener extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
+    public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
         Category category = event.getChannel().getParent();
         if (category == null || event.getAuthor().isBot()) return;
 

@@ -41,7 +41,6 @@ import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.util.UserUtil;
 import pl.kamil0024.stats.StatsModule;
 
-import javax.annotation.Nonnull;
 import java.awt.*;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -62,7 +61,7 @@ public class Logger extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildMessageDelete(@Nonnull GuildMessageDeleteEvent event) {
+    public void onGuildMessageDelete(GuildMessageDeleteEvent event) {
         FakeMessage msg = manager.get(event.getMessageId());
         if (msg == null) return;
 
@@ -98,7 +97,7 @@ public class Logger extends ListenerAdapter {
     }
 
     @Override
-    public void onMessageBulkDelete(@Nonnull MessageBulkDeleteEvent event) {
+    public void onMessageBulkDelete(MessageBulkDeleteEvent event) {
         for (String message : event.getMessageIds()) {
             FakeMessage msg = manager.get(message);
             if (msg == null) continue;
@@ -119,7 +118,7 @@ public class Logger extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildMessageUpdate(@Nonnull GuildMessageUpdateEvent event) {
+    public void onGuildMessageUpdate(GuildMessageUpdateEvent event) {
         FakeMessage msg = manager.get(event.getMessage().getId());
 
         if (msg == null) return;

@@ -31,7 +31,6 @@ import pl.kamil0024.musicbot.core.util.EventWaiter;
 import pl.kamil0024.musicbot.music.managers.MusicManager;
 import pl.kamil0024.musicbot.socket.SocketClient;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,7 +47,7 @@ public class LeaveVcListener extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildVoiceMove(@Nonnull GuildVoiceMoveEvent event) {
+    public void onGuildVoiceMove(GuildVoiceMoveEvent event) {
         if (!event.getGuild().getId().equals(Ustawienia.instance.bot.guildId) ||
                 !event.getEntity().getId().equals(event.getGuild().getSelfMember().getId())) {
             return;
@@ -61,7 +60,7 @@ public class LeaveVcListener extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
+    public void onGuildVoiceLeave(GuildVoiceLeaveEvent event) {
         if (!event.getGuild().getId().equals(Ustawienia.instance.bot.guildId)) return;
         Guild guild = event.getGuild();
         if (!guild.getId().equals(Ustawienia.instance.bot.guildId)) {

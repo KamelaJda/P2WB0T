@@ -20,7 +20,6 @@ package pl.kamil0024.core.redis;
 import com.google.common.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -37,7 +36,7 @@ public class RedisCache<V> implements Cache<V> {
     }
 
     @Override
-    public V getIfPresent(@Nonnull Object key) {
+    public V getIfPresent(@NotNull Object key) {
         return rcm.get(key.toString(), holds);
     }
 
@@ -48,12 +47,12 @@ public class RedisCache<V> implements Cache<V> {
     }
 
     @Override
-    public V get(@Nonnull String key, @Nonnull Function<? super String, ? extends V> mappingFunction) {
+    public V get(@NotNull String key, @NotNull Function<? super String, ? extends V> mappingFunction) {
         return rcm.get(key, holds, mappingFunction, expiry);
     }
 
     @Override
-    public Map<String, V> getAllPresent(@Nonnull Iterable<?> keys) {
+    public Map<String, V> getAllPresent(@NotNull Iterable<?> keys) {
         Map<String, V> map = new LinkedHashMap<>();
         for (Object obj : keys) {
             String str = obj.toString();
@@ -63,7 +62,7 @@ public class RedisCache<V> implements Cache<V> {
         return map;
     }
 
-    public Map<String, V> getAllPresentRaw(@Nonnull Iterable<?> keys) {
+    public Map<String, V> getAllPresentRaw(@NotNull Iterable<?> keys) {
         Map<String, V> map = new LinkedHashMap<>();
         for (Object obj : keys) {
             String str = obj.toString();
@@ -74,17 +73,17 @@ public class RedisCache<V> implements Cache<V> {
     }
 
     @Override
-    public void put(@Nonnull String key, @Nonnull V value) {
+    public void put(@NotNull String key, @NotNull V value) {
         rcm.put(key, holds, value, expiry);
     }
 
     @Override
-    public void putAll(@Nonnull Map<? extends String, ? extends V> map) {
+    public void putAll(@NotNull Map<? extends String, ? extends V> map) {
         rcm.putAll(holds, map, expiry);
     }
 
     @Override
-    public long getTTL(@Nonnull Object key) {
+    public long getTTL(@NotNull Object key) {
         return rcm.ttl(key, holds);
     }
 
@@ -94,16 +93,16 @@ public class RedisCache<V> implements Cache<V> {
     }
 
     @Override
-    public void invalidate(@Nonnull Object key) {
+    public void invalidate(@NotNull Object key) {
         rcm.invalidate(key, holds);
     }
 
     @Override
-    public void invalidateAll(@Nonnull Iterable<?> keys) {
+    public void invalidateAll(@NotNull Iterable<?> keys) {
         rcm.invalidateAll(keys, holds);
     }
 
-    private void invalidateAllRaw(@Nonnull Iterable<?> dbKeys) {
+    private void invalidateAllRaw(@NotNull Iterable<?> dbKeys) {
         rcm.invalidateAllRaw(dbKeys);
     }
 

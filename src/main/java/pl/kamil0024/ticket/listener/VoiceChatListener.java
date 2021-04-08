@@ -47,8 +47,6 @@ import pl.kamil0024.core.util.UserUtil;
 import pl.kamil0024.ticket.config.ChannelTicketConfig;
 import pl.kamil0024.ticket.config.TicketRedisManager;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -240,13 +238,13 @@ public class VoiceChatListener extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
+    public void onGuildVoiceLeave(GuildVoiceLeaveEvent event) {
         checkRemoveTicket(event.getChannelLeft());
         deleteMessage(event.getMember().getId(), event.getJDA());
     }
 
     @SuppressWarnings("ConstantConditions")
-    private void checkRemoveTicket(@Nullable VoiceChannel voiceChannel) {
+    private void checkRemoveTicket(VoiceChannel voiceChannel) {
         if (voiceChannel == null) return;
         synchronized (this) {
             if (voiceChannel == null) return;

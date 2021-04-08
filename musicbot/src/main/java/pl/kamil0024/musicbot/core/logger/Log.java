@@ -19,9 +19,9 @@
 
 package pl.kamil0024.musicbot.core.logger;
 
+import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.musicbot.core.util.WebhookUtil;
 
-import javax.annotation.Nullable;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;

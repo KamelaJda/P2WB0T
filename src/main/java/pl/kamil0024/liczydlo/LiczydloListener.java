@@ -25,8 +25,6 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import pl.kamil0024.core.Ustawienia;
-
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,7 +32,7 @@ import java.util.stream.Collectors;
 public class LiczydloListener extends ListenerAdapter {
 
     @Override
-    public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
+    public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
         if (!event.getChannel().getId().equals(Ustawienia.instance.channel.liczek)) return;
 
         if (event.getAuthor().isBot() || event.getMessage().isWebhookMessage()) {
@@ -66,7 +64,7 @@ public class LiczydloListener extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildMessageUpdate(@Nonnull GuildMessageUpdateEvent event) {
+    public void onGuildMessageUpdate(GuildMessageUpdateEvent event) {
         if (!event.getChannel().getId().equals(Ustawienia.instance.channel.liczek)) return;
         event.getMessage().delete().complete();
     }

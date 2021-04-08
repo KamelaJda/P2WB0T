@@ -31,6 +31,7 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MarkdownSanitizer;
+import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.bdate.util.BLanguage;
 import pl.kamil0024.moderation.commands.MuteCommand;
 import pl.kamil0024.moderation.commands.TempbanCommand;
@@ -45,8 +46,6 @@ import pl.kamil0024.core.util.WebhookUtil;
 import pl.kamil0024.core.util.kary.Kara;
 import pl.kamil0024.core.util.kary.KaryEnum;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -86,7 +85,7 @@ public class ModLog extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildMemberJoin(@Nonnull GuildMemberJoinEvent event) {
+    public void onGuildMemberJoin(GuildMemberJoinEvent event) {
         if (!event.getGuild().getId().equals(Ustawienia.instance.bot.guildId)) return;
         new Thread(() -> {
             try {
@@ -351,12 +350,12 @@ public class ModLog extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildBan(@Nonnull GuildBanEvent event) {
+    public void onGuildBan(GuildBanEvent event) {
         sendCase(event.getGuild(), event.getUser(), ActionType.BAN);
     }
 
     @Override
-    public void onGuildUnban(@Nonnull GuildUnbanEvent event) {
+    public void onGuildUnban(GuildUnbanEvent event) {
         sendCase(event.getGuild(), event.getUser(), ActionType.UNBAN);
     }
 

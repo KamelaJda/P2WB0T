@@ -19,10 +19,10 @@
 
 package pl.kamil0024.embedgenerator.entity;
 
+import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.core.redis.Cache;
 import pl.kamil0024.core.redis.RedisManager;
 
-import javax.annotation.Nullable;
 
 public class EmbedRedisManager {
 

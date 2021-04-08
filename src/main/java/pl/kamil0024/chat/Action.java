@@ -58,7 +58,7 @@ public class Action {
         eb.addField("Za co ukarać?", kara.getPowod(), false);
 
         if (!pewnosc) {
-            eb.addField("!UWAGA!", "Zgłoszenie może ukazać się fałszywe. Radze zajrzeć do kontekstu prowadzonej rozmowy", false);
+            eb.addField("UWAGA", "Zgłoszenie może ukazać się fałszywe. Radze zajrzeć do kontekstu prowadzonej rozmowy", false);
         }
         if (!isDeleted) eb.addField("Link do wiadomości", String.format("[%s](%s)", "KLIK",
                 String.format("https://discord.com/channels/%s/%s/%s", api.getId(), getMsg().getChannel(), getMsg().getId())), false);

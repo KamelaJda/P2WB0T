@@ -40,7 +40,6 @@ import pl.kamil0024.musicbot.core.logger.Log;
 import pl.kamil0024.musicbot.music.managers.GuildMusicManager;
 import pl.kamil0024.musicbot.music.managers.MusicManager;
 
-import javax.annotation.Nonnull;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -264,14 +263,14 @@ public class SocketClient extends Thread {
     private class LeaveListener extends ListenerAdapter {
 
         @Override
-        public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
+        public void onGuildVoiceLeave(GuildVoiceLeaveEvent event) {
             if (event.getEntity().getId().equals(event.getGuild().getSelfMember().getId())) {
                 sendMessage("setChannel: null");
             }
         }
 
         @Override
-        public void onGuildVoiceJoin(@Nonnull GuildVoiceJoinEvent event) {
+        public void onGuildVoiceJoin(GuildVoiceJoinEvent event) {
             if (event.getEntity().getId().equals(event.getGuild().getSelfMember().getId())) {
                 sendMessage("setChannel: " + event.getChannelJoined().getId());
             }

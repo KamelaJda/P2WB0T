@@ -26,14 +26,12 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import pl.kamil0024.moderation.commands.MuteCommand;
 import pl.kamil0024.core.Ustawienia;
 
-import javax.annotation.Nonnull;
-
 public class GuildListener extends ListenerAdapter {
 
     public GuildListener() { }
 
     @Override
-    public void onGuildMessageReactionAdd(@Nonnull GuildMessageReactionAddEvent event) {
+    public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent event) {
         if (!event.getGuild().getId().equals(Ustawienia.instance.bot.guildId)) return;
         if (MuteCommand.hasMute(event.getMember())) {
             Message msg = event.getChannel().retrieveMessageById(event.getMessageId()).complete();

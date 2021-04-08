@@ -38,7 +38,6 @@ import pl.kamil0024.core.redis.RedisManager;
 import redis.clients.jedis.exceptions.JedisDataException;
 
 import java.util.*;
-import javax.annotation.Nonnull;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -70,7 +69,7 @@ public class UserstatsManager extends ListenerAdapter {
     }
 
     @Override
-    public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
+    public void onMessageReceived(MessageReceivedEvent event) {
 
         if (!event.isFromGuild() || event.getAuthor().isBot()) return;
 

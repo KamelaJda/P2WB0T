@@ -46,7 +46,6 @@ import pl.kamil0024.moderation.commands.PunishCommand;
 import pl.kamil0024.moderation.listeners.ModLog;
 import pl.kamil0024.stats.StatsModule;
 
-import javax.annotation.Nonnull;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -107,7 +106,7 @@ public class ChatListener extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent e) {
+    public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
         if (!e.getGuild().getId().equals(Ustawienia.instance.bot.guildId) || e.getAuthor().isBot()) return;
         if (e.getChannel().getParent() != null && e.getChannel().getParent().getId().equals("539819570358386698")) return;
         if (UserUtil.getPermLevel(e.getAuthor()).getNumer() >= PermLevel.CHATMOD.getNumer()) return;
@@ -127,7 +126,7 @@ public class ChatListener extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildMessageUpdate(@Nonnull GuildMessageUpdateEvent e) {
+    public void onGuildMessageUpdate(GuildMessageUpdateEvent e) {
         if (!e.getGuild().getId().equals(Ustawienia.instance.bot.guildId)) return;
         if (UserUtil.getPermLevel(e.getAuthor()).getNumer() >= PermLevel.CHATMOD.getNumer()) return;
         if (e.getAuthor().isBot() || e.getMessage().getContentRaw().isEmpty()) return;

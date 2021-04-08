@@ -27,14 +27,13 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.util.DiscordRank;
 import pl.kamil0024.core.util.UserUtil;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,19 +44,19 @@ public class SyncListener extends ListenerAdapter {
     public SyncListener() { }
 
     @Override
-    public void onGuildMemberJoin(@Nonnull GuildMemberJoinEvent event) {
+    public void onGuildMemberJoin(GuildMemberJoinEvent event) {
         if (!event.getGuild().getId().equals(Ustawienia.instance.rekrutacyjny.guildId)) return;
         updateMember(event.getMember(), getDerpMember(event.getMember()));
     } 
     
     @Override
-    public void onGuildMemberRoleAdd(@Nonnull GuildMemberRoleAddEvent event) {
+    public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event) {
         if (!event.getGuild().getId().equals(Ustawienia.instance.bot.guildId)) return;
         updateMember(getRekruMember(event.getMember()), event.getMember());
     }
     
     @Override
-    public void onGuildMemberRoleRemove(@Nonnull GuildMemberRoleRemoveEvent event) {
+    public void onGuildMemberRoleRemove(GuildMemberRoleRemoveEvent event) {
         if (!event.getGuild().getId().equals(Ustawienia.instance.bot.guildId)) return;
         Member rekru = getRekruMember(event.getMember());
         List<Role> roles = new ArrayList<>();
@@ -75,7 +74,7 @@ public class SyncListener extends ListenerAdapter {
         roles.forEach(r -> rekru.getGuild().removeRoleFromMember(rekru, r).queue());
     }
 
-    public void onGuildMemberUpdateNickname(@Nonnull GuildMemberUpdateNicknameEvent event) {
+    public void onGuildMemberUpdateNickname(GuildMemberUpdateNicknameEvent event) {
         if (!event.getGuild().getId().equals(Ustawienia.instance.bot.guildId)) return;
         updateMember(getRekruMember(event.getMember()), event.getMember());
     }

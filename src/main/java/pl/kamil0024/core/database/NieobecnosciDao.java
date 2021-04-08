@@ -20,11 +20,11 @@
 package pl.kamil0024.core.database;
 
 import gg.amy.pgorm.PgMapper;
+import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.core.database.config.Dao;
 import pl.kamil0024.core.database.config.NieobecnosciConfig;
 import pl.kamil0024.nieobecnosci.config.Nieobecnosc;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 

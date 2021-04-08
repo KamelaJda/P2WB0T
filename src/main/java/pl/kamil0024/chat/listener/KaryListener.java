@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.utils.MarkdownSanitizer;
+import org.jetbrains.annotations.NotNull;
 import pl.kamil0024.chat.Action;
 import pl.kamil0024.moderation.listeners.ModLog;
 import pl.kamil0024.moderation.commands.MuteCommand;
@@ -39,7 +40,6 @@ import pl.kamil0024.core.util.kary.Dowod;
 import pl.kamil0024.core.util.kary.KaryJSON;
 import pl.kamil0024.stats.StatsModule;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
@@ -61,7 +61,7 @@ public class KaryListener extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildMessageReactionAdd(@Nonnull GuildMessageReactionAddEvent event) {
+    public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent event) {
         if (!event.getGuild().getId().equals(Ustawienia.instance.bot.guildId)
                 || !event.getChannel().getId().equals(Ustawienia.instance.channel.moddc)) return;
         if (UserUtil.getPermLevel(event.getMember()).getNumer() == PermLevel.MEMBER.getNumer()) return;

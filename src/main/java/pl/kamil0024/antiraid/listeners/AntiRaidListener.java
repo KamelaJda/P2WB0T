@@ -35,7 +35,6 @@ import pl.kamil0024.core.database.CaseDao;
 import pl.kamil0024.core.database.config.AntiRaidConfig;
 import pl.kamil0024.core.util.UserUtil;
 
-import javax.annotation.Nonnull;
 import java.util.Objects;
 
 @AllArgsConstructor
@@ -47,7 +46,7 @@ public class AntiRaidListener extends ListenerAdapter {
     private final ModLog modLog;
 
     @Override
-    public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
+    public void onMessageReceived(MessageReceivedEvent event) {
         if (!event.isFromGuild() || event.getAuthor().isBot()
                 || UserUtil.getPermLevel(event.getMember()).getNumer() > PermLevel.MEMBER.getNumer()
                 || event.getMessage().getContentRaw().isEmpty()
@@ -62,7 +61,7 @@ public class AntiRaidListener extends ListenerAdapter {
 
     @SuppressWarnings("DuplicatedCode")
     @Override
-    public void onGuildMessageReactionAdd(@Nonnull GuildMessageReactionAddEvent event) {
+    public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent event) {
         if (event.getMember().getUser().isBot() || !event.getGuild().getId().equals(Ustawienia.instance.bot.guildId)
                 || !event.getChannel().getId().equals(Ustawienia.instance.channel.moddc)) return;
         if (UserUtil.getPermLevel(event.getMember()).getNumer() == PermLevel.MEMBER.getNumer()) return;
