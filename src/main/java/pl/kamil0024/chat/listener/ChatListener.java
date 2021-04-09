@@ -167,7 +167,6 @@ public class ChatListener extends ListenerAdapter {
 
             if (containsSwear(przeklenstwa.split(" ")) != null) {
                 msg.delete().queue();
-//                msg.getChannel().sendMessage(String.format("<@%s>, ładnie to tak przeklinać?", msg.getAuthor().getId())).queue();
 
                 KaryJSON.Kara kara = karyJSON.getByName("Wszelkiej maści wyzwiska, obraza, wulgaryzmy, prowokacje, groźby i inne formy przemocy");
                 Dowod d = new Dowod(1, msg.getGuild().getSelfMember().getId(), msg.getContentDisplay(), null);
@@ -254,7 +253,7 @@ public class ChatListener extends ListenerAdapter {
             }
         }
 
-        if (msg.getAttachments().size() > 0) {
+        if (!msg.getChannel().getId().equals("652263735645175818") && msg.getAttachments().size() > 0) {
             ImageUtil.readFile(msg.getAttachments().get(0)).thenAcceptAsync(st -> {
                 if (st == null) return;
 

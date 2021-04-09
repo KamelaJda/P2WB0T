@@ -84,8 +84,8 @@ public class Logger extends ListenerAdapter {
         }
         EmbedBuilder eb = getLogMessage(Action.DELETED, msg, deletedBy);
         String content = msg.getContent();
-        if (content != null) {
-            if (content.length() > 1024) { content = content.substring(0, 1024); }
+        if (!content.isEmpty()) {
+            if (content.length() > 1024) content = content.substring(0, 1024);
             eb.addField("Treść wiadomości:", content, false);
         }
         sendLog(eb);
@@ -94,6 +94,7 @@ public class Logger extends ListenerAdapter {
         if (event.getChannel().getParent() != null && Arrays.asList("425673488456482817", "494507499739676686", "502831202332573707", "506210855231291393").contains(event.getChannel().getParent().getId())) {
             deletedMessagesDao.save(DeletedMessagesConfig.convert(msg, new Date().getTime()));
         }
+
     }
 
     @Override
@@ -103,7 +104,7 @@ public class Logger extends ListenerAdapter {
             if (msg == null) continue;
             EmbedBuilder eb = getLogMessage(Action.DELETED, msg, null);
             String content = msg.getContent();
-            if (content != null) {
+            if (!content.isEmpty()) {
                 if (content.length() > 1024) { content = content.substring(0, 1024); }
                 eb.addField("Treść wiadomości:", content, false);
             }
@@ -130,6 +131,10 @@ public class Logger extends ListenerAdapter {
 
         if (msg.getEmojiList() != null && !msg.getEmojiList().isEmpty()) {
             eb.addField("Wysłane emoji:", String.join("\n", msg.getEmojiList()), false);
+        }
+
+        if (msg.getAttachments() != null && !msg.getAttachments().isEmpty()) {
+            eb.addField("Zamieszczone zdjęcia:", String.join("\n", msg.getAttachments()), false);
         }
 
         sendLog(eb);

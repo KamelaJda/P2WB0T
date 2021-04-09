@@ -52,7 +52,7 @@ public class MessageManager extends ListenerAdapter {
         if (event.getAuthor().isBot() || event.getMessage().isWebhookMessage()) return;
         if (event.getMessage().getAttachments().isEmpty() && event.getMessage().getContentRaw().isEmpty()) return;
         add(event.getMessage());
-    } // j
+    }
 
 }
 
