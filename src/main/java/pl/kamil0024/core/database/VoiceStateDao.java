@@ -20,7 +20,6 @@
 package pl.kamil0024.core.database;
 
 import gg.amy.pgorm.PgMapper;
-import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.core.database.config.Dao;
 import pl.kamil0024.core.database.config.VoiceStateConfig;
 

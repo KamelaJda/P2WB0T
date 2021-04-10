@@ -19,6 +19,8 @@
 
 package pl.kamil0024.moderation;
 
+import lombok.Getter;
+import lombok.Setter;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandManager;
 import pl.kamil0024.core.database.CaseDao;
@@ -47,6 +49,8 @@ public class ModerationModule implements Modul {
     private final MultiDao multiDao;
 
     private ArrayList<Command> cmd;
+
+    @Getter @Setter
     private boolean start = false;
 
     public ModerationModule(CommandManager commandManager, EventWaiter eventWaiter, CaseDao caseDao, StatsModule statsModule, NieobecnosciManager nieobecnosciManager, NieobecnosciDao nieobecnosciDao, ModLog modLog, KaryJSON karyJSON, MultiDao multiDao) {
@@ -97,16 +101,6 @@ public class ModerationModule implements Modul {
     @Override
     public String getName() {
         return "moderation";
-    }
-
-    @Override
-    public boolean isStart() {
-        return start;
-    }
-
-    @Override
-    public void setStart(boolean bol) {
-        this.start = bol;
     }
 
 }

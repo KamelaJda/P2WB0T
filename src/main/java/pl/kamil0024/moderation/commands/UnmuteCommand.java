@@ -22,7 +22,6 @@ package pl.kamil0024.moderation.commands;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import org.jetbrains.annotations.NotNull;
-import pl.kamil0024.moderation.listeners.ModLog;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
@@ -33,6 +32,7 @@ import pl.kamil0024.core.database.config.CaseConfig;
 import pl.kamil0024.core.util.UserUtil;
 import pl.kamil0024.core.util.kary.Kara;
 import pl.kamil0024.core.util.kary.KaryEnum;
+import pl.kamil0024.moderation.listeners.ModLog;
 
 import java.util.Date;
 import java.util.Objects;

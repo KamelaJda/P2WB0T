@@ -19,6 +19,8 @@
 
 package pl.kamil0024.status;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.sharding.ShardManager;
@@ -41,13 +43,14 @@ public class StatusModule implements Modul {
     private final ShardManager api;
     public final Cache<String> cache;
 
+    @Getter @Setter
+    private boolean start = false;
+    private final WulgarneStatusy wulgarneStatusy = new WulgarneStatusy();
+
     public StatusModule(ShardManager api, RedisManager redisManager) {
         this.api = api;
         this.cache = redisManager.new CacheRetriever<String>() {}.getCache(300);
     }
-
-    private boolean start = false;
-    private final WulgarneStatusy wulgarneStatusy = new WulgarneStatusy();
 
     @Override
     public boolean startUp() {
@@ -100,16 +103,6 @@ public class StatusModule implements Modul {
     @Override
     public String getName() {
         return "status";
-    }
-
-    @Override
-    public boolean isStart() {
-        return start;
-    }
-
-    @Override
-    public void setStart(boolean bol) {
-        start = bol;
     }
 
 }

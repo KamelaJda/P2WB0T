@@ -19,29 +19,18 @@
 
 package pl.kamil0024.core.userstats.manager;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildVoiceState;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.sharding.ShardManager;
-import org.jetbrains.annotations.NotNull;
-import pl.kamil0024.core.Ustawienia;
-import pl.kamil0024.core.userstats.config.VoiceStateConfig;
 import pl.kamil0024.core.database.UserstatsDao;
 import pl.kamil0024.core.database.config.UserstatsConfig;
 import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.redis.Cache;
 import pl.kamil0024.core.redis.RedisManager;
+import pl.kamil0024.core.userstats.config.VoiceStateConfig;
 import redis.clients.jedis.exceptions.JedisDataException;
 
 import java.util.*;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;

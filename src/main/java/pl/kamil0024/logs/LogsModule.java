@@ -19,6 +19,8 @@
 
 package pl.kamil0024.logs;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.joda.time.DateTime;
 import pl.kamil0024.core.database.DeletedMessagesDao;
@@ -29,15 +31,15 @@ import pl.kamil0024.logs.logger.Logger;
 import pl.kamil0024.logs.logger.MessageManager;
 import pl.kamil0024.stats.StatsModule;
 
-import javax.inject.Inject;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class LogsModule implements Modul {
     
-    @Inject ShardManager api;
+    private final ShardManager api;
 
+    @Getter @Setter
     private boolean start = false;
 
     private MessageManager messageManager;
@@ -82,16 +84,6 @@ public class LogsModule implements Modul {
     @Override
     public String getName() {
         return "logs";
-    }
-
-    @Override
-    public boolean isStart() {
-        return this.start;
-    }
-
-    @Override
-    public void setStart(boolean bol) {
-        this.start = bol;
     }
 
 }

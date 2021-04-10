@@ -19,7 +19,6 @@
 
 package pl.kamil0024.nieobecnosci.listeners;
 
-import com.google.inject.Inject;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -46,8 +45,8 @@ public class NieobecnosciListener extends ListenerAdapter {
 
     private static final Logger logger = LoggerFactory.getLogger(NieobecnosciListener.class);
 
-    @Inject private final NieobecnosciDao nieobecnosciDao;
-    @Inject private final NieobecnosciManager nieobecnosciManager;
+    private final NieobecnosciDao nieobecnosciDao;
+    private final NieobecnosciManager nieobecnosciManager;
 
     public NieobecnosciListener(NieobecnosciDao nieobecnosciDao, NieobecnosciManager nieobecnosciManager) {
         this.nieobecnosciDao = nieobecnosciDao;

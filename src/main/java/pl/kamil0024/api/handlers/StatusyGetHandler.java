@@ -29,11 +29,9 @@ import net.dv8tion.jda.api.sharding.ShardManager;
 import pl.kamil0024.api.Response;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.database.config.UserinfoConfig;
-import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.status.StatusModule;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

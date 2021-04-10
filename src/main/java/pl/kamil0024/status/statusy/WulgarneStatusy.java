@@ -26,15 +26,10 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.chat.listener.ChatListener;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static io.undertow.server.handlers.SSLHeaderHandler.HTTPS;
 
 public class WulgarneStatusy extends ListenerAdapter {
 

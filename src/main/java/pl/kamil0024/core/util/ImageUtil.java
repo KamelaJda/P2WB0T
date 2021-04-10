@@ -20,7 +20,6 @@
 package pl.kamil0024.core.util;
 
 import net.dv8tion.jda.api.entities.Message;
-import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.commands.dews.ShellCommand;
 import pl.kamil0024.core.logger.Log;
 

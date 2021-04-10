@@ -23,7 +23,10 @@ import lombok.Getter;
 import net.dv8tion.jda.api.entities.Member;
 import pl.kamil0024.commands.kolkoikrzyzyk.Gra;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class Slot {

@@ -43,7 +43,8 @@ import pl.kamil0024.stats.StatsModule;
 
 import java.awt.*;
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class Logger extends ListenerAdapter {

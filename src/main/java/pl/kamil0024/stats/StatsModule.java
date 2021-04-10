@@ -20,6 +20,7 @@
 package pl.kamil0024.stats;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import pl.kamil0024.bdate.BDate;
 import pl.kamil0024.core.command.Command;
@@ -50,9 +51,11 @@ public class StatsModule implements Modul {
     private final MusicModule musicModule;
     private final NieobecnosciDao nieobecnosciDao;
 
+    @Getter @Setter
     private boolean start = false;
 
-    @Getter public StatsCache statsCache;
+    @Getter
+    public StatsCache statsCache;
 
     StatsListener statsListener;
 
@@ -99,16 +102,6 @@ public class StatsModule implements Modul {
     @Override
     public String getName() {
         return "stats";
-    }
-
-    @Override
-    public boolean isStart() {
-        return start;
-    }
-
-    @Override
-    public void setStart(boolean bol) {
-        this.start = bol;
     }
 
 }

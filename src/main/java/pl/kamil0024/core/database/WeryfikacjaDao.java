@@ -25,8 +25,6 @@ import pl.kamil0024.core.database.config.Dao;
 import pl.kamil0024.core.database.config.WeryfikacjaConfig;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class WeryfikacjaDao implements Dao<WeryfikacjaConfig> {
 

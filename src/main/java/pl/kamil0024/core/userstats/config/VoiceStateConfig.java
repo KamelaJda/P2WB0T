@@ -22,8 +22,6 @@ package pl.kamil0024.core.userstats.config;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.Map;
-
 @Data
 @AllArgsConstructor
 public class VoiceStateConfig {

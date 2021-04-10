@@ -19,7 +19,8 @@
 
 package pl.kamil0024.rekrutacyjny;
 
-import com.google.inject.Inject;
+import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandManager;
@@ -33,10 +34,12 @@ public class RekruModule implements Modul {
 
     private ArrayList<Command> cmd;
 
-    @Inject CommandManager commandManager;
-    @Inject ShardManager api;
+    CommandManager commandManager;
+    ShardManager api;
 
+    @Getter @Setter
     private boolean start = false;
+
     private SyncListener listener;
 
     public RekruModule(ShardManager api, CommandManager commandManager) {
@@ -67,16 +70,6 @@ public class RekruModule implements Modul {
     @Override
     public String getName() {
         return "rekrutacyjny";
-    }
-
-    @Override
-    public boolean isStart() {
-        return start;
-    }
-
-    @Override
-    public void setStart(boolean bol) {
-        this.start = bol;
     }
 
 }

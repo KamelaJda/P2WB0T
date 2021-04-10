@@ -19,13 +19,12 @@
 
 package pl.kamil0024.nieobecnosci;
 
-import com.google.inject.Inject;
+
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import pl.kamil0024.bdate.Timespan;
-import pl.kamil0024.moderation.listeners.ModLog;
 import pl.kamil0024.commands.system.CytujCommand;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.CommandExecute;
@@ -33,6 +32,7 @@ import pl.kamil0024.core.database.NieobecnosciDao;
 import pl.kamil0024.core.database.config.NieobecnosciConfig;
 import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.util.UserUtil;
+import pl.kamil0024.moderation.listeners.ModLog;
 import pl.kamil0024.nieobecnosci.config.Nieobecnosc;
 import pl.kamil0024.nieobecnosci.config.Zmiana;
 
@@ -46,8 +46,8 @@ import java.util.concurrent.TimeUnit;
 
 public class NieobecnosciManager {
 
-    @Inject private final ShardManager api;
-    @Inject private final NieobecnosciDao nieobecnosciDao;
+    private final ShardManager api;
+    private final NieobecnosciDao nieobecnosciDao;
 
     public NieobecnosciManager(ShardManager api, NieobecnosciDao nieobecnosciDao) {
         this.api = api;

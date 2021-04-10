@@ -26,7 +26,6 @@ import pl.kamil0024.core.database.config.UserstatsConfig;
 
 import java.util.Calendar;
 import java.util.Date;
-
 import java.util.List;
 
 public class UserstatsDao implements Dao<UserstatsConfig> {

@@ -19,6 +19,8 @@
 
 package pl.kamil0024.weryfikacja;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
@@ -55,6 +57,7 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
     public final WeryfikacjaDao weryfikacjaDao;
     public final APIModule apiModule;
 
+    @Getter @Setter
     private boolean start = false;
     private ChangeNickname changeNickname;
 
@@ -85,16 +88,6 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
     @Override
     public String getName() {
         return "weryfikacja";
-    }
-
-    @Override
-    public boolean isStart() {
-        return start;
-    }
-
-    @Override
-    public void setStart(boolean bol) {
-        this.start = bol;
     }
 
     public void executeCode(Member member, MessageChannel channel, String code, Guild g, boolean bypass) {

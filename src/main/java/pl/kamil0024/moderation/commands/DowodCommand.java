@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageActivity;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.internal.entities.AbstractMessage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

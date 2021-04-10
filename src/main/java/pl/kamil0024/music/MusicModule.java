@@ -19,7 +19,7 @@
 
 package pl.kamil0024.music;
 
-import com.google.inject.Inject;
+
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -36,6 +36,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioItem;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
@@ -63,11 +64,12 @@ public class MusicModule implements Modul {
 
     private ArrayList<Command> cmd;
 
-    @Inject CommandManager commandManager;
-    @Inject ShardManager api;
-    @Inject EventWaiter eventWaiter;
-    @Inject VoiceStateDao voiceStateDao;
+    CommandManager commandManager;
+    ShardManager api;
+    EventWaiter eventWaiter;
+    VoiceStateDao voiceStateDao;
 
+    @Getter @Setter
     private boolean start = false;
 
     public final DefaultAudioPlayerManager defaultAudioPlayerManager = new DefaultAudioPlayerManager();
@@ -146,16 +148,6 @@ public class MusicModule implements Modul {
     @Override
     public String getName() {
         return "music";
-    }
-
-    @Override
-    public boolean isStart() {
-        return start;
-    }
-
-    @Override
-    public void setStart(boolean bol) {
-        this.start = bol;
     }
     
     public synchronized GuildMusicManager getGuildAudioPlayer(Guild guild) {
@@ -260,4 +252,5 @@ public class MusicModule implements Modul {
             voiceStateDao.save(vsc);
         } catch (Exception ignored) {}
     }
+
 }

@@ -19,6 +19,8 @@
 
 package pl.kamil0024.liczydlo;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import pl.kamil0024.core.module.Modul;
 
@@ -26,6 +28,7 @@ public class LiczydloModule implements Modul {
 
     private final ShardManager api;
 
+    @Getter @Setter
     private boolean start = false;
     private LiczydloListener liczydloListener;
 
@@ -51,16 +54,6 @@ public class LiczydloModule implements Modul {
     @Override
     public String getName() {
         return "liczydlo";
-    }
-
-    @Override
-    public boolean isStart() {
-        return this.start;
-    }
-
-    @Override
-    public void setStart(boolean bol) {
-        this.start = bol;
     }
 
 }

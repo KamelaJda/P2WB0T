@@ -24,6 +24,7 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.RoutingHandler;
 import io.undertow.server.handlers.BlockingHandler;
 import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.jetbrains.annotations.Nullable;
@@ -48,7 +49,6 @@ public class APIModule implements Modul {
 
     private final VoiceStateDao voiceStateDao;
     private final ShardManager api;
-    private boolean start = false;
     private Undertow server;
 
     private final CaseDao caseDao;
@@ -72,6 +72,9 @@ public class APIModule implements Modul {
     private final Cache<DiscordInviteConfig> newWery;
 
     private final Guild guild;
+
+    @Getter @Setter
+    private boolean start = false;
 
     public APIModule(ShardManager api, CaseDao caseDao, RedisManager redisManager, NieobecnosciDao nieobecnosciDao, StatsDao statsDao, VoiceStateDao voiceStateDao, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, AcBanDao acBanDao, RecordingDao recordingDao, DeletedMessagesDao deletedMessagesDao, KaryJSON karyJSON, ModLog modLog, StatsModule statsModule, StatusModule statusModule) {
         this.api = api;
@@ -170,16 +173,6 @@ public class APIModule implements Modul {
     @Override
     public String getName() {
         return "api";
-    }
-
-    @Override
-    public boolean isStart() {
-        return this.start;
-    }
-
-    @Override
-    public void setStart(boolean bol) {
-        this.start = bol;
     }
 
     private static HttpHandler wrapWithMiddleware(HttpHandler handler) {

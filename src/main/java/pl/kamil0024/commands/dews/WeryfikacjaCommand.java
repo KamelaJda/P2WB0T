@@ -19,7 +19,8 @@
 
 package pl.kamil0024.commands.dews;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import pl.kamil0024.api.APIModule;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;

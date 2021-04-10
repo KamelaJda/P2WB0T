@@ -20,6 +20,7 @@
 package pl.kamil0024.musicbot.api;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import pl.kamil0024.musicbot.api.listeners.LeaveVcListener;
@@ -36,6 +37,8 @@ public class APIModule implements Modul {
     private final MusicManager musicManager;
     private final EventWaiter eventWaiter;
     private final SocketClient client;
+
+    @Getter @Setter
     private boolean start = false;
 
     private final Guild guild;
@@ -67,16 +70,6 @@ public class APIModule implements Modul {
     @Override
     public String getName() {
         return "api";
-    }
-
-    @Override
-    public boolean isStart() {
-        return this.start;
-    }
-
-    @Override
-    public void setStart(boolean bol) {
-        this.start = bol;
     }
 
 }

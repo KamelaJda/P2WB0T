@@ -29,7 +29,6 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 import pl.kamil0024.bdate.BDate;
-import pl.kamil0024.moderation.listeners.ModLog;
 import pl.kamil0024.commands.listener.GiveawayListener;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
@@ -39,6 +38,7 @@ import pl.kamil0024.core.database.config.GiveawayConfig;
 import pl.kamil0024.core.util.Duration;
 import pl.kamil0024.core.util.EmbedPageintaor;
 import pl.kamil0024.core.util.EventWaiter;
+import pl.kamil0024.moderation.listeners.ModLog;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;

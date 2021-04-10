@@ -19,14 +19,16 @@
 
 package pl.kamil0024.antiraid;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import pl.kamil0024.antiraid.listeners.AntiRaidListener;
 import pl.kamil0024.antiraid.managers.AntiRaidManager;
-import pl.kamil0024.moderation.listeners.ModLog;
 import pl.kamil0024.core.database.AntiRaidDao;
 import pl.kamil0024.core.database.CaseDao;
 import pl.kamil0024.core.module.Modul;
 import pl.kamil0024.core.redis.RedisManager;
+import pl.kamil0024.moderation.listeners.ModLog;
 
 public class AntiRaidModule implements Modul {
 
@@ -36,6 +38,7 @@ public class AntiRaidModule implements Modul {
     private final CaseDao caseDao;
     private final ModLog modLog;
 
+    @Getter @Setter
     private boolean start = false;
 
     private AntiRaidListener antiRaidListener;
@@ -65,16 +68,6 @@ public class AntiRaidModule implements Modul {
     @Override
     public String getName() {
         return "antiraid";
-    }
-
-    @Override
-    public boolean isStart() {
-        return start;
-    }
-
-    @Override
-    public void setStart(boolean bol) {
-        this.start = bol;
     }
 
 }

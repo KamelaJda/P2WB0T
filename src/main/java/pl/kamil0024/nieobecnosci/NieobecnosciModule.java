@@ -19,7 +19,9 @@
 
 package pl.kamil0024.nieobecnosci;
 
-import com.google.inject.Inject;
+
+import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import pl.kamil0024.core.database.NieobecnosciDao;
 import pl.kamil0024.core.module.Modul;
@@ -27,9 +29,10 @@ import pl.kamil0024.nieobecnosci.listeners.NieobecnosciListener;
 
 public class NieobecnosciModule implements Modul {
 
-    @Inject private final ShardManager api;
-    @Inject private final NieobecnosciDao nieobecnosciDao;
+    private final ShardManager api;
+    private final NieobecnosciDao nieobecnosciDao;
 
+    @Getter @Setter
     private boolean start = false;
 
     private NieobecnosciListener nieobecnosciListener;
@@ -59,16 +62,6 @@ public class NieobecnosciModule implements Modul {
     @Override
     public String getName() {
         return "nieobecnosci";
-    }
-
-    @Override
-    public boolean isStart() {
-        return this.start;
-    }
-
-    @Override
-    public void setStart(boolean bol) {
-        this.start = bol;
     }
 
 }

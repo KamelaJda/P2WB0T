@@ -19,26 +19,29 @@
 
 package pl.kamil0024.chat;
 
-import com.google.inject.Inject;
+
+import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import pl.kamil0024.chat.listener.ChatListener;
 import pl.kamil0024.chat.listener.KaryListener;
-import pl.kamil0024.moderation.listeners.ModLog;
 import pl.kamil0024.core.database.CaseDao;
 import pl.kamil0024.core.module.Modul;
 import pl.kamil0024.core.redis.RedisManager;
 import pl.kamil0024.core.util.kary.KaryJSON;
+import pl.kamil0024.moderation.listeners.ModLog;
 import pl.kamil0024.stats.StatsModule;
 
 public class ChatModule implements Modul {
 
-    @Inject private final ShardManager api;
-    @Inject private final KaryJSON karyJSON;
-    @Inject private final CaseDao caseDao;
-    @Inject private final ModLog modLog;
-    @Inject private final StatsModule statsModule;
-    @Inject private final RedisManager redisManager;
+    private final ShardManager api;
+    private final KaryJSON karyJSON;
+    private final CaseDao caseDao;
+    private final ModLog modLog;
+    private final StatsModule statsModule;
+    private final RedisManager redisManager;
 
+    @Getter @Setter
     private boolean start = false;
     private ChatListener chatListener;
     private KaryListener karyListener;
@@ -71,16 +74,6 @@ public class ChatModule implements Modul {
     @Override
     public String getName() {
         return "chat";
-    }
-
-    @Override
-    public boolean isStart() {
-        return this.start;
-    }
-
-    @Override
-    public void setStart(boolean bol) {
-        this.start = bol;
     }
 
 }

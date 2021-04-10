@@ -19,7 +19,6 @@
 
 package pl.kamil0024.commands.listener;
 
-import com.google.inject.Inject;
 import lombok.Data;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -28,10 +27,10 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import pl.kamil0024.bdate.BDate;
-import pl.kamil0024.moderation.listeners.ModLog;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.database.GiveawayDao;
 import pl.kamil0024.core.database.config.GiveawayConfig;
+import pl.kamil0024.moderation.listeners.ModLog;
 
 import java.awt.*;
 import java.text.SimpleDateFormat;
@@ -48,8 +47,8 @@ public class GiveawayListener {
 
     private static final String TADA = "\uD83C\uDF89";
 
-    @Inject private GiveawayDao giveawayDao;
-    @Inject private ShardManager api;
+    private GiveawayDao giveawayDao;
+    private ShardManager api;
 
     public List<String> konkursMsg;
 

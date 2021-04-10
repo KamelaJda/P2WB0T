@@ -40,7 +40,6 @@ import pl.kamil0024.moderation.listeners.ModLog;
 import pl.kamil0024.stats.StatsModule;
 import pl.kamil0024.status.StatusModule;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 

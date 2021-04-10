@@ -19,6 +19,8 @@
 
 package pl.kamil0024.embedgenerator;
 
+import lombok.Getter;
+import lombok.Setter;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandManager;
 import pl.kamil0024.core.module.Modul;
@@ -33,6 +35,8 @@ public class EmbedGeneratorModule implements Modul {
     private final EmbedRedisManager embedRedisManager;
 
     private ArrayList<Command> cmd;
+
+    @Getter @Setter
     private boolean start = false;
 
     public EmbedGeneratorModule(CommandManager commandManager, EmbedRedisManager embedRedisManager) {
@@ -59,16 +63,6 @@ public class EmbedGeneratorModule implements Modul {
     @Override
     public String getName() {
         return "embed";
-    }
-
-    @Override
-    public boolean isStart() {
-        return start;
-    }
-
-    @Override
-    public void setStart(boolean bol) {
-        this.start = bol;
     }
 
 }

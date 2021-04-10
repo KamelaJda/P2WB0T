@@ -21,14 +21,18 @@ package pl.kamil0024.commands;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import pl.kamil0024.api.APIModule;
+import pl.kamil0024.commands.dews.*;
 import pl.kamil0024.commands.kolkoikrzyzyk.KolkoIKrzyzykManager;
 import pl.kamil0024.commands.listener.GiveawayListener;
 import pl.kamil0024.commands.listener.GuildListener;
+import pl.kamil0024.commands.system.*;
 import pl.kamil0024.commands.zabawa.KolkoIKrzyzykCommand;
 import pl.kamil0024.commands.zabawa.PogodaCommand;
 import pl.kamil0024.commands.zabawa.SasinCommand;
@@ -37,6 +41,7 @@ import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandExecute;
 import pl.kamil0024.core.command.CommandManager;
+import pl.kamil0024.core.database.*;
 import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.module.Modul;
 import pl.kamil0024.core.module.ModulManager;
@@ -50,9 +55,6 @@ import pl.kamil0024.moderation.commands.StatusCommand;
 import pl.kamil0024.moderation.listeners.ModLog;
 import pl.kamil0024.music.MusicModule;
 import pl.kamil0024.stats.StatsModule;
-import pl.kamil0024.commands.dews.*;
-import pl.kamil0024.commands.system.*;
-import pl.kamil0024.core.database.*;
 import pl.kamil0024.status.StatusModule;
 import pl.kamil0024.weryfikacja.WeryfikacjaModule;
 
@@ -94,6 +96,7 @@ public class CommandsModule implements Modul {
     private final StatusModule statusModule;
     private final APIModule apiModule;
 
+    @Getter @Setter
     private boolean start = false;
     private final ModLog modLog;
 
@@ -212,16 +215,6 @@ public class CommandsModule implements Modul {
     @Override
     public String getName() {
         return "commands";
-    }
-
-    @Override
-    public boolean isStart() {
-        return start;
-    }
-
-    @Override
-    public void setStart(boolean bol) {
-        this.start = bol;
     }
 
     @Data

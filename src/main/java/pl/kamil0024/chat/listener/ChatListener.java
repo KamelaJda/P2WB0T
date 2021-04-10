@@ -19,7 +19,6 @@
 
 package pl.kamil0024.chat.listener;
 
-import com.google.inject.Inject;
 import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
@@ -70,11 +69,11 @@ public class ChatListener extends ListenerAdapter {
     private static final Pattern YOUTUBE_LINK = Pattern.compile("(http(s)?://)?(www\\.)?(m\\.)?(youtube\\.com|youtu\\.be)/\\S+");
     private static final Pattern SKROTY = Pattern.compile("[jJ][ ]?[a-z-A-Z]{1,2}");
 
-    @Inject private final KaryJSON karyJSON;
-    @Inject private final CaseDao caseDao;
-    @Inject private final ModLog modLog;
-    @Inject private final StatsModule statsModule;
-    @Inject private final KaryListener karyListener;
+    private final KaryJSON karyJSON;
+    private final CaseDao caseDao;
+    private final ModLog modLog;
+    private final StatsModule statsModule;
+    private final KaryListener karyListener;
 
     @Getter private final List<String> przeklenstwa;
 
@@ -289,7 +288,7 @@ public class ChatListener extends ListenerAdapter {
 
     public static boolean containsLink(String[] list) {
         for (String s : list) {
-            if (s.contains("derpmc") || s.contains("roizy") || s.contains("p2w") || s.contains("hypixel") || s.contains("discord")) continue;
+            if (s.contains("derpmc") || s.contains("roizy") || s.contains("p2w") || s.contains("hypixel") || s.contains("discord") || s.contains("tenor")) continue;
             try {
                 new URL(s);
                 return true;

@@ -16,9 +16,10 @@
  */
 package pl.kamil0024.core.redis;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Map;
 import java.util.function.Function;
-import org.jetbrains.annotations.NotNull;
 
 public interface Cache<V> {
     V getIfPresent(@NotNull Object key);

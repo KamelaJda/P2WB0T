@@ -19,7 +19,9 @@
 
 package pl.kamil0024.ticket;
 
-import com.google.inject.Inject;
+
+import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import pl.kamil0024.core.database.TicketDao;
 import pl.kamil0024.core.module.Modul;
@@ -30,11 +32,12 @@ import pl.kamil0024.ticket.listener.VoiceChatListener;
 
 public class TicketModule implements Modul {
 
-    @Inject TicketDao ticketDao;
-    @Inject ShardManager api;
-    @Inject RedisManager redisManager;
-    @Inject EventWaiter eventWaiter;
+    TicketDao ticketDao;
+    ShardManager api;
+    RedisManager redisManager;
+    EventWaiter eventWaiter;
 
+    @Getter @Setter
     private boolean start = false;
 
     private final TicketRedisManager ticketRedisManager;
@@ -68,13 +71,4 @@ public class TicketModule implements Modul {
         return "ticket";
     }
 
-    @Override
-    public boolean isStart() {
-        return start;
-    }
-
-    @Override
-    public void setStart(boolean bol) {
-        this.start = bol;
-    }
 }

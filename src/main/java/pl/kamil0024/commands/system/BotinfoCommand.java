@@ -19,14 +19,12 @@
 
 package pl.kamil0024.commands.system;
 
-import com.google.inject.Inject;
 import lombok.SneakyThrows;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDAInfo;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.jetbrains.annotations.NotNull;
 import pl.kamil0024.bdate.BDate;
-import pl.kamil0024.moderation.listeners.ModLog;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
 import pl.kamil0024.core.command.CommandManager;
@@ -34,6 +32,7 @@ import pl.kamil0024.core.module.ModulManager;
 import pl.kamil0024.core.socket.SocketManager;
 import pl.kamil0024.core.util.Statyczne;
 import pl.kamil0024.core.util.UserUtil;
+import pl.kamil0024.moderation.listeners.ModLog;
 
 import java.lang.management.ManagementFactory;
 import java.math.BigDecimal;
@@ -44,9 +43,9 @@ import java.util.Date;
 
 public class BotinfoCommand extends Command {
 
-    @Inject private final CommandManager commandManager;
-    @Inject private final ModulManager modulManager;
-    @Inject private final SocketManager socketManager;
+    private final CommandManager commandManager;
+    private final ModulManager modulManager;
+    private final SocketManager socketManager;
 
     public BotinfoCommand(CommandManager commandManager, ModulManager modulManager, SocketManager socketManager) {
         name = "botinfo";

@@ -19,19 +19,19 @@
 
 package pl.kamil0024.commands.system;
 
-import com.google.inject.Inject;
+
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.jetbrains.annotations.NotNull;
 import pl.kamil0024.bdate.BDate;
-import pl.kamil0024.moderation.listeners.ModLog;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.database.RemindDao;
 import pl.kamil0024.core.database.config.RemindConfig;
 import pl.kamil0024.core.util.*;
+import pl.kamil0024.moderation.listeners.ModLog;
 
 import java.awt.*;
 import java.text.SimpleDateFormat;
@@ -42,8 +42,8 @@ import java.util.concurrent.FutureTask;
 
 public class RemindmeCommand extends Command {
 
-    @Inject private final RemindDao remindDao;
-    @Inject private final EventWaiter eventWaiter;
+    private final RemindDao remindDao;
+    private final EventWaiter eventWaiter;
 
     public RemindmeCommand(RemindDao remindDao, EventWaiter eventWaiter) {
         name = "remind";

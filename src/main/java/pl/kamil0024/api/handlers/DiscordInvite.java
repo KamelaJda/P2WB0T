@@ -19,7 +19,7 @@
 
 package pl.kamil0024.api.handlers;
 
-import com.google.inject.Inject;
+
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import pl.kamil0024.api.APIModule;
@@ -31,7 +31,7 @@ import java.util.Map;
 
 public class DiscordInvite implements HttpHandler  {
 
-    @Inject private final APIModule apiModule;
+    private final APIModule apiModule;
 
     public DiscordInvite(APIModule apiModule) {
         this.apiModule = apiModule;
