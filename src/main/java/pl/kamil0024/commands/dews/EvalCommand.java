@@ -20,6 +20,7 @@
 package pl.kamil0024.commands.dews;
 
 import com.google.gson.Gson;
+import com.wrapper.spotify.SpotifyApi;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -81,8 +82,9 @@ public class EvalCommand extends Command {
     private final AcBanDao acBanDao;
     private final UserstatsManager userstatsManager;
     private final StatusModule statusModule;
+    private final SpotifyApi spotifyApi;
 
-    public EvalCommand(EventWaiter eventWaiter, CommandManager commandManager, CaseDao caseDao, ModLog modLog, KaryJSON karyJSON, Tlumaczenia tlumaczenia, CommandExecute commandExecute, UserDao userDao, NieobecnosciDao nieobecnosciDao, RemindDao remindDao, ModulManager modulManager, GiveawayListener giveawayListener, GiveawayDao giveawayDao, StatsModule statsModule, MultiDao multiDao, MusicModule musicModule, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, WeryfikacjaDao weryfikacjaDao, WeryfikacjaModule weryfikacjaModule, SocketManager socketManager, DeletedMessagesDao deletedMessagesDao, AcBanDao acBanDao, UserstatsManager userstatsManager, StatusModule statusModule) {
+    public EvalCommand(EventWaiter eventWaiter, CommandManager commandManager, CaseDao caseDao, ModLog modLog, KaryJSON karyJSON, Tlumaczenia tlumaczenia, CommandExecute commandExecute, UserDao userDao, NieobecnosciDao nieobecnosciDao, RemindDao remindDao, ModulManager modulManager, GiveawayListener giveawayListener, GiveawayDao giveawayDao, StatsModule statsModule, MultiDao multiDao, MusicModule musicModule, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, WeryfikacjaDao weryfikacjaDao, WeryfikacjaModule weryfikacjaModule, SocketManager socketManager, DeletedMessagesDao deletedMessagesDao, AcBanDao acBanDao, UserstatsManager userstatsManager, StatusModule statusModule, SpotifyApi spotifyApi) {
         name = "eval";
         aliases.add("ev");
         category = CommandCategory.DEVS;
@@ -115,6 +117,7 @@ public class EvalCommand extends Command {
         this.acBanDao = acBanDao;
         this.userstatsManager = userstatsManager;
         this.statusModule = statusModule;
+        this.spotifyApi = spotifyApi;
     }
 
     @Override
@@ -155,6 +158,8 @@ public class EvalCommand extends Command {
         shell.setVariable("acBanDao", acBanDao);
         shell.setVariable("userstatsManager", userstatsManager);
         shell.setVariable("statusModule", statusModule);
+        shell.setVariable("spotifyApi", spotifyApi);
+
 
         long ms = System.currentTimeMillis();
         Object value;
