@@ -23,7 +23,12 @@ import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.model_objects.specification.Album;
 import com.wrapper.spotify.model_objects.specification.Track;
 import lombok.AllArgsConstructor;
+import okhttp3.*;
+import pl.kamil0024.core.util.JSONResponse;
+import pl.kamil0024.core.util.NetworkUtil;
 
+import java.io.IOException;
+import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -61,6 +66,19 @@ public class SpotifyUtil {
         }
         return null;
 
+    }
+
+    public JSONResponse getAccessToken() throws IOException {
+        RequestBody body = RequestBody.create(
+                MediaType.parse("application/x-www-form-urlencoded"), "grant_type=client_credentials");
+        String b64 = Base64.getEncoder().encodeToString((spotifyApi.getClientId() + ":" + spotifyApi.getClientSecret()).getBytes());
+        Request req = new Request.Builder()
+                .url("https://accounts.spotify.com/api/token")
+                .addHeader("Authorization", "Basic " + b64)
+                .post(body)
+                .build();
+        Response res = NetworkUtil.getClient().newCall(req).execute();
+        return res.body() == null ? null : new JSONResponse(res.body().string(), res.code());
     }
 
 }

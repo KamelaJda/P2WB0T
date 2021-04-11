@@ -70,6 +70,7 @@ import pl.kamil0024.logs.LogsModule;
 import pl.kamil0024.moderation.ModerationModule;
 import pl.kamil0024.moderation.listeners.ModLog;
 import pl.kamil0024.music.MusicModule;
+import pl.kamil0024.music.utils.SpotifyUtil;
 import pl.kamil0024.nieobecnosci.NieobecnosciManager;
 import pl.kamil0024.nieobecnosci.NieobecnosciModule;
 import pl.kamil0024.rekrutacyjny.RekruModule;
@@ -266,8 +267,17 @@ public class B0T {
         api.addEventListener(userstatsManager);
 
         SpotifyApi spotifyApi = new SpotifyApi.Builder()
-                .setAccessToken(Ustawienia.instance.spotify.secret)
+                .setClientId(Ustawienia.instance.spotify.id)
+                .setClientSecret(Ustawienia.instance.spotify.secret)
                 .build();
+
+        try {
+            String accessToken = new SpotifyUtil(spotifyApi).getAccessToken().getString("access_token");
+            spotifyApi.setAccessToken(accessToken);
+            spotifyApi.setRefreshToken(spotifyApi.authorizationCodeRefresh().build().execute().getRefreshToken());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         this.musicModule = new MusicModule(commandManager, api, eventWaiter, voiceStateDao, socketManager, spotifyApi);
         this.statsModule = new StatsModule(commandManager, api, eventWaiter, statsDao, musicModule, nieobecnosciDao);

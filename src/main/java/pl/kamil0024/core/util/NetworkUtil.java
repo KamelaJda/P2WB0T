@@ -32,7 +32,9 @@ public class NetworkUtil {
     private static final String USER_AGENT = "P2WB0T";
     private static final String UA = "User-Agent";
     private static final String AUTH = "Authorization";
-    @Getter private static final OkHttpClient client = new OkHttpClient();
+
+    @Getter
+    public static final OkHttpClient client = new OkHttpClient();
 
     public static JSONResponse getJson(String url) throws IOException {
         Request req = new Request.Builder()
