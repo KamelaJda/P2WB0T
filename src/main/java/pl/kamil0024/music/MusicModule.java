@@ -53,6 +53,7 @@ import pl.kamil0024.core.socket.SocketManager;
 import pl.kamil0024.core.util.EventWaiter;
 import pl.kamil0024.music.commands.*;
 import pl.kamil0024.music.commands.privates.*;
+import pl.kamil0024.music.utils.SpotifyUtil;
 import pl.kamil0024.musicmanager.entity.GuildMusicManager;
 
 import java.util.ArrayList;
@@ -69,7 +70,7 @@ public class MusicModule implements Modul {
     private final ShardManager api;
     private final EventWaiter eventWaiter;
     private final VoiceStateDao voiceStateDao;
-    private final SpotifyApi spotifyApi;
+    private final SpotifyUtil spotifyUtil;
 
     @Getter @Setter
     private boolean start = false;
@@ -82,13 +83,13 @@ public class MusicModule implements Modul {
     public YoutubeAudioSourceManager youtubeSourceManager;
     public SocketManager socketManager;
 
-    public MusicModule(CommandManager commandManager, ShardManager api, EventWaiter eventWaiter, VoiceStateDao voiceStateDao, SocketManager socketManager, SpotifyApi spotifyApi) {
+    public MusicModule(CommandManager commandManager, ShardManager api, EventWaiter eventWaiter, VoiceStateDao voiceStateDao, SocketManager socketManager, SpotifyUtil spotifyApi) {
         this.commandManager = commandManager;
         this.api = api;
         this.eventWaiter = eventWaiter;
         this.voiceStateDao = voiceStateDao;
         this.socketManager = socketManager;
-        this.spotifyApi = spotifyApi;
+        this.spotifyUtil = spotifyApi;
 
         this.playerManager = defaultAudioPlayerManager;
         this.musicManagers = new HashMap<>();
@@ -129,7 +130,7 @@ public class MusicModule implements Modul {
         cmd.add(new LoopCommand(this));
 
         //#region Prywatne
-        cmd.add(new PrivatePlayCommand(socketManager, spotifyApi, this));
+        cmd.add(new PrivatePlayCommand(socketManager, spotifyUtil, this));
         cmd.add(new PrivateLeaveCommand(socketManager));
         cmd.add(new PrivateQueueCommand(socketManager));
         cmd.add(new PrivateSkipCommand(socketManager));

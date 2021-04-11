@@ -270,16 +270,9 @@ public class B0T {
                 .setClientId(Ustawienia.instance.spotify.id)
                 .setClientSecret(Ustawienia.instance.spotify.secret)
                 .build();
+        SpotifyUtil spotifyUtil = new SpotifyUtil(spotifyApi);
 
-        try {
-            String accessToken = new SpotifyUtil(spotifyApi).getAccessToken().getString("access_token");
-            spotifyApi.setAccessToken(accessToken);
-            spotifyApi.setRefreshToken(spotifyApi.authorizationCodeRefresh().build().execute().getRefreshToken());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        this.musicModule = new MusicModule(commandManager, api, eventWaiter, voiceStateDao, socketManager, spotifyApi);
+        this.musicModule = new MusicModule(commandManager, api, eventWaiter, voiceStateDao, socketManager, spotifyUtil);
         this.statsModule = new StatsModule(commandManager, api, eventWaiter, statsDao, musicModule, nieobecnosciDao);
 
         StatusModule statusModule = new StatusModule(api, redisManager);
@@ -291,7 +284,7 @@ public class B0T {
         modulManager.getModules().add(statusModule);
         modulManager.getModules().add(new NieobecnosciModule(api, nieobecnosciDao, nieobecnosciManager));
         modulManager.getModules().add(new LiczydloModule(api));
-        modulManager.getModules().add(new CommandsModule(commandManager, tlumaczenia, api, eventWaiter, karyJSON, caseDao, modulManager, commandExecute, userDao, modLog, nieobecnosciDao, remindDao, giveawayDao, statsModule, musicModule, multiDao, ticketDao, apelacjeDao, ankietaDao, embedRedisManager, weryfikacjaDao, weryfikacjaModule, recordingDao, socketManager, deletedMessagesDao, acBanDao, userstatsManager, statusModule, apiModule, spotifyApi));
+        modulManager.getModules().add(new CommandsModule(commandManager, tlumaczenia, api, eventWaiter, karyJSON, caseDao, modulManager, commandExecute, userDao, modLog, nieobecnosciDao, remindDao, giveawayDao, statsModule, musicModule, multiDao, ticketDao, apelacjeDao, ankietaDao, embedRedisManager, weryfikacjaDao, weryfikacjaModule, recordingDao, socketManager, deletedMessagesDao, acBanDao, userstatsManager, statusModule, apiModule, spotifyUtil));
         modulManager.getModules().add(new RekruModule(api, commandManager));
         modulManager.getModules().add(musicModule);
         modulManager.getModules().add(statsModule);

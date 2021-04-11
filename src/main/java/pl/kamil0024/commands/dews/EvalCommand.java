@@ -45,6 +45,7 @@ import pl.kamil0024.core.util.kary.KaryJSON;
 import pl.kamil0024.embedgenerator.entity.EmbedRedisManager;
 import pl.kamil0024.moderation.listeners.ModLog;
 import pl.kamil0024.music.MusicModule;
+import pl.kamil0024.music.utils.SpotifyUtil;
 import pl.kamil0024.stats.StatsModule;
 import pl.kamil0024.status.StatusModule;
 import pl.kamil0024.weryfikacja.WeryfikacjaModule;
@@ -82,9 +83,9 @@ public class EvalCommand extends Command {
     private final AcBanDao acBanDao;
     private final UserstatsManager userstatsManager;
     private final StatusModule statusModule;
-    private final SpotifyApi spotifyApi;
+    private final SpotifyUtil spotifyUtil;
 
-    public EvalCommand(EventWaiter eventWaiter, CommandManager commandManager, CaseDao caseDao, ModLog modLog, KaryJSON karyJSON, Tlumaczenia tlumaczenia, CommandExecute commandExecute, UserDao userDao, NieobecnosciDao nieobecnosciDao, RemindDao remindDao, ModulManager modulManager, GiveawayListener giveawayListener, GiveawayDao giveawayDao, StatsModule statsModule, MultiDao multiDao, MusicModule musicModule, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, WeryfikacjaDao weryfikacjaDao, WeryfikacjaModule weryfikacjaModule, SocketManager socketManager, DeletedMessagesDao deletedMessagesDao, AcBanDao acBanDao, UserstatsManager userstatsManager, StatusModule statusModule, SpotifyApi spotifyApi) {
+    public EvalCommand(EventWaiter eventWaiter, CommandManager commandManager, CaseDao caseDao, ModLog modLog, KaryJSON karyJSON, Tlumaczenia tlumaczenia, CommandExecute commandExecute, UserDao userDao, NieobecnosciDao nieobecnosciDao, RemindDao remindDao, ModulManager modulManager, GiveawayListener giveawayListener, GiveawayDao giveawayDao, StatsModule statsModule, MultiDao multiDao, MusicModule musicModule, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, WeryfikacjaDao weryfikacjaDao, WeryfikacjaModule weryfikacjaModule, SocketManager socketManager, DeletedMessagesDao deletedMessagesDao, AcBanDao acBanDao, UserstatsManager userstatsManager, StatusModule statusModule, SpotifyUtil spotifyApi) {
         name = "eval";
         aliases.add("ev");
         category = CommandCategory.DEVS;
@@ -117,7 +118,7 @@ public class EvalCommand extends Command {
         this.acBanDao = acBanDao;
         this.userstatsManager = userstatsManager;
         this.statusModule = statusModule;
-        this.spotifyApi = spotifyApi;
+        this.spotifyUtil = spotifyApi;
     }
 
     @Override
@@ -158,7 +159,7 @@ public class EvalCommand extends Command {
         shell.setVariable("acBanDao", acBanDao);
         shell.setVariable("userstatsManager", userstatsManager);
         shell.setVariable("statusModule", statusModule);
-        shell.setVariable("spotifyApi", spotifyApi);
+        shell.setVariable("spotifyUtil", spotifyUtil);
 
 
         long ms = System.currentTimeMillis();

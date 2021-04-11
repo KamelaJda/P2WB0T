@@ -20,65 +20,61 @@
 package pl.kamil0024.music.utils;
 
 import com.wrapper.spotify.SpotifyApi;
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
+import com.wrapper.spotify.model_objects.credentials.ClientCredentials;
 import com.wrapper.spotify.model_objects.specification.Album;
 import com.wrapper.spotify.model_objects.specification.Track;
-import lombok.AllArgsConstructor;
-import okhttp3.*;
-import pl.kamil0024.core.util.JSONResponse;
-import pl.kamil0024.core.util.NetworkUtil;
+import org.apache.hc.core5.http.ParseException;
 
 import java.io.IOException;
-import java.util.Base64;
-import java.util.regex.Matcher;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-@AllArgsConstructor
 public class SpotifyUtil {
 
     private static final Pattern TRACK_REGEX = Pattern.compile("^(https://open.spotify.com/track/)([a-zA-Z0-9]+)(.*)$");
     private static final Pattern PLAYLIST_REGEX = Pattern.compile("^(https://open.spotify.com/playlist/)([a-zA-Z0-9]+)(.*)$");
 
+    private final ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+
     private final SpotifyApi spotifyApi;
 
-    public Track getTrack(String link) {
-        Matcher xd = TRACK_REGEX.matcher(link);
-        if (xd.matches()) {
-            try {
-                return spotifyApi.getTrack(xd.group(2)).build().execute();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-
-        }
-        return null;
+    public SpotifyUtil(SpotifyApi spotifyApi) {
+        this.spotifyApi = spotifyApi;
+        refreshAccessToken();
     }
 
-    public Album getAlbum(String link) {
-        Matcher xd = PLAYLIST_REGEX.matcher(link);
-        if (xd.matches()) {
-            try {
-                return spotifyApi.getAlbum(xd.group(2)).build().execute();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-        return null;
-
+    public boolean isSpotifyLink(String url) {
+        return isTrack(url) || isAlbum(url);
     }
 
-    public JSONResponse getAccessToken() throws IOException {
-        RequestBody body = RequestBody.create(
-                MediaType.parse("application/x-www-form-urlencoded"), "grant_type=client_credentials");
-        String b64 = Base64.getEncoder().encodeToString((spotifyApi.getClientId() + ":" + spotifyApi.getClientSecret()).getBytes());
-        Request req = new Request.Builder()
-                .url("https://accounts.spotify.com/api/token")
-                .addHeader("Authorization", "Basic " + b64)
-                .post(body)
-                .build();
-        Response res = NetworkUtil.getClient().newCall(req).execute();
-        return res.body() == null ? null : new JSONResponse(res.body().string(), res.code());
+    public boolean isTrack(String url) {
+        return TRACK_REGEX.matcher(url).matches();
+    }
+
+    public boolean isAlbum(String url) {
+        return PLAYLIST_REGEX.matcher(url).matches();
+    }
+
+    public Track getTrack(String link) throws ParseException, SpotifyWebApiException, IOException {
+        return spotifyApi.getTrack(TRACK_REGEX.matcher(link).group(2)).build().execute();
+    }
+
+    public Album getAlbum(String link) throws ParseException, SpotifyWebApiException, IOException {
+        return spotifyApi.getAlbum(PLAYLIST_REGEX.matcher(link).group(2)).build().execute();
+    }
+
+    private void refreshAccessToken() {
+        try {
+            ClientCredentials cr = spotifyApi.clientCredentials().build().execute();
+            spotifyApi.setAccessToken(cr.getAccessToken());
+            ses.schedule(this::refreshAccessToken, cr.getExpiresIn(), TimeUnit.SECONDS);
+        } catch (Exception e) {
+            ses.schedule(this::refreshAccessToken, 60, TimeUnit.SECONDS);
+        }
+
     }
 
 }
