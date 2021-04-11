@@ -35,6 +35,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioItem;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.wrapper.spotify.SpotifyApi;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.Guild;
@@ -64,10 +65,11 @@ public class MusicModule implements Modul {
 
     private ArrayList<Command> cmd;
 
-    CommandManager commandManager;
-    ShardManager api;
-    EventWaiter eventWaiter;
-    VoiceStateDao voiceStateDao;
+    private final CommandManager commandManager;
+    private final ShardManager api;
+    private final EventWaiter eventWaiter;
+    private final VoiceStateDao voiceStateDao;
+    private final SpotifyApi spotifyApi;
 
     @Getter @Setter
     private boolean start = false;
@@ -80,12 +82,13 @@ public class MusicModule implements Modul {
     public YoutubeAudioSourceManager youtubeSourceManager;
     public SocketManager socketManager;
 
-    public MusicModule(CommandManager commandManager, ShardManager api, EventWaiter eventWaiter, VoiceStateDao voiceStateDao, SocketManager socketManager) {
+    public MusicModule(CommandManager commandManager, ShardManager api, EventWaiter eventWaiter, VoiceStateDao voiceStateDao, SocketManager socketManager, SpotifyApi spotifyApi) {
         this.commandManager = commandManager;
         this.api = api;
         this.eventWaiter = eventWaiter;
         this.voiceStateDao = voiceStateDao;
         this.socketManager = socketManager;
+        this.spotifyApi = spotifyApi;
 
         this.playerManager = defaultAudioPlayerManager;
         this.musicManagers = new HashMap<>();
@@ -126,7 +129,7 @@ public class MusicModule implements Modul {
         cmd.add(new LoopCommand(this));
 
         //#region Prywatne
-        cmd.add(new PrivatePlayCommand(socketManager));
+        cmd.add(new PrivatePlayCommand(socketManager, spotifyApi, this));
         cmd.add(new PrivateLeaveCommand(socketManager));
         cmd.add(new PrivateQueueCommand(socketManager));
         cmd.add(new PrivateSkipCommand(socketManager));

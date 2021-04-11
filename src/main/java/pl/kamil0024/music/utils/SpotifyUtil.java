@@ -20,6 +20,7 @@
 package pl.kamil0024.music.utils;
 
 import com.wrapper.spotify.SpotifyApi;
+import com.wrapper.spotify.model_objects.specification.Album;
 import com.wrapper.spotify.model_objects.specification.Track;
 import lombok.AllArgsConstructor;
 
@@ -30,6 +31,7 @@ import java.util.regex.Pattern;
 public class SpotifyUtil {
 
     private static final Pattern TRACK_REGEX = Pattern.compile("^(https://open.spotify.com/track/)([a-zA-Z0-9]+)(.*)$");
+    private static final Pattern PLAYLIST_REGEX = Pattern.compile("^(https://open.spotify.com/playlist/)([a-zA-Z0-9]+)(.*)$");
 
     private final SpotifyApi spotifyApi;
 
@@ -43,6 +45,19 @@ public class SpotifyUtil {
                 return null;
             }
 
+        }
+        return null;
+    }
+
+    public Album getAlbum(String link) {
+        Matcher xd = PLAYLIST_REGEX.matcher(link);
+        if (xd.matches()) {
+            try {
+                return spotifyApi.getAlbum(xd.group(2)).build().execute();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
         }
         return null;
 

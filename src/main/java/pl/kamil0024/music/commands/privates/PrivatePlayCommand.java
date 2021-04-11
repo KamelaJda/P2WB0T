@@ -19,6 +19,9 @@
 
 package pl.kamil0024.music.commands.privates;
 
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.wrapper.spotify.SpotifyApi;
+import com.wrapper.spotify.model_objects.specification.Track;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
@@ -31,7 +34,10 @@ import pl.kamil0024.core.socket.SocketClient;
 import pl.kamil0024.core.socket.SocketManager;
 import pl.kamil0024.core.util.Error;
 import pl.kamil0024.core.util.UserUtil;
+import pl.kamil0024.music.MusicModule;
 import pl.kamil0024.music.commands.PlayCommand;
+import pl.kamil0024.music.commands.QueueCommand;
+import pl.kamil0024.music.utils.SpotifyUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -41,12 +47,16 @@ import java.util.stream.Collectors;
 public class PrivatePlayCommand extends Command {
 
     private final SocketManager socketManager;
+    private final SpotifyApi spotifyApi;
+    private final MusicModule musicModule;
 
-    public PrivatePlayCommand(SocketManager socketManager) {
+    public PrivatePlayCommand(SocketManager socketManager, SpotifyApi spotifyApi, MusicModule musicModule) {
         name = "pplay";
         aliases.add("privateplay");
         category = CommandCategory.PRIVATE_CHANNEL;
         this.socketManager = socketManager;
+        this.spotifyApi = spotifyApi;
+        this.musicModule = musicModule;
     }
 
     @Override
@@ -60,10 +70,27 @@ public class PrivatePlayCommand extends Command {
         }
 
         SocketClient client = socketManager.getClientFromChannel(context);
+        String spotifyMusic = null;
+
+        if (link.contains("https://open.spotify.com/")) {
+            SpotifyUtil su = new SpotifyUtil(spotifyApi);
+            Track track = su.getTrack(link);
+            if (track != null) {
+                List<AudioTrack> audioTrackList = musicModule.search(track.getArtists()[0].getName() + " " + track.getName());
+                if (audioTrackList.isEmpty()) {
+                    context.send("Nie znaleziono dopasowań dla tej piosenki Spotify!").queue();
+                    return false;
+                }
+                spotifyMusic = QueueCommand.getYtLink(audioTrackList.get(0));
+            } else {
+                context.send("Puszczanie piosenek z albumów Spotify zostanie dodane wkrótce!").queue();
+                return false;
+            }
+        }
 
         if (client != null) {
             socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId())
-                    .play(link);
+                    .setSendMessage(true).play(spotifyMusic != null ? spotifyMusic : link);
         } else {
             boolean find = false;
             for (Map.Entry<Integer, SocketClient> entry : socketManager.getClients().entrySet()) {
@@ -75,7 +102,7 @@ public class PrivatePlayCommand extends Command {
                             .setSendMessage(false)
                             .connect(PlayCommand.getVc(context.getMember()).getId())
                             .setSendMessage(true)
-                            .play(link);
+                            .play(spotifyMusic != null ? spotifyMusic : link);
                     break;
                 }
             }

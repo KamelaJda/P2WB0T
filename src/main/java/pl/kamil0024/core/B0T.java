@@ -265,13 +265,14 @@ public class B0T {
         api.addEventListener(modLog);
         api.addEventListener(userstatsManager);
 
-        this.musicModule = new MusicModule(commandManager, api, eventWaiter, voiceStateDao, socketManager);
-        this.statsModule = new StatsModule(commandManager, api, eventWaiter, statsDao, musicModule, nieobecnosciDao);
-
-        StatusModule statusModule = new StatusModule(api, redisManager);
         SpotifyApi spotifyApi = new SpotifyApi.Builder()
                 .setAccessToken(Ustawienia.instance.spotify.secret)
                 .build();
+
+        this.musicModule = new MusicModule(commandManager, api, eventWaiter, voiceStateDao, socketManager, spotifyApi);
+        this.statsModule = new StatsModule(commandManager, api, eventWaiter, statsDao, musicModule, nieobecnosciDao);
+
+        StatusModule statusModule = new StatusModule(api, redisManager);
         APIModule apiModule = new APIModule(api, caseDao, redisManager, nieobecnosciDao, statsDao, voiceStateDao, ticketDao, apelacjeDao, ankietaDao, embedRedisManager, acBanDao, recordingDao, deletedMessagesDao, karyJSON, modLog, statsModule, statusModule);
         WeryfikacjaModule weryfikacjaModule = new WeryfikacjaModule(apiModule, multiDao, modLog, caseDao, weryfikacjaDao);
 
