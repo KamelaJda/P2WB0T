@@ -39,7 +39,7 @@ public class SpotifyUtil {
 
     private final ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
 
-    private final SpotifyApi spotifyApi;
+    public final SpotifyApi spotifyApi;
 
     public SpotifyUtil(SpotifyApi spotifyApi) {
         this.spotifyApi = spotifyApi;
