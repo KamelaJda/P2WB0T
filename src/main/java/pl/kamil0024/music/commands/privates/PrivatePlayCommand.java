@@ -136,7 +136,7 @@ public class PrivatePlayCommand extends Command {
             SocketManager.Action sm = socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId())
                     .setSendMessage(false);
             if (!linki.isEmpty()) {
-                context.send("Dodaje **" + link.length() + "** piosenek do kolejki").queue();
+                context.send("Dodaje **" + linki.size() + "** piosenek do kolejki").queue();
                 for (String s : linki) {
                     sm.play(s);
                 }
@@ -154,10 +154,11 @@ public class PrivatePlayCommand extends Command {
                             .setSendMessage(false)
                             .connect(PlayCommand.getVc(context.getMember()).getId());
                     if (!linki.isEmpty()) {
-                        context.send("Dodaje **" + link.length() + "** piosenek do kolejki").queue();
+                        context.send("Dodaje **" + linki.size() + "** piosenek do kolejki").queue();
                         for (String s : linki) {
                             sm.play(s);
                         }
+                        break;
                     }
                     sm.play(link);
                     break;
