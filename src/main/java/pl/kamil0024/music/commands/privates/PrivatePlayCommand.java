@@ -80,11 +80,13 @@ public class PrivatePlayCommand extends Command {
                     Album album = spotifyUtil.getAlbumFromUrl(link);
                     for (TrackSimplified item : album.getTracks().getItems()) {
                         iteml.add(item.getArtists()[0].getName() + " " + item.getName());
+                        if (iteml.size() == 10) break;
                     }
                 } else if (spotifyUtil.isArtists(link)) {
                     Track[] tracks = spotifyUtil.getArtistsTracks(link);
                     for (Track track : tracks) {
                         iteml.add(track.getArtists()[0].getName() + " " + track.getName());
+                        if (iteml.size() == 10) break;
                     }
                 } else if (spotifyUtil.isPlaylist(link)) {
                     context.getChannel().sendTyping().queue();
@@ -98,7 +100,7 @@ public class PrivatePlayCommand extends Command {
                         try {
                             Track track = (Track) item.getTrack();
                             iteml.add(track.getArtists()[0].getName() + " " + track.getName());
-                            if (iteml.size() > 10) break;
+                            if (iteml.size() == 10) break;
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
