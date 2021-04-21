@@ -20,7 +20,7 @@
 package pl.kamil0024.music.commands.privates;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.wrapper.spotify.model_objects.specification.Track;
+import com.wrapper.spotify.model_objects.specification.*;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
@@ -38,8 +38,7 @@ import pl.kamil0024.music.commands.PlayCommand;
 import pl.kamil0024.music.commands.QueueCommand;
 import pl.kamil0024.music.utils.SpotifyUtil;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("DuplicatedCode")
@@ -68,38 +67,82 @@ public class PrivatePlayCommand extends Command {
             return false;
         }
 
-        SocketClient client = socketManager.getClientFromChannel(context);
-        String spotifyMusic = null;
+        List<String> linki = new ArrayList<>();
 
         if (link.contains("https://open.spotify.com/")) {
-            // TOOD: Albumy
-            if (spotifyUtil.isTrack(link)) {
-                Track track;
-                try {
-                    track = spotifyUtil.getTrack(link);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    context.send("Wystąpił błąd podczas pobierania piosenki!").queue();
-                    return false;
-                }
-                if (track != null) {
-                    List<AudioTrack> audioTrackList = musicModule.search(track.getArtists()[0].getName() + " " + track.getName());
-                    if (audioTrackList.isEmpty()) {
-                        context.send("Nie znaleziono dopasowań dla tej piosenki Spotify!").queue();
+            List<String> iteml = new ArrayList<>();
+
+            try {
+                if (spotifyUtil.isTrack(link)) {
+                    Track track = spotifyUtil.getTrackFromUrl(link);
+                    if (track != null) iteml.add(track.getArtists()[0].getName() + " " + track.getName());
+                } else if (spotifyUtil.isAlbum(link)) {
+                    Album album = spotifyUtil.getAlbumFromUrl(link);
+                    for (TrackSimplified item : album.getTracks().getItems()) {
+                        iteml.add(item.getArtists()[0].getName() + " " + item.getName());
+                    }
+                } else if (spotifyUtil.isArtists(link)) {
+                    Track[] tracks = spotifyUtil.getArtistsTracks(link);
+                    for (Track track : tracks) {
+                        iteml.add(track.getArtists()[0].getName() + " " + track.getName());
+                    }
+                } else if (spotifyUtil.isPlaylist(link)) {
+                    context.getChannel().sendTyping().queue();
+                    Paging<PlaylistTrack> album = spotifyUtil.getPlaylistFromUrl(link);
+                    List<PlaylistTrack> items = Arrays.stream(album.getItems())
+                            .filter(s -> !s.getIsLocal())
+                            .collect(Collectors.toList());
+                    Collections.reverse(items);
+
+                    for (PlaylistTrack item : items) {
+                        try {
+                            Track track = (Track) item.getTrack();
+                            iteml.add(track.getArtists()[0].getName() + " " + track.getName());
+                            if (iteml.size() > 10) break;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    if (iteml.isEmpty()) {
+                        context.send("Nie znaleziono żadnych piosenek w tej playliście!");
                         return false;
                     }
-                    spotifyMusic = QueueCommand.getYtLink(audioTrackList.get(0));
+                }
+
+                if (!iteml.isEmpty()) {
+                    for (String s : iteml) {
+                        List<AudioTrack> audioTrackList = musicModule.search(s);
+                        if (!audioTrackList.isEmpty()) {
+                            linki.add(QueueCommand.getYtLink(audioTrackList.get(0)));
+                        }
+                    }
                 } else {
-                    context.send("Puszczanie piosenek z albumów Spotify zostanie dodane wkrótce!").queue();
+                    context.send("Nie znaleziono nic pod tym linkiem! (jeżeli miał on odtworzyć piosenkę(-i), zgłoś to do administracji!)");
                     return false;
                 }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                context.send("Wystąpił błąd podczas pobierania piosenki!").queue();
+                return false;
             }
 
         }
 
+        SocketClient client = socketManager.getClientFromChannel(context);
+
         if (client != null) {
-            socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId())
-                    .setSendMessage(true).play(spotifyMusic != null ? spotifyMusic : link);
+            SocketManager.Action sm = socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId())
+                    .setSendMessage(false);
+            if (!linki.isEmpty()) {
+                context.send("Dodaje **" + link.length() + "** piosenek do kolejki").queue();
+                for (String s : linki) {
+                    sm.play(s);
+                }
+                return true;
+            }
+            sm.setSendMessage(true).play(link);
         } else {
             boolean find = false;
             for (Map.Entry<Integer, SocketClient> entry : socketManager.getClients().entrySet()) {
@@ -107,11 +150,16 @@ public class PrivatePlayCommand extends Command {
                 if (mem == null) continue;
                 if (mem.getVoiceState() == null || mem.getVoiceState().getChannel() == null) {
                     find = true;
-                    socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), entry.getKey())
+                    SocketManager.Action sm = socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), entry.getKey())
                             .setSendMessage(false)
-                            .connect(PlayCommand.getVc(context.getMember()).getId())
-                            .setSendMessage(true)
-                            .play(spotifyMusic != null ? spotifyMusic : link);
+                            .connect(PlayCommand.getVc(context.getMember()).getId());
+                    if (!linki.isEmpty()) {
+                        context.send("Dodaje **" + link.length() + "** piosenek do kolejki").queue();
+                        for (String s : linki) {
+                            sm.play(s);
+                        }
+                    }
+                    sm.play(link);
                     break;
                 }
             }
