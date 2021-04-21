@@ -161,7 +161,6 @@ public class EvalCommand extends Command {
         shell.setVariable("statusModule", statusModule);
         shell.setVariable("spotifyUtil", spotifyUtil);
 
-
         long ms = System.currentTimeMillis();
         Object value;
         boolean error = false;

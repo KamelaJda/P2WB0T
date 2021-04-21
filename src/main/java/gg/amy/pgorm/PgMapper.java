@@ -8,6 +8,7 @@ import gg.amy.pgorm.annotations.GIndex;
 import gg.amy.pgorm.annotations.PrimaryKey;
 import gg.amy.pgorm.annotations.Table;
 import lombok.Getter;
+import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.core.logger.Log;
 
 import java.io.IOException;
@@ -408,9 +409,12 @@ public class PgMapper<T> {
         return data;
     }
 
-    public List<T> getDescKary(String userId, int offset) {
+    public List<T> getDescKary(String userId, @Nullable Integer offset) {
         final List<T> data = new ArrayList<>();
-        String msg = String.format("SELECT * FROM %s WHERE data::jsonb @> '{\"kara\": {\"karanyId\": \"%s\"}}' ORDER BY cast(data->>'id' as integer) DESC LIMIT 10 OFFSET %d;", table.value(), userId, offset);
+        String msg = String.format("SELECT * FROM %s WHERE data::jsonb @> '{\"kara\": {\"karanyId\": \"%s\"}}' ORDER BY cast(data->>'id' as integer)", table.value(), userId);
+        if (offset != null) {
+            msg = String.format("SELECT * FROM %s WHERE data::jsonb @> '{\"kara\": {\"karanyId\": \"%s\"}}' ORDER BY cast(data->>'id' as integer) DESC LIMIT 10 OFFSET %d;", table.value(), userId, offset);
+        }
         store.sql(msg, c -> {
             final ResultSet resultSet = c.executeQuery();
             if (resultSet.isBeforeFirst()) {

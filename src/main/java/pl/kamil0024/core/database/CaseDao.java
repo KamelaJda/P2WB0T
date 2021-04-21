@@ -90,7 +90,7 @@ public class CaseDao implements Dao<CaseConfig> {
         return mapper.getAll(userId);
     }
 
-    public List<CaseConfig> getAllDesc(String userId, int offset) {
+    public List<CaseConfig> getAllDesc(String userId, Integer offset) {
         return mapper.getDescKary(userId, offset);
     }
 

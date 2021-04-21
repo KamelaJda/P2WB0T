@@ -75,7 +75,7 @@ public class PunishCommand extends Command {
     @Override
     public boolean execute(@NotNull CommandContext context) {
         if (karyJSON.getKary().isEmpty()) {
-            context.send("karyJSON.getKary() jest puste").queue();
+            context.send("karyJSON.getKary() jest puste", false).queue();
             return false;
         }
         String arg = context.getArgs().get(0);
@@ -103,7 +103,7 @@ public class PunishCommand extends Command {
                         }
                     }
                     if (!powod) {
-                        context.send("Nie ma takiego numeru!").queue();
+                        context.send("Nie ma takiego numeru!", false).queue();
                         return false;
                     }
                 }
@@ -177,7 +177,7 @@ public class PunishCommand extends Command {
         }
 
         if (numer - 1 > karyJSON.getKary().size() || numer <= 0) {
-            context.send("Nie ma takiego numeru!").queue();
+            context.send("Nie ma takiego numeru!", false).queue();
             return false;
         }
         KaryJSON.Kara kara = karyJSON.getKary().get(numer - 1);

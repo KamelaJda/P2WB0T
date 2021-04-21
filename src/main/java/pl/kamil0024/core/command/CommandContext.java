@@ -39,7 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-@SuppressWarnings({"unused", "UnusedReturnValue", "StringBufferMayBeStringBuilder"})
+@SuppressWarnings({"unused", "UnusedReturnValue"})
 public class CommandContext {
 
     @Getter private final MessageReceivedEvent event;
@@ -107,27 +107,25 @@ public class CommandContext {
     }
 
     public MessageAction send(String msg) {
-        return send(msg, true);
+        return send(msg, true, true);
     }
 
-    public MessageAction send(CharSequence msg, boolean checkUrl) {
+    public MessageAction send(String msg, boolean referece) {
+        return send(msg, true, referece);
+    }
+
+    public MessageAction send(CharSequence msg, boolean checkUrl, boolean reference) {
         String message = String.valueOf(msg);
         if (checkUrl && URLPATTERN.matcher(msg).matches()) {
             message = message.replaceAll(String.valueOf(URLPATTERN), "[LINK]");
         }
         MessageAction ma = event.getChannel().sendMessage(message.replaceAll("@(everyone|here)", "@\u200b$1"));
-        try {
-            ma = ma.referenceById(getMessage().getIdLong());
-        } catch (Exception ignored) { }
+        if (reference) ma = ma.reference(getMessage());
         return ma;
     }
 
     public MessageAction send(MessageEmbed message) {
-        MessageAction ma = event.getChannel().sendMessage(message);
-        try {
-            ma = ma.referenceById(getMessage().getIdLong());
-        } catch (Exception ignored) { }
-        return ma;
+        return event.getChannel().sendMessage(message).reference(getMessage());
     }
 
     public MessageAction sendTranslate(String key, Object... obj) {

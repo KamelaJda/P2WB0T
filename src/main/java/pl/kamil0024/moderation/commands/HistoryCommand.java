@@ -33,11 +33,10 @@ import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.util.DynamicEmbedPageinator;
 import pl.kamil0024.core.util.EventWaiter;
 import pl.kamil0024.core.util.UserUtil;
+import pl.kamil0024.core.util.kary.KaryEnum;
 import pl.kamil0024.moderation.listeners.ModLog;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.FutureTask;
 
 public class HistoryCommand extends Command {
@@ -65,39 +64,13 @@ public class HistoryCommand extends Command {
 
         new Thread(() -> {
             try {
-                List<CaseConfig> cc = caseDao.getAll(u.getId());
+                List<CaseConfig> cc = caseDao.getAllDesc(u.getId(), null);
 
-                int banow = 0;
-                int unbanow = 0;
-                int mutow = 0;
-                int unmutow = 0;
-                int kickow = 0;
-                int tempbanow = 0;
-                int tempmutow = 0;
+                Map<KaryEnum, Integer> liczbaKar = new HashMap<>();
                 for (CaseConfig k : cc) {
-                    switch (k.getKara().getTypKary()) {
-                        case BAN:
-                            banow++;
-                            break;
-                        case TEMPBAN:
-                            tempbanow++;
-                            break;
-                        case TEMPMUTE:
-                            tempmutow++;
-                            break;
-                        case KICK:
-                            kickow++;
-                            break;
-                        case UNBAN:
-                            unbanow++;
-                            break;
-                        case MUTE:
-                            mutow++;
-                            break;
-                        case UNMUTE:
-                            unmutow++;
-                    }
+                    liczbaKar.put(k.getKara().getTypKary(), liczbaKar.getOrDefault(k.getKara().getTypKary(), 0) + 1);
                 }
+
                 List<FutureTask<EmbedBuilder>> pages = new ArrayList<>();
 
                 EmbedBuilder eb = new EmbedBuilder();
@@ -106,20 +79,16 @@ public class HistoryCommand extends Command {
                 eb.setDescription(context.getTranslate("history.history", UserUtil.getLogName(u)));
                 eb.setColor(UserUtil.getColor(context.getMember()));
 
-                eb.addField(context.getTranslate("history.tempban"), tempbanow + "", true);
-                eb.addField(context.getTranslate("history.ban"), banow + "", true);
-                eb.addField(context.getTranslate("history.unban"), unbanow + "", true);
-                eb.addField(context.getTranslate("history.mute"), mutow + "", false);
-                eb.addField(context.getTranslate("history.tempmute"), tempmutow + "", true);
-                eb.addField(context.getTranslate("history.unmute"), unmutow + "", true);
-                eb.addField(context.getTranslate("history.kick"), kickow + "", true);
+                for (KaryEnum v : KaryEnum.values()) {
+                    eb.addField(context.getTranslate("history." + v.toString().toLowerCase()), liczbaKar.getOrDefault(v, 0) + "", true);
+                }
                 pages.add(new FutureTask<>(() -> eb));
 
                 List<EmbedBuilder> historiaKar = new ArrayList<>();
                 for (CaseConfig kara : cc) {
                     EmbedBuilder ebb = ModLog.getEmbed(kara.getKara(), context.getShardManager());
                     boolean aktywna = kara.getKara().getAktywna() != null && kara.getKara().getAktywna();
-                    ebb.addField("Aktywna?", aktywna ? "Tak" : "Nie", false);
+                    ebb.addField(context.getTranslate("history.aktywna"), aktywna ? context.getTranslate("generic.yes") : context.getTranslate("generic.no"), false);
                     historiaKar.add(ebb);
                 }
 
@@ -129,7 +98,7 @@ public class HistoryCommand extends Command {
                 }
                 new DynamicEmbedPageinator(pages, context.getUser(), eventWaiter, context.getJDA(), 360).create(msg);
             } catch (Exception e) {
-                msg.editMessage("Wystąpił błąd!").complete();
+                msg.editMessage("Wystąpił błąd: " + e.getMessage()).complete();
                 Log.newError(e, getClass());
             }
         }).start();

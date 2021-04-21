@@ -23,8 +23,6 @@ import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.kamil0024.core.database.CaseDao;
 import pl.kamil0024.core.database.config.CaseConfig;
 import pl.kamil0024.core.util.kary.Dowod;
@@ -37,8 +35,6 @@ import java.util.concurrent.TimeUnit;
 @AllArgsConstructor
 public class DowodWaiter {
 
-    private final Logger logger = LoggerFactory.getLogger(DowodWaiter.class);
-
     private final String userId;
     private final CaseConfig cc;
     private final CaseDao cd;
@@ -48,7 +44,7 @@ public class DowodWaiter {
     private Message botMsg;
 
     public void start() {
-        botMsg = channel.sendMessage(String.format("<@%s>, zapisz dowód... (jeżeli takowego nie ma, napisz `anuluj`)", userId)).complete();
+        botMsg = channel.sendMessage(String.format("<@%s>, zapisz dowód... (jeżeli takowego nie ma, napisz `anuluj`)\n**NIE WPISUJ KOLEJNEJ KOMENDY JEŻELI NIE MA DOWODU, WPISZ `ANULUJ`**", userId)).complete();
         waitForMessage();
     }
 
@@ -68,7 +64,7 @@ public class DowodWaiter {
 
     private void clear() {
         try {
-            botMsg.delete().queue(c -> {});
+            botMsg.delete().completeAfter(5, TimeUnit.SECONDS);
         } catch (Exception ignored) { }
     }
 
@@ -77,10 +73,10 @@ public class DowodWaiter {
         try {
             msg = e.getTextChannel().retrieveMessageById(e.getMessageId()).complete();
         } catch (Exception ex) {
-            logger.debug("Próbuje kolejny raz...");
             waitForMessage();
             return;
         }
+
         List<Dowod> d = DowodCommand.getKaraConfig(msg.getContentRaw(), msg, false);
         if (d == null || d.isEmpty()) {
             e.getTextChannel().sendMessage("Dowód jest pusty?").queue();
