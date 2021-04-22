@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.chat.Action;
+import pl.kamil0024.chat.SwearWords;
 import pl.kamil0024.core.Main;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.enums.PermLevel;
@@ -75,7 +76,11 @@ public class ChatListener extends ListenerAdapter {
     private final StatsModule statsModule;
     private final KaryListener karyListener;
 
-    @Getter private final List<String> przeklenstwa;
+    @Getter
+    private final SwearWords swearWords;
+
+    @Getter
+    private final static List<String> przeklenstwa = loadWords("przeklenstwa.api");
 
     public ChatListener(KaryJSON karyJSON, CaseDao caseDao, ModLog modLog, StatsModule statsModule, KaryListener karyListener) {
         this.karyJSON = karyJSON;
@@ -83,25 +88,25 @@ public class ChatListener extends ListenerAdapter {
         this.caseDao = caseDao;
         this.statsModule = statsModule;
         this.karyListener = karyListener;
-        this.przeklenstwa = loadPrzeklenstwa();
+        this.swearWords = new SwearWords();
     }
 
-    public static List<String> loadPrzeklenstwa() {
-        InputStream res = Main.class.getClassLoader().getResourceAsStream("przeklenstwa.api");
+    public static List<String> loadWords(String file) {
+        InputStream res = Main.class.getClassLoader().getResourceAsStream(file);
         if (res == null) {
-            Log.newError("Plik przeklenstwa.api jest nullem", ChatListener.class);
-            throw new NullPointerException("Plik przeklenstwa.api jest nullem");
+            Log.newError("Plik " + file + " jest nullem", ChatListener.class);
+            throw new NullPointerException("Plik " + file + " jest nullem");
         }
 
-        List<String> przeklenstwa = new ArrayList<>();
+        List<String> words = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(res, UTF_8))) {
             String line;
-            while ((line = br.readLine()) != null) { przeklenstwa.add(line); }
+            while ((line = br.readLine()) != null) { words.add(line); }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (przeklenstwa.isEmpty()) Log.newError("Lista przeklenstw jest nullem!", ChatListener.class);
-        return przeklenstwa;
+        if (words.isEmpty()) Log.newError("Lista slow w pliku " + file + "  jest pusta!", ChatListener.class);
+        return words;
     }
 
     @Override
@@ -189,6 +194,7 @@ public class ChatListener extends ListenerAdapter {
 
             if (containsInvite(msgRaw.split(" "))) {
                 msg.delete().queue();
+                action.setDeleted(true);
                 action.setKara(Action.ListaKar.LINK);
                 action.send(karyListener, msg.getGuild());
                 return;
@@ -204,6 +210,7 @@ public class ChatListener extends ListenerAdapter {
                     }
                     if (!member.getRoles().contains(miniyt) || !member.getRoles().contains(yt)) {
                         msg.delete().queue();
+                        action.setDeleted(true);
                         action.setKara(Action.ListaKar.LINK);
                         action.send(karyListener, msg.getGuild());
                     }
@@ -220,6 +227,7 @@ public class ChatListener extends ListenerAdapter {
             if (!msg.getChannel().getId().equals("652927860943880224")) {
                 if (containsCaps(capsMsg) >= 50 || emoteCount(takMsg, msg.getJDA()) >= 10) {
                     msg.delete().queue();
+                    action.setDeleted(true);
                     action.setKara(Action.ListaKar.FLOOD);
                     action.send(karyListener, msg.getGuild());
                     return;
@@ -250,6 +258,14 @@ public class ChatListener extends ListenerAdapter {
                 action.send(karyListener, msg.getGuild());
                 return;
             }
+
+            String sw = swearWords.checkSwear(przeklenstwa);
+            if (sw != null) {
+                action.setKara(Action.ListaKar.ZACHOWANIE);
+                action.setDescription("Wykryto w wiadomości wulgarny zwrot `" + sw + "`");
+                action.send(karyListener, msg.getGuild());
+            }
+
         }
 
         if (!msg.getChannel().getId().equals("652263735645175818") && msg.getAttachments().size() > 0) {

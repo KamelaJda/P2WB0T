@@ -21,6 +21,7 @@ package pl.kamil0024.core.command;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 import com.google.gson.Gson;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
@@ -194,14 +195,10 @@ public class CommandContext {
                 "args=" + new Gson().toJson(getArgs());
     }
 
-    @SuppressWarnings("InnerClassMayBeStatic")
-    public class ParsedArgumenty {
+    @AllArgsConstructor
+    public static class ParsedArgumenty {
 
         private final CommandContext context;
-
-        public ParsedArgumenty(CommandContext context) {
-            this.context = context;
-        }
 
         @Nullable
         public User getUser(String user) {
@@ -222,21 +219,10 @@ public class CommandContext {
         @Nullable
         public Integer getNumber(@Nullable String num) {
             if (num == null) return null;
-            Integer n = null;
             try {
-                n = Integer.parseInt(num);
+                return Integer.parseInt(num);
             } catch (NumberFormatException ignored) { }
-            return n;
-        }
-
-        @Nullable
-        public Double getDouble(@Nullable String num) {
-            if (num == null) return null;
-            Double n = null;
-            try {
-                n = Double.parseDouble(num);
-            } catch (Exception ignored) { }
-            return n;
+            return null;
         }
 
     }

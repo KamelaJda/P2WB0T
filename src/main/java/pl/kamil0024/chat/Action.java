@@ -43,6 +43,7 @@ public class Action {
     private boolean isDeleted = true;
     private String botMsg = null;
     private String imageUrl = null;
+    private String description = null;
 
     public Action() { }
 
@@ -64,6 +65,8 @@ public class Action {
                 String.format("https://discord.com/channels/%s/%s/%s", api.getId(), getMsg().getChannel(), getMsg().getId())), false);
 
         if (imageUrl != null) eb.setImage(imageUrl);
+
+        if (getDescription() != null) eb.addField("Dodatkowa pomoc", getDescription(), false);
 
         TextChannel txt = api.getTextChannelById(Ustawienia.instance.channel.moddc);
         if (txt == null) throw new NullPointerException("Kanał do modów dc jest nullem");

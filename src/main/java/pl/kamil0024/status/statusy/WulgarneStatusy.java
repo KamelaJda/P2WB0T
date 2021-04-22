@@ -38,7 +38,7 @@ public class WulgarneStatusy extends ListenerAdapter {
     private final List<String> przeklenstwa;
 
     public WulgarneStatusy() {
-        this.przeklenstwa = ChatListener.loadPrzeklenstwa();
+        this.przeklenstwa = ChatListener.getPrzeklenstwa();
     }
 
     public List<String> getAvtivity(Member mem) {
