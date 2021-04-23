@@ -64,7 +64,7 @@ public class DowodWaiter {
 
     private void clear() {
         try {
-            botMsg.delete().completeAfter(5, TimeUnit.SECONDS);
+            botMsg.delete().complete();
         } catch (Exception ignored) { }
     }
 

@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -224,7 +225,7 @@ public class DowodCommand extends Command {
         }
         else dowody.add(new Dowod(1, msg.getAuthor().getId(), content, null));
 
-        if (deleteMsg && !inCmd) msg.delete().queue();
+        if (deleteMsg && !inCmd) msg.delete().queueAfter(5, TimeUnit.SECONDS);
         return dowody;
     }
 

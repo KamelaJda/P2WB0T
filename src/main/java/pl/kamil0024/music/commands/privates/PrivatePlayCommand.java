@@ -162,7 +162,7 @@ public class PrivatePlayCommand extends Command {
                         }
                         break;
                     }
-                    sm.play(link);
+                    sm.setSendMessage(true).play(link);
                     break;
                 }
             }
