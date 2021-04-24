@@ -115,7 +115,10 @@ public class ChatListener extends ListenerAdapter {
         if (e.getChannel().getParent() != null && e.getChannel().getParent().getId().equals("539819570358386698")) return;
         if (UserUtil.getPermLevel(e.getAuthor()).getNumer() >= PermLevel.CHATMOD.getNumer()) return;
         if (e.getAuthor().isBot()) return;
-        if (e.getChannel().getId().equals("426809411378479105") || e.getChannel().getId().equals("503294063064121374") || e.getChannel().getId().equals("573873102757429256")) return;
+        if (e.getChannel().getId().equals("426809411378479105") ||
+                e.getChannel().getId().equals("503294063064121374") ||
+                e.getChannel().getId().equals("573873102757429256") ||
+                e.getChannel().getId().equals("816436328417198081")) return;
 
         char kurwa = 'a';
         try {
