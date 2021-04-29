@@ -78,7 +78,7 @@ public class CheckCommand extends Command {
         Member mem = context.getParsed().getMember(user.getId());
 
         Kara kara = null;
-        List<CaseConfig> kary = caseDao.getAll(user.getId());
+        List<CaseConfig> kary = caseDao.getAllDesc(user.getId(), null);
         if (!kary.isEmpty()) kara = kary.get(kary.size() - 1).getKara();
 
         eb.addField(context.getTranslate("check.name"), UserUtil.getLogName(user), false);
