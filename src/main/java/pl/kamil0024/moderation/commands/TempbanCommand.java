@@ -30,12 +30,14 @@ import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.database.CaseDao;
 import pl.kamil0024.core.util.Duration;
 import pl.kamil0024.core.util.UserUtil;
+import pl.kamil0024.core.util.kary.Dowod;
 import pl.kamil0024.core.util.kary.Kara;
 import pl.kamil0024.core.util.kary.KaryEnum;
 import pl.kamil0024.moderation.listeners.ModLog;
 import pl.kamil0024.stats.StatsModule;
 
 import java.util.Date;
+import java.util.List;
 
 import static pl.kamil0024.core.util.kary.Kara.check;
 
@@ -84,10 +86,10 @@ public class TempbanCommand extends Command {
     }
 
     public static String tempban(User user, User adm, String powod, String duration, CaseDao caseDao, ModLog modLog, boolean isPun, Guild guild, String nick) {
-        return tempban(user, adm, powod,duration, caseDao, modLog, isPun, guild,nick,0);
+        return tempban(user, adm, powod,duration, caseDao, modLog, isPun, guild, nick, 0, null);
     }
 
-    public static String tempban(User user, User adm, String powod, String duration, CaseDao caseDao, ModLog modLog, boolean isPun, Guild guild, String nick, int delDays) {
+    public static String tempban(User user, User adm, String powod, String duration, CaseDao caseDao, ModLog modLog, boolean isPun, Guild guild, String nick, int delDays, List<Dowod> dowody) {
         if (UserUtil.getPermLevel(adm).getNumer() <= UserUtil.getPermLevel(user).getNumer()) {
             return "Poziom uprawnień osoby, którą chcesz ukarać jest wyższy od Twojego!";
         }
@@ -112,6 +114,7 @@ public class TempbanCommand extends Command {
             kara.setTypKary(KaryEnum.TEMPBAN);
             kara.setEnd(dur);
             kara.setDuration(duration);
+            if (dowody != null) kara.setDowody(dowody);
             Kara.put(caseDao, kara, modLog);
         }
 

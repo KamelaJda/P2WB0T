@@ -36,10 +36,8 @@ import pl.kamil0024.core.util.UserUtil;
 
 import javax.crypto.IllegalBlockSizeException;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class AntiRaidManager {
@@ -151,6 +149,7 @@ public class AntiRaidManager {
             arc.setUserId(user.getId());
             arc.setId(msg.getId());
             arc.setReason(reason);
+            arc.setMessages(Collections.singletonList(messages.stream().map(FakeAntiRaidMessage::getContent).collect(Collectors.joining("\n"))));
             dao.save(arc);
             msg.addReaction(CommandExecute.getReaction(msg.getAuthor(), true)).queue();
             msg.addReaction(CommandExecute.getReaction(msg.getAuthor(), false)).queue();

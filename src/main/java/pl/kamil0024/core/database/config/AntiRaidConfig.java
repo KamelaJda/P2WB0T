@@ -25,6 +25,9 @@ import gg.amy.pgorm.annotations.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Table("antiraid")
 @GIndex({"id"})
 @Data
@@ -43,5 +46,6 @@ public class AntiRaidConfig {
     public String userId;
     public long date;
     public String reason;
+    public List<String> messages = new ArrayList<>();
 
 }

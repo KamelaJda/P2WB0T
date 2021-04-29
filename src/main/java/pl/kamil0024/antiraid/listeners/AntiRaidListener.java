@@ -32,9 +32,11 @@ import pl.kamil0024.core.database.AntiRaidDao;
 import pl.kamil0024.core.database.CaseDao;
 import pl.kamil0024.core.database.config.AntiRaidConfig;
 import pl.kamil0024.core.util.UserUtil;
+import pl.kamil0024.core.util.kary.Dowod;
 import pl.kamil0024.moderation.commands.TempbanCommand;
 import pl.kamil0024.moderation.listeners.ModLog;
 
+import java.util.Collections;
 import java.util.Objects;
 
 @AllArgsConstructor
@@ -100,9 +102,13 @@ public class AntiRaidListener extends ListenerAdapter {
             return;
         }
 
+        Dowod d = new Dowod();
+        d.setId(0);
+        d.setUser(event.getUserId());
+        d.setContent("Zbanowano przez antiraida - dowód wystawiony automatycznie. Wiadomości użytkownika znajdują się poniżej\n\n" + String.join("\n", arc.getMessages()));
         String tak = TempbanCommand.tempban(member.getUser(), event.getUser(),
                 String.format("Raid (%s)", arc.getReason()), "1d", caseDao, modLog, false,
-                event.getGuild(), UserUtil.getMcNick(member), 1);
+                event.getGuild(), UserUtil.getMcNick(member), 1, Collections.singletonList(d));
 
         if (tak != null) event.getChannel().sendMessage(tak).complete();
         msg.delete().complete();
