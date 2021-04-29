@@ -76,7 +76,7 @@ public class ModerationModule implements Modul {
         cmd.add(new PunishCommand(karyJSON, eventWaiter, caseDao, modLog, statsModule));
         cmd.add(new KickCommand(caseDao, modLog, statsModule));
         cmd.add(new BanCommand(caseDao, modLog, statsModule));
-        cmd.add(new TempbanCommand(caseDao, modLog, statsModule));
+        cmd.add(new TempbanCommand(caseDao, modLog));
         cmd.add(new UnbanCommand(caseDao, modLog));
         cmd.add(new MuteCommand(caseDao, modLog, statsModule));
         cmd.add(new HistoryCommand(caseDao, eventWaiter));

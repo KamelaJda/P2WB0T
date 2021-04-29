@@ -34,7 +34,6 @@ import pl.kamil0024.core.util.kary.Dowod;
 import pl.kamil0024.core.util.kary.Kara;
 import pl.kamil0024.core.util.kary.KaryEnum;
 import pl.kamil0024.moderation.listeners.ModLog;
-import pl.kamil0024.stats.StatsModule;
 
 import java.util.Date;
 import java.util.List;
@@ -47,7 +46,7 @@ public class TempbanCommand extends Command {
     private final CaseDao caseDao;
     private final ModLog modLog;
 
-    public TempbanCommand(CaseDao caseDao, ModLog modLog, StatsModule statsModule) {
+    public TempbanCommand(CaseDao caseDao, ModLog modLog) {
         name = "tempban";
         permLevel = PermLevel.CHATMOD;
         category = CommandCategory.MODERATION;
