@@ -133,9 +133,11 @@ public class AntiRaidManager {
 
         eb.addField("", "Ostatnie wiadomości:", false);
         int i = 1;
+        StringBuilder dowodMsg = new StringBuilder();
         for (FakeAntiRaidMessage message : messages) {
             try {
                 eb.addField("Wiadomość nr:  " + i, message.getContent(), false);
+                dowodMsg.append(message.getContent()).append("\n");
             } catch(Exception ignored) {}
             i++;
         }
@@ -149,7 +151,7 @@ public class AntiRaidManager {
             arc.setUserId(user.getId());
             arc.setId(msg.getId());
             arc.setReason(reason);
-            arc.setMessages(Collections.singletonList(messages.stream().map(FakeAntiRaidMessage::getContent).collect(Collectors.joining("\n"))));
+            arc.setMessages(dowodMsg.toString());
             dao.save(arc);
             msg.addReaction(CommandExecute.getReaction(msg.getAuthor(), true)).queue();
             msg.addReaction(CommandExecute.getReaction(msg.getAuthor(), false)).queue();

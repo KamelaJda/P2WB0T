@@ -105,7 +105,7 @@ public class AntiRaidListener extends ListenerAdapter {
         Dowod d = new Dowod();
         d.setId(0);
         d.setUser(event.getUserId());
-        d.setContent("Zbanowano przez antiraida - dowód wystawiony automatycznie. Wiadomości użytkownika znajdują się poniżej\n\n" + String.join("\n", arc.getMessages()));
+        d.setContent("Zbanowano przez antiraida - dowód wystawiony automatycznie. Wiadomości użytkownika znajdują się poniżej\n\n" + arc.getMessages());
         String tak = TempbanCommand.tempban(member.getUser(), event.getUser(),
                 String.format("Raid (%s)", arc.getReason()), "1d", caseDao, modLog, false,
                 event.getGuild(), UserUtil.getMcNick(member), 1, Collections.singletonList(d));

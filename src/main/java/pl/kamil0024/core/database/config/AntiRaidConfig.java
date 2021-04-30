@@ -46,6 +46,6 @@ public class AntiRaidConfig {
     public String userId;
     public long date;
     public String reason;
-    public List<String> messages = new ArrayList<>();
+    public String messages;
 
 }
