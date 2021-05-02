@@ -22,6 +22,7 @@ package pl.kamil0024.core.database;
 import gg.amy.pgorm.PgMapper;
 import pl.kamil0024.core.database.config.Dao;
 import pl.kamil0024.core.database.config.MultiConfig;
+import pl.kamil0024.core.util.Nick;
 
 import java.util.List;
 
@@ -39,9 +40,13 @@ public class MultiDao implements Dao<MultiConfig> {
         return mapper.load(id).orElseGet(() -> new MultiConfig(id));
     }
 
-    public MultiConfig getByNick(String nick) {
-        return mapper.loadRaw(String.format("SELECT * FROM multi WHERE data::jsonb @> '{\"nicki\": [{\"nick\": \"%s\"}]}';", nick))
-                .stream().findAny().orElse(null);
+    public List<MultiConfig> getByNick(String nick) {
+        List<MultiConfig> conf = mapper.loadRaw(String.format("SELECT * FROM multi WHERE data::jsonb @> '{\"nicki\": [{\"nick\": \"%s\"}]}';", nick));
+        for (MultiConfig config : conf) {
+            config.getNicki().removeIf(nick1 -> !nick1.getNick().equals(nick));
+        }
+        return conf;
+
     }
 
     @Override
