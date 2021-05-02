@@ -97,13 +97,13 @@ public class MultiCommand extends Command {
         eb.setColor(UserUtil.getColor(executor));
 
         BetterStringBuilder sb = new BetterStringBuilder();
-        sb.appendLine("```");
 
+        int index = 1;
         for (MultiConfig multiConfig : mc) {
             for (Nick nick : multiConfig.getNicki()) {
+                sb.append(index + ". ");
                 sb.appendLine(format(nick, showUser ? UserUtil.getFullName(jda, multiConfig.getId()) : null));
                 if (sb.toString().length() >= 1900) {
-                    sb.append("```");
                     eb.setDescription(sb.toString());
                     pages.add(eb);
 
@@ -111,9 +111,9 @@ public class MultiCommand extends Command {
                     eb.setColor(UserUtil.getColor(executor));
 
                     sb = new BetterStringBuilder();
-                    sb.appendLine("```");
                 }
             }
+            index++;
         }
 
         if (pages.isEmpty()) {
