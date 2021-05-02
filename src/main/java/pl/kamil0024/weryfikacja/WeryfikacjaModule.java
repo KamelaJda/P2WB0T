@@ -191,7 +191,7 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
         } catch (Exception ignored) {}
 
         MultiConfig conf = multiDao.get(member.getId());
-        conf.getNicki().add(new Nick(nickname + " " + config.getNick(), new BDate().getTimestamp()));
+        conf.getNicki().add(new Nick(config.getNick(), nickname, new BDate().getTimestamp()));
         multiDao.save(conf);
 
         modLog.checkKara(member, true,

@@ -39,6 +39,11 @@ public class MultiDao implements Dao<MultiConfig> {
         return mapper.load(id).orElseGet(() -> new MultiConfig(id));
     }
 
+    public MultiConfig getByNick(String nick) {
+        return mapper.loadRaw(String.format("SELECT * FROM multi WHERE data::jsonb @> '{\"nicki\": [{\"nick\": \"%s\"}]}';", nick))
+                .stream().findAny().orElse(null);
+    }
+
     @Override
     public void save(MultiConfig toCos) {
         mapper.save(toCos);

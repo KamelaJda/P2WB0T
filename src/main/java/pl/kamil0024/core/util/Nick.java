@@ -28,6 +28,7 @@ public class Nick {
     public Nick() {}
 
     String nick = null;
+    String ranga = null;
     long date = 0;
 
 }

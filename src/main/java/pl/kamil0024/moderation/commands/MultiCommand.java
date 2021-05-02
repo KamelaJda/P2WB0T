@@ -20,6 +20,7 @@
 package pl.kamil0024.moderation.commands;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
@@ -34,6 +35,7 @@ import pl.kamil0024.core.util.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class MultiCommand extends Command {
 
@@ -50,21 +52,36 @@ public class MultiCommand extends Command {
 
     @Override
     public boolean execute(@NotNull CommandContext context) {
-        User user = context.getParsed().getUser(context.getArgs().get(0));
-        if (user == null) throw new UsageException();
-
         Message msg = context.send("Ładuje...").reference(context.getMessage()).complete();
 
-        MultiConfig mc = multiDao.get(user.getId());
+        MultiConfig mc;
+
+        User user = context.getParsed().getUser(context.getArgs().get(0));
+        if (user != null) mc = multiDao.get(user.getId());
+        else mc = multiDao.getByNick(context.getArgs().get(0));
+
         if (mc.getNicki().isEmpty()) {
-            msg.editMessage("Ta osoba nie posiada multi kont!").queue();
+            context.send("Taki użytkownik Discorda oraz taki nick w Minecraft nie posiadają żadnych wspólnych kont na Discordzie!").queue();
             return false;
         }
 
+        List<EmbedBuilder> pages = getPages(mc, "", context.getMember());
+
+        new EmbedPageintaor(pages, context.getUser(), eventWaiter, context.getJDA()).create(context.getChannel(), context.getMessage());
+        msg.delete().queue();
+        return true;
+    }
+
+    public static String format(Nick nick) {
+        SimpleDateFormat sfd = new SimpleDateFormat("dd.MM.yyyy `@` HH:mm:ss");
+        return sfd.format(new Date(nick.getDate())) + " - " + nick.getRanga() + " " + nick.getNick();
+    }
+
+    public ArrayList<EmbedBuilder> getPages(MultiConfig mc, String name, Member executor) {
         ArrayList<EmbedBuilder> pages = new ArrayList<>();
         EmbedBuilder eb = new EmbedBuilder();
-        eb.addField("Multi konta gracza", UserUtil.getLogName(user), false);
-        eb.setColor(UserUtil.getColor(context.getMember()));
+        eb.addField("Multi konta gracza", name, false);
+        eb.setColor(UserUtil.getColor(executor));
 
         BetterStringBuilder sb = new BetterStringBuilder();
         sb.appendLine("```");
@@ -77,7 +94,7 @@ public class MultiCommand extends Command {
                 pages.add(eb);
 
                 eb = new EmbedBuilder();
-                eb.setColor(UserUtil.getColor(context.getMember()));
+                eb.setColor(UserUtil.getColor(executor));
 
                 sb = new BetterStringBuilder();
                 sb.appendLine("```");
@@ -89,15 +106,7 @@ public class MultiCommand extends Command {
             eb.setDescription(sb.toString());
             pages.add(eb);
         }
-
-        new EmbedPageintaor(pages, context.getUser(), eventWaiter, context.getJDA()).create(context.getChannel(), context.getMessage());
-        msg.delete().queue();
-        return true;
-    }
-
-    public static String format(Nick nick) {
-        SimpleDateFormat sfd = new SimpleDateFormat("dd.MM.yyyy @ HH:mm:ss");
-        return sfd.format(new Date(nick.getDate())) + " - " + nick.getNick();
+        return pages;
     }
 
 }
