@@ -85,7 +85,7 @@ public class MultiCommand extends Command {
     }
 
     public static String format(Nick nick, @Nullable String user) {
-        String format = String.format("%s - %s %s", SDF.format(new Date(nick.getDate())), nick.getRanga(), nick.getNick());
+        String format = String.format("`%s - %s %s`", SDF.format(new Date(nick.getDate())), nick.getRanga(), nick.getNick());
         if (user != null) format += " " + user;
         return format;
     }
@@ -112,12 +112,11 @@ public class MultiCommand extends Command {
 
                     sb = new BetterStringBuilder();
                 }
+                index++;
             }
-            index++;
         }
 
         if (pages.isEmpty()) {
-            sb.append("```");
             eb.setDescription(sb.toString());
             pages.add(eb);
         }

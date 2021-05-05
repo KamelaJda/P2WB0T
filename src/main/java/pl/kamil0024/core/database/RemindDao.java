@@ -45,7 +45,6 @@ public class RemindDao implements Dao<RemindConfig> {
     }
 
     @Override
-
     public List<RemindConfig> getAll() {
         return mapper.loadAll();
     }

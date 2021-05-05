@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.events.ExceptionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import pl.kamil0024.core.logger.Log;
 
-
 public class ExceptionListener extends ListenerAdapter {
 
     public ExceptionListener() { }

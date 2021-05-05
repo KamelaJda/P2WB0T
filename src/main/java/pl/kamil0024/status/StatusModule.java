@@ -41,11 +41,12 @@ import java.util.concurrent.TimeUnit;
 public class StatusModule implements Modul {
 
     private final ShardManager api;
+    private final WulgarneStatusy wulgarneStatusy = new WulgarneStatusy();
+
     public final Cache<String> cache;
 
     @Getter @Setter
     private boolean start = false;
-    private final WulgarneStatusy wulgarneStatusy = new WulgarneStatusy();
 
     public StatusModule(ShardManager api, RedisManager redisManager) {
         this.api = api;

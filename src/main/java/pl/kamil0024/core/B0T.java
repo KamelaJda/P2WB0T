@@ -187,7 +187,7 @@ public class B0T {
             builder.setActivity(Activity.playing(tlumaczenia.get("status.starting")));
             builder.addEventListeners(eventWaiter, new ExceptionListener());
             builder.setBulkDeleteSplittingEnabled(false);
-            builder.setCallbackPool(Executors.newFixedThreadPool(4));
+            builder.setCallbackPool(Executors.newFixedThreadPool(30));
             builder.enableCache(CacheFlag.EMOTE, CacheFlag.ACTIVITY);
             builder.setMemberCachePolicy(MemberCachePolicy.ALL);
             MessageAction.setDefaultMentionRepliedUser(false);

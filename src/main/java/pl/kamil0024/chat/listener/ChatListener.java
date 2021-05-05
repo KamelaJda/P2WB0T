@@ -63,11 +63,11 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class ChatListener extends ListenerAdapter {
 
-    private static final Pattern HTTP = Pattern.compile("([0-9a-z_-]+\\.)+(com|infonet|net|org|pro|de|ggmc|md|me|tt|tv|uk|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt)");
-    private static final Pattern DISCORD_INVITE = Pattern.compile("(https?://)?(www\\.)?(discord\\.(gg|io|me|li)|discordapp\\.com/invite)/.+[a-z]");
-    private static final Pattern EMOJI = Pattern.compile("<(a?):(\\w{2,32}):(\\d{17,19})>");
-    private static final Pattern YOUTUBE_LINK = Pattern.compile("(http(s)?://)?(www\\.)?(m\\.)?(youtube\\.com|youtu\\.be)/\\S+");
-    private static final Pattern SKROTY = Pattern.compile("[jJ][ ]?[a-z-A-Z]{1,2}");
+    public static final Pattern HTTP = Pattern.compile("([0-9a-z_-]+\\.)+(com|infonet|net|org|pro|de|ggmc|md|me|tt|tv|uk|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt)");
+    public static final Pattern DISCORD_INVITE = Pattern.compile("(https?://)?(www\\.)?(discord\\.(gg|io|me|li)|discordapp\\.com/invite)/.+[a-z]");
+    public static final Pattern EMOJI = Pattern.compile("<(a?):(\\w{2,32}):(\\d{17,19})>");
+    public static final Pattern YOUTUBE_LINK = Pattern.compile("(http(s)?://)?(www\\.)?(m\\.)?(youtube\\.com|youtu\\.be)/\\S+");
+    public static final Pattern SKROTY = Pattern.compile("[jJ][ ]?[a-z-A-Z]{1,2}");
 
     private final KaryJSON karyJSON;
     private final CaseDao caseDao;

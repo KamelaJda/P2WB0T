@@ -182,28 +182,30 @@ public class CommandsModule implements Modul {
     }
 
     private void tak(ShardManager api) {
+        Log.debug("CommandsModule#tak(ShardManager)");
         RemindmeCommand.check(remindDao, api);
         TextChannel txt = api.getTextChannelById(Ustawienia.instance.channel.status);
-        if (txt == null) throw new NullPointerException("Kanal do statusu jest nullem");
-        Message botMsg = null;
-        MessageHistory history = txt.getHistoryFromBeginning(15).complete();
-        if (history.isEmpty()) return;
+        if (txt != null) {
+            Message botMsg = null;
+            MessageHistory history = txt.getHistoryFromBeginning(15).complete();
+            if (!history.isEmpty()) {
+                for (Message message : history.getRetrievedHistory()) {
+                    if (message.getAuthor().getId().equals(Ustawienia.instance.bot.botId)) {
+                        botMsg = message;
+                        break;
+                    }
+                }
 
-        for (Message message : history.getRetrievedHistory()) {
-            if (message.getAuthor().getId().equals(Ustawienia.instance.bot.botId)) {
-                botMsg = message;
-                break;
+                if (botMsg != null) {
+                    try {
+                        String c = StatusCommand.getMsg(null, null, null, botMsg.getContentRaw());
+                        botMsg.editMessage(c).complete();
+                    } catch (Exception e) {
+                        Log.newError(e, getClass());
+                    }
+                }
             }
-        }
-
-        if (botMsg != null) {
-            try {
-                String c = StatusCommand.getMsg(null, null, null, botMsg.getContentRaw());
-                botMsg.editMessage(c).complete();
-            } catch (Exception e) {
-                Log.newError(e, getClass());
-            }
-        }
+        } else Log.newError("Kanal do statusu jest nullem", getClass());
 
     }
 

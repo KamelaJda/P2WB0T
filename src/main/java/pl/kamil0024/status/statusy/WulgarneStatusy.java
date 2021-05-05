@@ -28,7 +28,6 @@ import pl.kamil0024.chat.listener.ChatListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class WulgarneStatusy extends ListenerAdapter {
@@ -74,11 +73,9 @@ public class WulgarneStatusy extends ListenerAdapter {
                         .replaceAll("roizy\\.pl", "tak")
                         .replaceAll("hypixel\\.net", "tak")
                         .replaceAll("blazingpack\\.pl", "tak")
-                        .replaceAll("1\\.8\\.8", "tak")
                         .replaceAll("\\.by", "tak")
                         .replaceAll("blazingpack\\.pl", "tak");
-                Matcher macher = HTTP.matcher(s);
-                if (macher.find()) return s;
+                if (HTTP.matcher(s).matches() || ChatListener.DISCORD_INVITE.matcher(s).matches()) return s;
             }
         }
         return null;
