@@ -19,7 +19,6 @@
 
 package pl.kamil0024.commands;
 
-import com.wrapper.spotify.SpotifyApi;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -28,6 +27,8 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.kamil0024.api.APIModule;
 import pl.kamil0024.commands.dews.*;
 import pl.kamil0024.commands.kolkoikrzyzyk.KolkoIKrzyzykManager;
@@ -67,7 +68,7 @@ import java.util.concurrent.TimeUnit;
 
 public class CommandsModule implements Modul {
 
-    private ArrayList<Command> cmd;
+    private static final Logger logger = LoggerFactory.getLogger(CommandsModule.class);
 
     private final CommandManager commandManager;
     private final Tlumaczenia tlumaczenia;
@@ -108,6 +109,8 @@ public class CommandsModule implements Modul {
     GuildListener guildListener;
     GiveawayListener giveawayListener;
 
+    private ArrayList<Command> cmd;
+
     public CommandsModule(CommandManager commandManager, Tlumaczenia tlumaczenia, ShardManager api, EventWaiter eventWaiter, KaryJSON karyJSON, CaseDao caseDao, ModulManager modulManager, CommandExecute commandExecute, UserDao userDao, ModLog modLog, NieobecnosciDao nieobecnosciDao, RemindDao remindDao, GiveawayDao giveawayDao, StatsModule statsModule, MusicModule musicModule, MultiDao multiDao, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, WeryfikacjaDao weryfikacjaDao, WeryfikacjaModule weryfikacjaModule, RecordingDao recordingDao, SocketManager socketManager, DeletedMessagesDao deletedMessagesDao, AcBanDao acBanDao, UserstatsManager userstatsManager, StatusModule statusModule, APIModule apiModule, SpotifyUtil spotifyApi) {
         this.commandManager = commandManager;
         this.tlumaczenia = tlumaczenia;
@@ -141,7 +144,14 @@ public class CommandsModule implements Modul {
         this.spotifyUtil = spotifyApi;
 
         ScheduledExecutorService executorSche = Executors.newSingleThreadScheduledExecutor();
-        executorSche.scheduleWithFixedDelay(() -> tak(api), 0, 5, TimeUnit.MINUTES);
+        executorSche.scheduleWithFixedDelay(() -> {
+            try {
+                logger.debug("Startuje taska");
+                tak(api);
+            } catch (Exception e) {
+                Log.newError(e, getClass());
+            }
+        }, 0, 5, TimeUnit.MINUTES);
     }
 
     @Override
