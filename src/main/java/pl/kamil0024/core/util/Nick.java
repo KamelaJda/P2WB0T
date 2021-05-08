@@ -25,7 +25,8 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 public class Nick {
-    public Nick() {}
+    public Nick() {
+    }
 
     String nick = null;
     String ranga = null;

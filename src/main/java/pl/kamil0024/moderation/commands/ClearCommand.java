@@ -68,8 +68,8 @@ public class ClearCommand extends Command {
         if (kanal == null) kanal = context.getChannel();
 
         if (liczba == null || liczba > 100 || liczba <= 1) {
-             context.send(context.getTranslate("clear.toolong")).queue();
-             return true;
+            context.send(context.getTranslate("clear.toolong")).queue();
+            return true;
         }
         CompletableFuture<MessageHistory> historia;
         if (user == null) historia = kanal.getHistoryBefore(context.getMessage(), liczba).submit();

@@ -25,7 +25,8 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class DiscordInviteConfig {
-    public DiscordInviteConfig() {}
+    public DiscordInviteConfig() {
+    }
 
     public DiscordInviteConfig(String nick) {
         this.nick = nick;

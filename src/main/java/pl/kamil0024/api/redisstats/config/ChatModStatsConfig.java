@@ -25,7 +25,8 @@ import java.util.List;
 
 @Data
 public class ChatModStatsConfig {
-    public ChatModStatsConfig() { }
+    public ChatModStatsConfig() {
+    }
 
     private String id;
     private String nick;

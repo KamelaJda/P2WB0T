@@ -46,7 +46,9 @@ public class ApelacjeHandler implements HttpHandler {
 
     @Override
     public void handleRequest(HttpServerExchange ex) {
-        if (!Response.checkIp(ex)) { return; }
+        if (!Response.checkIp(ex)) {
+            return;
+        }
 
         if (type == 3) {
             try {
@@ -61,7 +63,8 @@ public class ApelacjeHandler implements HttpHandler {
                 }
 
                 if (filtr.equalsIgnoreCase("all")) Response.sendObjectResponse(ex, apelacjeDao.getAll(offset));
-                if (filtr.equalsIgnoreCase("nick")) Response.sendObjectResponse(ex, apelacjeDao.getAllByNick(value, offset));
+                if (filtr.equalsIgnoreCase("nick"))
+                    Response.sendObjectResponse(ex, apelacjeDao.getAllByNick(value, offset));
                 if (filtr.equalsIgnoreCase("id")) Response.sendObjectResponse(ex, apelacjeDao.get(value));
 
             } catch (Exception e) {
@@ -84,7 +87,8 @@ public class ApelacjeHandler implements HttpHandler {
                 String dodatkowaUwaga = null;
                 try {
                     dodatkowaUwaga = json.getString("dodatkowaUwaga");
-                } catch (Exception ignored) { }
+                } catch (Exception ignored) {
+                }
 
                 String unbanned = json.getString("unbanned");
                 long createdTime = new Date().getTime();

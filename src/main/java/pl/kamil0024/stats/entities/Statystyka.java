@@ -25,7 +25,8 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Statystyka {
-    public Statystyka() {}
+    public Statystyka() {
+    }
 
     public int zmutowanych = 0;
     public int zbanowanych = 0;

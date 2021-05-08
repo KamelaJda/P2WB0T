@@ -40,7 +40,9 @@ public class EmbedHandler implements HttpHandler {
 
     @Override
     public void handleRequest(HttpServerExchange ex) {
-        if (!Response.checkIp(ex)) { return; }
+        if (!Response.checkIp(ex)) {
+            return;
+        }
         try {
             JSONObject json = new JSONObject(Response.getBody(ex.getInputStream()));
             int rand = radom.nextInt(10000);

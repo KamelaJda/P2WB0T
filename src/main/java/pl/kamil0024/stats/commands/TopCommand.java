@@ -142,7 +142,7 @@ public class TopCommand extends Command {
     }
 
     public static HashMap<String, Integer> sortByValue(HashMap<String, Integer> hm) {
-        List<Map.Entry<String, Integer> > list =
+        List<Map.Entry<String, Integer>> list =
                 new LinkedList<>(hm.entrySet());
         list.sort(Map.Entry.comparingByValue());
         Collections.reverse(list);

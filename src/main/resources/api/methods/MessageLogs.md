@@ -1,6 +1,7 @@
 # MessageLogs
 
 ## Path
+
 `/api/chatmod/logs`
 
 ## Opis
@@ -22,10 +23,12 @@ Poprzez IP
 ## Przykłady
 
 * `/api/chatmod/logs?type=all&data=byle_co&offset=0` - To wyszuka ostatnie 10 usuniętych wiadomości
-* `/api/chatmod/logs?type=user&data=id_usera&offset=0` - To wyszuka ostatnie 10 usuniętych wiadomości przez danego użytkownika
+* `/api/chatmod/logs?type=user&data=id_usera&offset=0` - To wyszuka ostatnie 10 usuniętych wiadomości przez danego
+  użytkownika
 * `/api/chatmod/logs?type=channel&data=id_kanalu&offset=0` - To wyszuka ostatnie 10 usuniętych wiadomości w danym kanale
 
 ### Przykłady odpowiedzi
+
 ```json
 {
   "success": false,

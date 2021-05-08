@@ -30,9 +30,12 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ApelacjeConfig {
-    public ApelacjeConfig() { }
+    public ApelacjeConfig() {
+    }
 
-    public ApelacjeConfig(String id) { this.id = id; }
+    public ApelacjeConfig(String id) {
+        this.id = id;
+    }
 
     @PrimaryKey
     private String id;

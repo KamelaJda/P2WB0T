@@ -29,15 +29,23 @@ import java.util.Map;
 
 public abstract class Command {
 
-    @Getter protected String name;
-    @Getter protected int cooldown = 0;
-    @Getter protected CommandCategory category = CommandCategory.SYSTEM;
-    @Getter protected PermLevel permLevel = PermLevel.MEMBER;
-    @Getter protected List<String> aliases = new ArrayList<>();
-    @Getter protected boolean enabledInRekru = false;
-    @Getter protected boolean onlyInRekru = false;
+    @Getter
+    protected String name;
+    @Getter
+    protected int cooldown = 0;
+    @Getter
+    protected CommandCategory category = CommandCategory.SYSTEM;
+    @Getter
+    protected PermLevel permLevel = PermLevel.MEMBER;
+    @Getter
+    protected List<String> aliases = new ArrayList<>();
+    @Getter
+    protected boolean enabledInRekru = false;
+    @Getter
+    protected boolean onlyInRekru = false;
 
-    @Getter protected final Map<String, Method> subCommands = new HashMap<>();
+    @Getter
+    protected final Map<String, Method> subCommands = new HashMap<>();
 
     protected boolean execute(CommandContext context) {
         throw new UnsupportedOperationException("Komenda nie ma zaimplementowanej funkcji execute()");

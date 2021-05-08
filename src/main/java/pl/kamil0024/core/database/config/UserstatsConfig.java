@@ -35,7 +35,8 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 public class UserstatsConfig {
-    public UserstatsConfig() { }
+    public UserstatsConfig() {
+    }
 
     public UserstatsConfig(String date) {
         this.date = date;
@@ -54,7 +55,8 @@ public class UserstatsConfig {
     @Data
     @AllArgsConstructor
     public static class Config {
-        public Config() { }
+        public Config() {
+        }
 
         private long messageCount;
         private Map<String, Long> channels;

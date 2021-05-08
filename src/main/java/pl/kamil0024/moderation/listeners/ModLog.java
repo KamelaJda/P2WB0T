@@ -62,7 +62,9 @@ public class ModLog extends ListenerAdapter {
     private final TextChannel modlog;
     private final CaseDao caseDao;
 
-    @Setter @Getter private int proby = 0;
+    @Setter
+    @Getter
+    private int proby = 0;
 
     public ModLog(ShardManager api, CaseDao caseDao) {
         this.api = api;
@@ -90,7 +92,8 @@ public class ModLog extends ListenerAdapter {
         new Thread(() -> {
             try {
                 Thread.sleep(10000);
-            } catch (InterruptedException ignored) { }
+            } catch (InterruptedException ignored) {
+            }
             List<CaseConfig> cc = caseDao.getAktywe(event.getUser().getId());
             checkKara(event.getMember(), false, cc);
             //checkKara(event, true, caseDao.getNickAktywne(nick));
@@ -140,7 +143,8 @@ public class ModLog extends ListenerAdapter {
             try {
                 kara.setEnd(config.getKara().getEnd());
                 kara.setDuration(config.getKara().getDuration());
-            } catch (Exception ignored) { }
+            } catch (Exception ignored) {
+            }
 
             if (!k.getPowod().contains("Te konto ma") && k.getKaraId() != 0) {
                 if (nick) {
@@ -183,7 +187,8 @@ public class ModLog extends ListenerAdapter {
             for (Guild.Ban ban : g.retrieveBanList().complete()) {
                 filtredBans.add(ban.getUser().getId());
             }
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
 
         for (CaseConfig a : cc) {
             Kara aCase = a.getKara();
@@ -301,7 +306,7 @@ public class ModLog extends ListenerAdapter {
             eb.addField("Kończy się o", sfd.format(new Date(kara.getEnd())), false);
             eb.addField("Nadano na czas", kara.getDuration(), false);
         }
-        eb.addField("Typ & ID kary", KaryEnum.getName(kara.getTypKary()) +  " | " + kara.getKaraId(), false);
+        eb.addField("Typ & ID kary", KaryEnum.getName(kara.getTypKary()) + " | " + kara.getKaraId(), false);
 
         if (bol || kara.getTypKary() == KaryEnum.UNBAN || kara.getTypKary() == KaryEnum.UNMUTE) {
             if (bol) {
@@ -373,7 +378,8 @@ public class ModLog extends ListenerAdapter {
                     break;
                 }
             }
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
 
         String action = at == ActionType.BAN ? "zbanował" : "odbanował";
         String format = "%s %s %s za `%s`";

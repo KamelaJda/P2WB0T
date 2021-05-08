@@ -35,7 +35,6 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioItem;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.wrapper.spotify.SpotifyApi;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.Guild;
@@ -72,12 +71,14 @@ public class MusicModule implements Modul {
     private final VoiceStateDao voiceStateDao;
     private final SpotifyUtil spotifyUtil;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean start = false;
 
     public final DefaultAudioPlayerManager defaultAudioPlayerManager = new DefaultAudioPlayerManager();
     public final AudioPlayerManager playerManager;
-    @Getter public final Map<Long, GuildMusicManager> musicManagers;
+    @Getter
+    public final Map<Long, GuildMusicManager> musicManagers;
 
     private static final YoutubeSearchProvider youtubeSearchProvider = new YoutubeSearchProvider();
     public YoutubeAudioSourceManager youtubeSourceManager;
@@ -153,7 +154,7 @@ public class MusicModule implements Modul {
     public String getName() {
         return "music";
     }
-    
+
     public synchronized GuildMusicManager getGuildAudioPlayer(Guild guild) {
         long guildId = guild.getIdLong();
         GuildMusicManager musicManager = musicManagers.get(guildId);
@@ -181,7 +182,8 @@ public class MusicModule implements Modul {
 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
-                if (sendMsg) channel.sendMessage("Dodaje do kolejki " +  playlist.getTracks().size() + " piosenek").queue();
+                if (sendMsg)
+                    channel.sendMessage("Dodaje do kolejki " + playlist.getTracks().size() + " piosenek").queue();
                 for (AudioTrack track : playlist.getTracks()) {
                     play(channel.getGuild(), musicManager, track, vc);
                 }
@@ -254,7 +256,8 @@ public class MusicModule implements Modul {
             vsc.setQueue(linki);
             vsc.setAktualnaPiosenka(QueueCommand.getYtLink(getMusicManagers().get(g.getIdLong()).getPlayer().getPlayingTrack()));
             voiceStateDao.save(vsc);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 
 }

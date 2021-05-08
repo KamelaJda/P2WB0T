@@ -29,7 +29,8 @@ import pl.kamil0024.core.logger.Log;
 
 public class ChangeNickname extends ListenerAdapter {
 
-    public ChangeNickname() {}
+    public ChangeNickname() {
+    }
 
     @Override
     public void onUserUpdateName(@NotNull UserUpdateNameEvent e) {

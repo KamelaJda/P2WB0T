@@ -27,7 +27,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 public class NetworkUtil {
-    private NetworkUtil() {}
+    private NetworkUtil() {
+    }
 
     private static final String USER_AGENT = "P2WB0T";
     private static final String UA = "User-Agent";
@@ -78,9 +79,7 @@ public class NetworkUtil {
                     .replaceAll("\\%28", "(")
                     .replaceAll("\\%29", ")")
                     .replaceAll("\\%7E", "~");
-        }
-
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             result = s;
         }
 

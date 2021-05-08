@@ -25,7 +25,8 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class VoiceStateConfig {
-    public VoiceStateConfig() { }
+    public VoiceStateConfig() {
+    }
 
     private long lastDate;
     private long fullTimestamp;

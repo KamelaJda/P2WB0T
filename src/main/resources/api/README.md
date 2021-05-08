@@ -1,8 +1,12 @@
 # Dokumentacja
-Tutaj znajdują się endpointy do API bota. Rzeczy używane **tylko** na stronie bota nie są opisane, ponieważ nikomu to nie jest potrzebne /shurg
+
+Tutaj znajdują się endpointy do API bota. Rzeczy używane **tylko** na stronie bota nie są opisane, ponieważ nikomu to
+nie jest potrzebne /shurg
 
 ## Format odpowiedzi
+
 Jeżeli odpowiedź będzie nie będzie OK, serwer zwróci
+
 ```json
 {
   "success": false,
@@ -16,6 +20,7 @@ Jeżeli odpowiedź będzie nie będzie OK, serwer zwróci
 Jeżeli odpowiedź będzie OK, możemy dostać dwa rodzaje odpowiedzi
 
 Ten format jest używany najczęściej w POST, jeżeli serwer nie ma nic do zwrócenia
+
 ```json
 {
   "success": true,
@@ -23,8 +28,9 @@ Ten format jest używany najczęściej w POST, jeżeli serwer nie ma nic do zwr�
 }
 ```
 
-Ten format natomiast jest używany, kiedy serwer chce zwrócić JSONObject'a.
-Wartość `data` jest zależna od wysłanego requesta
+Ten format natomiast jest używany, kiedy serwer chce zwrócić JSONObject'a. Wartość `data` jest zależna od wysłanego
+requesta
+
 ```json
 {
   "success": true,
@@ -35,16 +41,19 @@ Wartość `data` jest zależna od wysłanego requesta
 ```
 
 ## Autoryzacja
+
 Wyróżniamy dwa sposoby autoryzacji requestów
 
 1. Poprzez IP - nic nie trzeba dodać do patha/query/headerów
 2. Poprzez Token - Trzeba dodać header `Authorization`, np. "Authorization: test123"
 
 ## Offset
-Offset to po prostu podział na strony (żeby nie wyświetlać od razu 10k wartości). 
+
+Offset to po prostu podział na strony (żeby nie wyświetlać od razu 10k wartości).
 `Limit` - Ilość danych na stronę
 
 ### Przykład
+
 Wykorzystanie offsetu w aplikacji react w przypadku, kiedy `limit` wynosi 10 (czyli 10 danych na stronę)
 
 ```jsx

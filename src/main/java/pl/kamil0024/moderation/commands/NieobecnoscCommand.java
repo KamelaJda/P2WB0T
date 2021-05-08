@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.entities.Member;
 import org.jetbrains.annotations.NotNull;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
+import pl.kamil0024.core.command.SubCommand;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.database.NieobecnosciDao;
 import pl.kamil0024.core.database.config.NieobecnosciConfig;
@@ -40,7 +41,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-@SuppressWarnings("DuplicatedCode")
 public class NieobecnoscCommand extends Command {
 
     private final NieobecnosciManager nieobecnosciManager;
@@ -63,28 +63,6 @@ public class NieobecnoscCommand extends Command {
         String arg = context.getArgs().get(0);
         if (arg == null) throw new UsageException();
 
-        if (arg.equalsIgnoreCase("aktywne")) {
-            ArrayList<Nieobecnosc> nball = nieobecnosciDao.getAllAktywne();
-            if (nball.isEmpty()) {
-                context.sendTranslate("nieobecnosci.aktywne.empty").queue();
-                return false;
-            }
-            List<EmbedBuilder> pages = new ArrayList<>();
-            for (Nieobecnosc nieobecnosc : nball) {
-                Member mem = context.getParsed().getMember(nieobecnosc.getUserId());
-                if (mem == null) continue;
-                EmbedBuilder eb = NieobecnosciManager.getEmbed(nieobecnosc, mem, true);
-                List<Zmiana> zmiany = nieobecnosc.getZmiany();
-                eb.addField(context.getTranslate("nieobecnosci.aktywne.changesize"), zmiany == null || zmiany.isEmpty() ? "0" : zmiany.size() + "", false);
-                eb.addField(context.getTranslate("nieobecnosci.aktywne.lastchange"),
-                        zmiany == null || zmiany.isEmpty() ? context.getTranslate("nieobecnosci.brak") : zmiany.get(zmiany.size() - 1).toString(context.getGuild())
-                        , false);
-                pages.add(eb);
-            }
-            new EmbedPageintaor(pages, context.getUser(), eventWaiter, context.getJDA(), 320)
-                    .create(context.getChannel(), context.getMessage());
-            return true;
-        }
         Member mem = context.getParsed().getMember(arg);
         if (mem != null) {
             NieobecnosciConfig nbConf = nieobecnosciDao.get(mem.getId());
@@ -112,42 +90,68 @@ public class NieobecnoscCommand extends Command {
                     .create(context.getChannel(), context.getMessage());
             return true;
         }
-        if (arg.equalsIgnoreCase("powod")) {
-            String rawMember = context.getArgs().get(1);
-            String powod = context.getArgsToString(2);
-            if (rawMember == null || powod == null || powod.isEmpty()) {
-                context.sendTranslate("nieobecnosci.powod.usage").queue();
-                return false;
-            }
-            Member maNieobecnosc = context.getParsed().getMember(rawMember);
-            if (maNieobecnosc == null) {
-                context.sendTranslate("nieobecnosci.powod.usage").queue();
-                return false;
-            }
-            NieobecnosciConfig nbConf = nieobecnosciDao.get(maNieobecnosc.getId());
-            if (nbConf.getNieobecnosc().isEmpty()) {
-                context.sendTranslate("nieobecnosci.userdonthavenb").queue();
-                return false;
-            }
-            Nieobecnosc last = nbConf.getNieobecnosc().get(nbConf.getNieobecnosc().size() - 1);
-            nbConf.getNieobecnosc().remove(last);
-            Zmiana zmiana = new Zmiana();
-            zmiana.setKtoZmienia(context.getUser().getId());
-            zmiana.setCoZmienia(Zmiana.Enum.REASON);
-            zmiana.setKiedy(new Date().getTime());
-            zmiana.setKomentarz(context.getTranslate("nieobecnosci.sp") + " " + last.getPowod() + context.getTranslate("nieobecnosci.np") + " " + powod);
-            zmiana.sendLog(context.getGuild(), last.getUserId(), last.getId());
-            if (last.getZmiany() == null) last.setZmiany(new ArrayList<>());
-            last.getZmiany().add(zmiana);
-            last.setPowod(powod);
-            nbConf.getNieobecnosc().add(last);
-            nieobecnosciDao.save(nbConf);
-            context.sendTranslate("nieobecnosci.powod.success").queue();
-            nieobecnosciManager.update();
-            return true;
-        }
 
         throw new UsageException();
+    }
+
+    @SubCommand(name = "aktywne")
+    public boolean aktywne(CommandContext context) {
+        ArrayList<Nieobecnosc> nball = nieobecnosciDao.getAllAktywne();
+        if (nball.isEmpty()) {
+            context.sendTranslate("nieobecnosci.aktywne.empty").queue();
+            return false;
+        }
+        List<EmbedBuilder> pages = new ArrayList<>();
+        for (Nieobecnosc nieobecnosc : nball) {
+            Member mem = context.getParsed().getMember(nieobecnosc.getUserId());
+            if (mem == null) continue;
+            EmbedBuilder eb = NieobecnosciManager.getEmbed(nieobecnosc, mem, true);
+            List<Zmiana> zmiany = nieobecnosc.getZmiany();
+            eb.addField(context.getTranslate("nieobecnosci.aktywne.changesize"), zmiany == null || zmiany.isEmpty() ? "0" : zmiany.size() + "", false);
+            eb.addField(context.getTranslate("nieobecnosci.aktywne.lastchange"),
+                    zmiany == null || zmiany.isEmpty() ? context.getTranslate("nieobecnosci.brak") : zmiany.get(zmiany.size() - 1).toString(context.getGuild())
+                    , false);
+            pages.add(eb);
+        }
+        new EmbedPageintaor(pages, context.getUser(), eventWaiter, context.getJDA(), 320)
+                .create(context.getChannel(), context.getMessage());
+        return true;
+    }
+
+    @SubCommand(name = "powod", aliases = {"reason"})
+    public boolean powod(CommandContext context) {
+        String rawMember = context.getArgs().get(1);
+        String powod = context.getArgsToString(2);
+        if (rawMember == null || powod == null || powod.isEmpty()) {
+            context.sendTranslate("nieobecnosci.powod.usage").queue();
+            return false;
+        }
+        Member maNieobecnosc = context.getParsed().getMember(rawMember);
+        if (maNieobecnosc == null) {
+            context.sendTranslate("nieobecnosci.powod.usage").queue();
+            return false;
+        }
+        NieobecnosciConfig nbConf = nieobecnosciDao.get(maNieobecnosc.getId());
+        if (nbConf.getNieobecnosc().isEmpty()) {
+            context.sendTranslate("nieobecnosci.userdonthavenb").queue();
+            return false;
+        }
+        Nieobecnosc last = nbConf.getNieobecnosc().get(nbConf.getNieobecnosc().size() - 1);
+        nbConf.getNieobecnosc().remove(last);
+        Zmiana zmiana = new Zmiana();
+        zmiana.setKtoZmienia(context.getUser().getId());
+        zmiana.setCoZmienia(Zmiana.Enum.REASON);
+        zmiana.setKiedy(new Date().getTime());
+        zmiana.setKomentarz(context.getTranslate("nieobecnosci.sp") + " " + last.getPowod() + context.getTranslate("nieobecnosci.np") + " " + powod);
+        zmiana.sendLog(context.getGuild(), last.getUserId(), last.getId());
+        if (last.getZmiany() == null) last.setZmiany(new ArrayList<>());
+        last.getZmiany().add(zmiana);
+        last.setPowod(powod);
+        nbConf.getNieobecnosc().add(last);
+        nieobecnosciDao.save(nbConf);
+        context.sendTranslate("nieobecnosci.powod.success").queue();
+        nieobecnosciManager.update();
+        return true;
     }
 
 }

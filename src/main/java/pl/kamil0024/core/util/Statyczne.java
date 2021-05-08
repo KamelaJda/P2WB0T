@@ -23,7 +23,8 @@ import java.util.Date;
 
 public class Statyczne {
 
-    private Statyczne() {}
+    private Statyczne() {
+    }
 
     public static final String WERSJA;
 

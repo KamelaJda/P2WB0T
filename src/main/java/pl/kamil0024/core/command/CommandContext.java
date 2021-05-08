@@ -43,9 +43,12 @@ import java.util.regex.Pattern;
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public class CommandContext {
 
-    @Getter private final MessageReceivedEvent event;
-    @Getter private final String prefix;
-    @Getter private final HashMap<Integer, String> args;
+    @Getter
+    private final MessageReceivedEvent event;
+    @Getter
+    private final String prefix;
+    @Getter
+    private final HashMap<Integer, String> args;
 
     private final ArgumentManager argumentManager;
     private final Command cmd;
@@ -221,7 +224,8 @@ public class CommandContext {
             if (num == null) return null;
             try {
                 return Integer.parseInt(num);
-            } catch (NumberFormatException ignored) { }
+            } catch (NumberFormatException ignored) {
+            }
             return null;
         }
 

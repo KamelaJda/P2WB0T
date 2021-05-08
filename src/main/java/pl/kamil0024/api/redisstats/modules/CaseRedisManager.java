@@ -39,7 +39,8 @@ import java.util.concurrent.TimeUnit;
 @Getter
 public class CaseRedisManager {
 
-    @Setter private long lastUpdate = 0;
+    @Setter
+    private long lastUpdate = 0;
 
     private final CaseDao caseDao;
     private final Map<Long, Integer> mapKaryWRoku;

@@ -51,7 +51,8 @@ public class StatsModule implements Modul {
     private final MusicModule musicModule;
     private final NieobecnosciDao nieobecnosciDao;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean start = false;
 
     @Getter

@@ -96,7 +96,8 @@ public class KaryJSON {
     @Data
     @AllArgsConstructor
     public static class Kara {
-        public Kara() {}
+        public Kara() {
+        }
 
         private Integer id;
         private String powod;

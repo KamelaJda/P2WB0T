@@ -75,7 +75,8 @@ public class MuteCommand extends Command {
             context.getGuild().addRoleToMember(mem, role).complete();
             try {
                 mem.getGuild().kickVoiceMember(mem).queue();
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
             context.sendTranslate("mute.succes", UserUtil.getLogName(mem), powod).queue();
             Kara kara = new Kara();
             kara.setKaranyId(mem.getId());

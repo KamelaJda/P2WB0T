@@ -75,9 +75,12 @@ public class VoiceChatListener extends ListenerAdapter {
         this.ticketDao = ticketDao;
         this.ticketRedisManager = ticketRedisManager;
         this.eventWaiter = eventWaiter;
-        this.cooldownCache = redisManager.new CacheRetriever<Long>() {}.getCache(7200);
-        this.messagesCache = redisManager.new CacheRetriever<String>() {}.getCache(7200);
-        this.pingCache = redisManager.new CacheRetriever<Boolean>() {}.getCache(7200);
+        this.cooldownCache = redisManager.new CacheRetriever<Long>() {
+        }.getCache(7200);
+        this.messagesCache = redisManager.new CacheRetriever<String>() {
+        }.getCache(7200);
+        this.pingCache = redisManager.new CacheRetriever<Boolean>() {
+        }.getCache(7200);
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -272,7 +275,8 @@ public class VoiceChatListener extends ListenerAdapter {
             String[] s = msg.split("-");
             xd.retrieveMessageById(s[0]).complete().delete().complete();
             pingCache.invalidate(s[1]);
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
     }
 
     private String getMentions(VcType type, Guild g) {
@@ -294,7 +298,7 @@ public class VoiceChatListener extends ListenerAdapter {
         StringBuilder s = new StringBuilder();
         for (Member entry : l) {
             s.append(entry.getAsMention()).append(", ");
-	    }
+        }
 
         return s.toString();
     }

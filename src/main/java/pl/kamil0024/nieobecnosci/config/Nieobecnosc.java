@@ -29,7 +29,8 @@ import java.util.List;
 @Data
 public class Nieobecnosc {
 
-    public Nieobecnosc() { }
+    public Nieobecnosc() {
+    }
 
     private String userId;
     private int id;

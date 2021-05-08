@@ -29,7 +29,8 @@ public class EmbedRedisManager {
     private final Cache<String> cache;
 
     public EmbedRedisManager(RedisManager redisManager) {
-        this.cache = redisManager.new CacheRetriever<String>(){}.getCache(3600);
+        this.cache = redisManager.new CacheRetriever<String>() {
+        }.getCache(3600);
     }
 
     @Nullable

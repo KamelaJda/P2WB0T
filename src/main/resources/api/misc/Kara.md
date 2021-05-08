@@ -1,8 +1,11 @@
 # Kara
+
 ### Informacja
+
 Wygląd kar
 
 ### Przykłady
+
 ```json
 {
   "karaId": 2137,
@@ -22,6 +25,7 @@ Wygląd kar
 ```
 
 #### Dowod
+
 ```json
 {
   "id": 1,
@@ -32,6 +36,7 @@ Wygląd kar
 ```
 
 #### Typ Kary
+
 Możliwe typy kar
 
 | Typ      |

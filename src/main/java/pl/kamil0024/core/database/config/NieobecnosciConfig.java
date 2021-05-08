@@ -34,7 +34,8 @@ import java.util.ArrayList;
 @AllArgsConstructor
 public class NieobecnosciConfig {
 
-    public NieobecnosciConfig() { }
+    public NieobecnosciConfig() {
+    }
 
     public NieobecnosciConfig(String id) {
         this.id = id;

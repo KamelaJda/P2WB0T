@@ -52,8 +52,10 @@ import java.util.*;
 @SuppressWarnings("unused")
 public class SocketManager {
 
-    @Getter private final HashMap<Integer, SocketClient> clients;
-    @Getter private final HashMap<Integer, String> botIds;
+    @Getter
+    private final HashMap<Integer, SocketClient> clients;
+    @Getter
+    private final HashMap<Integer, String> botIds;
 
     private final ShardManager api;
     private final EventWaiter eventWaiter;
@@ -153,7 +155,8 @@ public class SocketManager {
                     Message msg = txt.sendMessage(mb.build()).complete();
                     msg.addReaction(CommandExecute.getReaction(msg.getAuthor(), true)).queue();
 
-                    List<String> queue = GsonUtil.fromJSON(GsonUtil.toJSON(obj[1]), new TypeToken<List<String>>(){}.getType());
+                    List<String> queue = GsonUtil.fromJSON(GsonUtil.toJSON(obj[1]), new TypeToken<List<String>>() {
+                    }.getType());
                     getClients().get(socketJson.getId()).setTracksList(queue);
                     break;
                 }
@@ -201,7 +204,7 @@ public class SocketManager {
 
     @Nullable
     public SocketClient getClientFromId(String userId) {
-       return clients.values().stream().filter(s -> s.getBotId().equals(userId)).findAny().orElse(null);
+        return clients.values().stream().filter(s -> s.getBotId().equals(userId)).findAny().orElse(null);
     }
 
     @Nullable
@@ -229,22 +232,27 @@ public class SocketManager {
             manager.sendMessage(new ConnectAction(sendMessage, memberId, channelId, socketId, voiceChannelId));
             return this;
         }
+
         public Action disconnect() {
             manager.sendMessage(new DisconnectAction(sendMessage, memberId, channelId, socketId));
             return this;
         }
+
         public Action play(String track) {
             manager.sendMessage(new PlayAction(sendMessage, memberId, channelId, socketId, track));
             return this;
         }
+
         public Action queue() {
             manager.sendMessage(new QueueAction(sendMessage, memberId, channelId, socketId));
             return this;
         }
+
         public Action shutdown() {
             manager.sendMessage(new ShutdownAction(sendMessage, memberId, channelId, socketId));
             return this;
         }
+
         public Action skip() {
             manager.sendMessage(new SkipAction(sendMessage, memberId, channelId, socketId));
             return this;
@@ -272,7 +280,8 @@ public class SocketManager {
 
         @Data
         public static class SocketAction {
-            public SocketAction() { }
+            public SocketAction() {
+            }
 
             private boolean sendMessage;
             private String memberId;

@@ -38,7 +38,8 @@ import java.util.Date;
 @Data
 public class Zmiana {
 
-    public Zmiana() {}
+    public Zmiana() {
+    }
 
     private String ktoZmienia;
     private long kiedy = 0;
@@ -66,7 +67,7 @@ public class Zmiana {
         eb.addField("Co się stało?", getString(getCoZmienia()), false);
         eb.addField("Komu zmienia?", UserUtil.getLogName(g.retrieveMemberById(autorNieobecnosci).complete()), false);
         if (getKomentarz() != null) {
-            eb.addField("Komentarz",getKomentarz(), false);
+            eb.addField("Komentarz", getKomentarz(), false);
         }
         sendEmbed(eb, g.getJDA());
     }

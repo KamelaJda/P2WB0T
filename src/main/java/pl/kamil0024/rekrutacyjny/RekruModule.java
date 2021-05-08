@@ -37,7 +37,8 @@ public class RekruModule implements Modul {
     private final CommandManager commandManager;
     private final ShardManager api;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean start = false;
 
     private SyncListener listener;

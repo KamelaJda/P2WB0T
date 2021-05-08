@@ -83,7 +83,8 @@ public class AntiRaidListener extends ListenerAdapter {
 
         try {
             member = event.getGuild().retrieveMemberById(arc.getUserId()).complete();
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
 
         if (member == null) {
             event.getChannel().sendMessage("Użytkownik wyszedł z serwera?").complete();

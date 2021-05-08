@@ -25,7 +25,8 @@ public class DatabaseManager {
 
     private PgStore pgStore;
 
-    public DatabaseManager () {}
+    public DatabaseManager() {
+    }
 
     public void shutdown() {
         if (pgStore != null) pgStore.disconnect();

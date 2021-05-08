@@ -37,9 +37,12 @@ public class VoiceChannelHandler implements AudioReceiveHandler {
 
     private final List<byte[]> bytes = new ArrayList<>();
 
-    @Getter public final long date;
-    @Getter public final String id;
-    @Getter public final String userId;
+    @Getter
+    public final long date;
+    @Getter
+    public final String id;
+    @Getter
+    public final String userId;
 
     public VoiceChannelHandler(String id, String userId) {
         this.id = id;

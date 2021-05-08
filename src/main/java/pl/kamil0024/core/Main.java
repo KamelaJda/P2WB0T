@@ -19,18 +19,8 @@
 
 package pl.kamil0024.core;
 
-import com.wrapper.spotify.SpotifyApi;
-import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRefreshRequest;
-import com.wrapper.spotify.requests.authorization.authorization_code.pkce.AuthorizationCodePKCERefreshRequest;
-import org.apache.hc.core5.http.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.kamil0024.core.util.JSONResponse;
-import pl.kamil0024.core.util.NetworkUtil;
-import pl.kamil0024.music.utils.SpotifyUtil;
-
-import java.io.IOException;
-import java.util.Base64;
 
 public class Main {
 

@@ -42,8 +42,10 @@ public class MessageLogsHandler implements HttpHandler {
     private final ShardManager api;
 
     @Override
-    public void handleRequest(HttpServerExchange ex)  {
-        if (!Response.checkIp(ex)) { return; }
+    public void handleRequest(HttpServerExchange ex) {
+        if (!Response.checkIp(ex)) {
+            return;
+        }
         try {
             String type = ex.getQueryParameters().get("type").getFirst();
             String data = ex.getQueryParameters().get("data").getFirst();
@@ -79,7 +81,8 @@ public class MessageLogsHandler implements HttpHandler {
                     if (mem != null) i.setMember(UserinfoConfig.convert(mem));
                     else i.setMember(UserinfoConfig.convert(api.getUserById(entry.getUserId())));
                     finalList.add(i);
-                } catch (Exception ignored) { }
+                } catch (Exception ignored) {
+                }
             }
             Response.sendObjectResponse(ex, finalList);
 

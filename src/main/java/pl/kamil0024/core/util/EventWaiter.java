@@ -56,8 +56,7 @@ import java.util.stream.Stream;
  *
  * @author John Grosh (jagrosh)
  */
-public class EventWaiter implements EventListener
-{
+public class EventWaiter implements EventListener {
     private final HashMap<Class<?>, Set<WaitingEvent>> waitingEvents;
     private final ScheduledExecutorService threadpool;
     private final boolean shutdownAutomatically;
@@ -65,8 +64,7 @@ public class EventWaiter implements EventListener
     /**
      * Constructs an empty EventWaiter.
      */
-    public EventWaiter()
-    {
+    public EventWaiter() {
         this(Executors.newSingleThreadScheduledExecutor(), true);
     }
 
@@ -94,20 +92,14 @@ public class EventWaiter implements EventListener
      * otherwise invocation of {@code EventWaiter#shutdown()} will result in an
      * {@link java.lang.UnsupportedOperationException UnsupportedOperationException}.
      *
-     * @param  threadpool
-     *         The ScheduledExecutorService to use for this EventWaiter's threadpool.
-     * @param  shutdownAutomatically
-     *         Whether or not the {@code threadpool} will shutdown automatically when a
-     *         {@link net.dv8tion.jda.api.events.ShutdownEvent ShutdownEvent} is fired.
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the threadpool provided is {@code null} or
-     *         {@link java.util.concurrent.ScheduledExecutorService#isShutdown() is shutdown}
-     *
-     * @see    pl.kamil0024.core.util.EventWaiter#shutdown() EventWaiter#shutdown()
+     * @param threadpool            The ScheduledExecutorService to use for this EventWaiter's threadpool.
+     * @param shutdownAutomatically Whether or not the {@code threadpool} will shutdown automatically when a
+     *                              {@link net.dv8tion.jda.api.events.ShutdownEvent ShutdownEvent} is fired.
+     * @throws java.lang.IllegalArgumentException If the threadpool provided is {@code null} or
+     *                                            {@link java.util.concurrent.ScheduledExecutorService#isShutdown() is shutdown}
+     * @see pl.kamil0024.core.util.EventWaiter#shutdown() EventWaiter#shutdown()
      */
-    public EventWaiter(ScheduledExecutorService threadpool, boolean shutdownAutomatically)
-    {
+    public EventWaiter(ScheduledExecutorService threadpool, boolean shutdownAutomatically) {
         Checks.notNull(threadpool, "ScheduledExecutorService");
         Checks.check(!threadpool.isShutdown(), "Cannot construct EventWaiter with a closed ScheduledExecutorService!");
 
@@ -134,8 +126,7 @@ public class EventWaiter implements EventListener
      *
      * @return {@code true} if the ScheduledExecutorService is shutdown, {@code false} otherwise.
      */
-    public boolean isShutdown()
-    {
+    public boolean isShutdown() {
         return threadpool.isShutdown();
     }
 
@@ -146,24 +137,17 @@ public class EventWaiter implements EventListener
      * <p>When this occurs, the provided {@link java.util.function.Consumer Consumer} will accept and
      * execute using the same Event.
      *
-     * @param  <T>
-     *         The type of Event to wait for.
-     * @param  classType
-     *         The {@link java.lang.Class} of the Event to wait for. Never null.
-     * @param  condition
-     *         The Predicate to test when Events of the provided type are thrown. Never null.
-     * @param  action
-     *         The Consumer to perform an action when the condition Predicate returns {@code true}. Never null.
-     *
-     * @throws IllegalArgumentException
-     *         One of two reasons:
-     *         <ul>
-     *             <li>1) Either the {@code classType}, {@code condition}, or {@code action} was {@code null}.</li>
-     *             <li>2) The internal threadpool is shut down, meaning that no more tasks can be submitted.</li>
-     *         </ul>
+     * @param <T>       The type of Event to wait for.
+     * @param classType The {@link java.lang.Class} of the Event to wait for. Never null.
+     * @param condition The Predicate to test when Events of the provided type are thrown. Never null.
+     * @param action    The Consumer to perform an action when the condition Predicate returns {@code true}. Never null.
+     * @throws IllegalArgumentException One of two reasons:
+     *                                  <ul>
+     *                                      <li>1) Either the {@code classType}, {@code condition}, or {@code action} was {@code null}.</li>
+     *                                      <li>2) The internal threadpool is shut down, meaning that no more tasks can be submitted.</li>
+     *                                  </ul>
      */
-    public <T extends Event> void waitForEvent(Class<T> classType, Predicate<T> condition, Consumer<T> action)
-    {
+    public <T extends Event> void waitForEvent(Class<T> classType, Predicate<T> condition, Consumer<T> action) {
         waitForEvent(classType, condition, action, -1, null, null);
     }
 
@@ -179,33 +163,23 @@ public class EventWaiter implements EventListener
      *     <li>The time limit is elapsed and the provided {@link java.lang.Runnable} is executed.</li>
      * </ul>
      *
-     * @param  <T>
-     *         The type of Event to wait for.
-     * @param  classType
-     *         The {@link java.lang.Class} of the Event to wait for. Never null.
-     * @param  condition
-     *         The Predicate to test when Events of the provided type are thrown. Never null.
-     * @param  action
-     *         The Consumer to perform an action when the condition Predicate returns {@code true}. Never null.
-     * @param  timeout
-     *         The maximum amount of time to wait for, or {@code -1} if there is no timeout.
-     * @param  unit
-     *         The {@link java.util.concurrent.TimeUnit TimeUnit} measurement of the timeout, or
-     *         {@code null} if there is no timeout.
-     * @param  timeoutAction
-     *         The Runnable to run if the time runs out before a correct Event is thrown, or
-     *         {@code null} if there is no action on timeout.
-     *
-     * @throws IllegalArgumentException
-     *         One of two reasons:
-     *         <ul>
-     *             <li>1) Either the {@code classType}, {@code condition}, or {@code action} was {@code null}.</li>
-     *             <li>2) The internal threadpool is shut down, meaning that no more tasks can be submitted.</li>
-     *         </ul>
+     * @param <T>           The type of Event to wait for.
+     * @param classType     The {@link java.lang.Class} of the Event to wait for. Never null.
+     * @param condition     The Predicate to test when Events of the provided type are thrown. Never null.
+     * @param action        The Consumer to perform an action when the condition Predicate returns {@code true}. Never null.
+     * @param timeout       The maximum amount of time to wait for, or {@code -1} if there is no timeout.
+     * @param unit          The {@link java.util.concurrent.TimeUnit TimeUnit} measurement of the timeout, or
+     *                      {@code null} if there is no timeout.
+     * @param timeoutAction The Runnable to run if the time runs out before a correct Event is thrown, or
+     *                      {@code null} if there is no action on timeout.
+     * @throws IllegalArgumentException One of two reasons:
+     *                                  <ul>
+     *                                      <li>1) Either the {@code classType}, {@code condition}, or {@code action} was {@code null}.</li>
+     *                                      <li>2) The internal threadpool is shut down, meaning that no more tasks can be submitted.</li>
+     *                                  </ul>
      */
     public <T extends Event> void waitForEvent(Class<T> classType, Predicate<T> condition, Consumer<T> action,
-                                               long timeout, TimeUnit unit, Runnable timeoutAction)
-    {
+                                               long timeout, TimeUnit unit, Runnable timeoutAction) {
         Checks.check(!isShutdown(), "Attempted to register a WaitingEvent while the EventWaiter's threadpool was already shut down!");
         Checks.notNull(classType, "The provided class type");
         Checks.notNull(condition, "The provided condition predicate");
@@ -215,11 +189,10 @@ public class EventWaiter implements EventListener
         Set<WaitingEvent> set = waitingEvents.computeIfAbsent(classType, c -> new HashSet<>());
         set.add(we);
 
-        if(timeout > 0 && unit != null)
-        {
+        if (timeout > 0 && unit != null) {
             threadpool.schedule(() ->
             {
-                if(set.remove(we) && timeoutAction != null)
+                if (set.remove(we) && timeoutAction != null)
                     timeoutAction.run();
             }, timeout, unit);
         }
@@ -228,18 +201,15 @@ public class EventWaiter implements EventListener
     @Override
     @SubscribeEvent
     @SuppressWarnings("unchecked")
-    public final void onEvent(GenericEvent event)
-    {
+    public final void onEvent(GenericEvent event) {
         Class c = event.getClass();
 
         // Runs at least once for the fired Event, at most
         // once for each superclass (excluding Object) because
         // Class#getSuperclass() returns null when the superclass
         // is primitive, void, or (in this case) Object.
-        while(c != null)
-        {
-            if(waitingEvents.containsKey(c))
-            {
+        while (c != null) {
+            if (waitingEvents.containsKey(c)) {
                 Set<WaitingEvent> set = waitingEvents.get(c);
                 WaitingEvent[] toRemove = set.toArray(new WaitingEvent[set.size()]);
 
@@ -248,8 +218,7 @@ public class EventWaiter implements EventListener
                 // remove them all from the set.
                 set.removeAll(Stream.of(toRemove).filter(i -> i.attempt(event)).collect(Collectors.toSet()));
             }
-            if(event instanceof ShutdownEvent && shutdownAutomatically)
-            {
+            if (event instanceof ShutdownEvent && shutdownAutomatically) {
                 threadpool.shutdown();
             }
             c = c.getSuperclass();
@@ -263,32 +232,26 @@ public class EventWaiter implements EventListener
      * <br>Calling this method on an EventWaiter that does shutdown automatically will result in
      * an {@link java.lang.UnsupportedOperationException UnsupportedOperationException} being thrown.
      *
-     * @throws UnsupportedOperationException
-     *         The EventWaiter is supposed to close automatically.
+     * @throws UnsupportedOperationException The EventWaiter is supposed to close automatically.
      */
-    public void shutdown()
-    {
-        if(shutdownAutomatically)
+    public void shutdown() {
+        if (shutdownAutomatically)
             throw new UnsupportedOperationException("Shutting down EventWaiters that are set to automatically close is unsupported!");
 
         threadpool.shutdown();
     }
 
-    private static class WaitingEvent<T extends GenericEvent>
-    {
+    private static class WaitingEvent<T extends GenericEvent> {
         final Predicate<T> condition;
         final Consumer<T> action;
 
-        WaitingEvent(Predicate<T> condition, Consumer<T> action)
-        {
+        WaitingEvent(Predicate<T> condition, Consumer<T> action) {
             this.condition = condition;
             this.action = action;
         }
 
-        boolean attempt(T event)
-        {
-            if(condition.test(event))
-            {
+        boolean attempt(T event) {
+            if (condition.test(event)) {
                 action.accept(event);
                 return true;
             }

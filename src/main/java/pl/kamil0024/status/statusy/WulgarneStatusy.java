@@ -51,7 +51,8 @@ public class WulgarneStatusy extends ListenerAdapter {
                         //noinspection ConstantConditions
                         list.add(rp.getState());
                         list.add(rp.getDetails());
-                    } catch (NullPointerException ignored) {}
+                    } catch (NullPointerException ignored) {
+                    }
                 }
             }
         } catch (Exception e) {

@@ -90,7 +90,7 @@ public class PrivateQueueCommand extends Command {
             if (!aktualnieGrana) {
                 eb.addField("Długość", trak.isStream() ? "To jest stream ;p" : longToTimespan(trak.getLength()), true);
             } else {
-                eb.addField("Długość",  longToTimespan(trak.getLength()), true);
+                eb.addField("Długość", longToTimespan(trak.getLength()), true);
                 eb.addField("Pozostało", longToTimespan(trak.getLength() - trak.getPosition()), false);
             }
 

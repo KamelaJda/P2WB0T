@@ -96,7 +96,7 @@ public class QueueCommand extends Command {
         if (!aktualnieGrana) {
             eb.addField("Długość", info.isStream ? "To jest stream ;p" : longToTimespan(info.length), true);
         } else {
-            eb.addField("Długość",  longToTimespan(info.length), true);
+            eb.addField("Długość", longToTimespan(info.length), true);
             eb.addField("Pozostało", longToTimespan(info.length - audioTrack.getPosition()), false);
         }
 

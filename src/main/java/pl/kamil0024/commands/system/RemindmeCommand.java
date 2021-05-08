@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import pl.kamil0024.bdate.BDate;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
+import pl.kamil0024.core.command.SubCommand;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.database.RemindDao;
 import pl.kamil0024.core.database.config.RemindConfig;
@@ -59,42 +60,6 @@ public class RemindmeCommand extends Command {
         String arg = context.getArgs().get(0);
         if (arg == null) throw new UsageException();
 
-        if (arg.equalsIgnoreCase("list")) {
-            List<RemindConfig> rc = remindDao.getAll();
-            rc.removeIf(m -> !m.getUserId().equals(context.getUser().getId()));
-            if (rc.isEmpty()) {
-                context.send(context.getTranslate("remind.remindlist")).queue();
-                return false;
-            }
-            ArrayList<FutureTask<EmbedBuilder>> pages = new ArrayList<>();
-
-            for (RemindConfig conf : rc) {
-                pages.add(new FutureTask<>(() -> getEmbed(conf).setColor(UserUtil.getColor(context.getMember()))));
-            }
-            new DynamicEmbedPageinator(pages, context.getUser(), eventWaiter, context.getJDA(), 120).create(context.getChannel(), context.getMessage());
-            return true;
-        }
-
-        if (arg.equalsIgnoreCase("delete") || arg.equalsIgnoreCase("remove")) {
-            Integer id = context.getParsed().getNumber(context.getArgs().get(1));
-            if (id == null) throw new UsageException();
-
-            List<RemindConfig> rc = remindDao.getAll();
-            rc.removeIf(m -> !m.getUserId().equals(context.getUser().getId()));
-            if (rc.isEmpty()) {
-                context.send(context.getTranslate("remind.remindlist")).queue();
-                return false;
-            }
-            RemindConfig ids = rc.stream().filter(conf -> conf.getId().equals(id.toString())).findAny().orElse(null);
-            if (ids == null) {
-                context.sendTranslate("remind.badid").queue();
-                return false;
-            }
-            remindDao.remove(ids);
-            context.sendTranslate("remind.successdelete").queue();
-            return true;
-        }
-
         Long dur = new Duration().parseLong(arg);
         if (dur == null) {
             context.send(context.getTranslate("cytuj.badtime")).queue();
@@ -114,6 +79,44 @@ public class RemindmeCommand extends Command {
         remindDao.save(rc);
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy `@` HH:mm:ss");
         context.send(context.getTranslate("remind.save", sdf.format(new Date(dur)))).queue();
+        return true;
+    }
+
+    @SubCommand(name = "list", aliases = {"lista"})
+    public boolean list(CommandContext context) {
+        List<RemindConfig> rc = remindDao.getAll();
+        rc.removeIf(m -> !m.getUserId().equals(context.getUser().getId()));
+        if (rc.isEmpty()) {
+            context.send(context.getTranslate("remind.remindlist")).queue();
+            return false;
+        }
+        ArrayList<FutureTask<EmbedBuilder>> pages = new ArrayList<>();
+
+        for (RemindConfig conf : rc) {
+            pages.add(new FutureTask<>(() -> getEmbed(conf).setColor(UserUtil.getColor(context.getMember()))));
+        }
+        new DynamicEmbedPageinator(pages, context.getUser(), eventWaiter, context.getJDA(), 120).create(context.getChannel(), context.getMessage());
+        return true;
+    }
+
+    @SubCommand(name = "remove", aliases = {"usun", "delete"})
+    public boolean remove(CommandContext context) {
+        Integer id = context.getParsed().getNumber(context.getArgs().get(1));
+        if (id == null) throw new UsageException();
+
+        List<RemindConfig> rc = remindDao.getAll();
+        rc.removeIf(m -> !m.getUserId().equals(context.getUser().getId()));
+        if (rc.isEmpty()) {
+            context.send(context.getTranslate("remind.remindlist")).queue();
+            return false;
+        }
+        RemindConfig ids = rc.stream().filter(conf -> conf.getId().equals(id.toString())).findAny().orElse(null);
+        if (ids == null) {
+            context.sendTranslate("remind.badid").queue();
+            return false;
+        }
+        remindDao.remove(ids);
+        context.sendTranslate("remind.successdelete").queue();
         return true;
     }
 
@@ -142,7 +145,8 @@ public class RemindmeCommand extends Command {
                 try {
                     User u = api.retrieveUserById(remind.getUserId()).complete();
                     u.openPrivateChannel().complete().sendMessage(sb.build()).queue();
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
 
                 remindDao.remove(remind);
             }

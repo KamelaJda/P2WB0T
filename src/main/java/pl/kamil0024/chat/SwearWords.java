@@ -54,8 +54,7 @@ public class SwearWords {
                     slowa.add(msgsplit[index]);
                     slowa.add(msg);
                     dodaj = true;
-                }
-                else if (splitZwrot[0].equalsIgnoreCase(msg)) {
+                } else if (splitZwrot[0].equalsIgnoreCase(msg)) {
                     slowa.add(msg);
                     dodaj = true;
                 }

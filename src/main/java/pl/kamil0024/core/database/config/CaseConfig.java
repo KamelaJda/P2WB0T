@@ -32,7 +32,8 @@ import pl.kamil0024.core.util.kary.Kara;
 @AllArgsConstructor
 public class CaseConfig {
 
-    public CaseConfig() {}
+    public CaseConfig() {
+    }
 
     public CaseConfig(String id) {
         this.id = id;

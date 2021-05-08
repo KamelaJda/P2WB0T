@@ -56,12 +56,16 @@ public class HelpCommand extends Command {
             for (CommandCategory cate : CommandCategory.values()) {
                 StringBuilder komendy = new StringBuilder();
                 for (Map.Entry<String, Command> cmd : commandManager.getCommands().entrySet()) {
-                    if ((!context.executedInRekru() && cmd.getValue().isOnlyInRekru()) || (context.executedInRekru() && !cmd.getValue().isEnabledInRekru())) continue;
+                    if ((!context.executedInRekru() && cmd.getValue().isOnlyInRekru()) || (context.executedInRekru() && !cmd.getValue().isEnabledInRekru()))
+                        continue;
                     if (cmd.getValue().getPermLevel().getNumer() <= UserUtil.getPermLevel(context.getMember()).getNumer()) {
-                        if (cmd.getValue().getCategory() == cate) { komendy.append(cmd.getKey()).append("`,` "); }
+                        if (cmd.getValue().getCategory() == cate) {
+                            komendy.append(cmd.getKey()).append("`,` ");
+                        }
                     }
                 }
-                if (!komendy.toString().isEmpty()) eb.addField(context.getTranslate("category." + cate.toString().toLowerCase()), komendy.toString(), false);
+                if (!komendy.toString().isEmpty())
+                    eb.addField(context.getTranslate("category." + cate.toString().toLowerCase()), komendy.toString(), false);
             }
 
             context.send(eb.build()).queue();

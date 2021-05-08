@@ -35,7 +35,7 @@ import java.util.Map;
 
 @Data
 public class KolkoIKrzyzykManager {
-    
+
     public HashMap<String, Zaproszenie> zaproszenia;
     public static final ArrayList<String> graja = new ArrayList<>();
 
@@ -57,7 +57,8 @@ public class KolkoIKrzyzykManager {
     public synchronized ZaproszenieStatus zapros(Member zapraszajacy, Member zapraszajaGo, TextChannel textChannel) {
         if (hasInvite(zapraszajacy.getId())) return ZaproszenieStatus.FAILED;
 
-        if (graja.contains(zapraszajacy.getId()) || graja.contains(zapraszajaGo.getId())) return ZaproszenieStatus.IN_GAME;
+        if (graja.contains(zapraszajacy.getId()) || graja.contains(zapraszajaGo.getId()))
+            return ZaproszenieStatus.IN_GAME;
 
         Zaproszenie zapro = new Zaproszenie();
         zapro.setZapraszajacy(zapraszajacy.getId());
@@ -76,7 +77,8 @@ public class KolkoIKrzyzykManager {
         new Thread(() -> {
             try {
                 Thread.sleep(30000);
-            } catch (InterruptedException ignored) { }
+            } catch (InterruptedException ignored) {
+            }
             getZaproszenia().remove(zapro.getZapraszajacy());
         }).start();
     }
@@ -121,5 +123,5 @@ public class KolkoIKrzyzykManager {
         }
 
     }
-    
+
 }

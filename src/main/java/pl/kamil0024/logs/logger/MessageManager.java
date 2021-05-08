@@ -28,10 +28,12 @@ import pl.kamil0024.core.redis.RedisManager;
 
 public class MessageManager extends ListenerAdapter {
 
-    @Getter private final Cache<FakeMessage> map;
+    @Getter
+    private final Cache<FakeMessage> map;
 
     public MessageManager(RedisManager redisManager) {
-        this.map = redisManager.new CacheRetriever<FakeMessage>() {}.getCache(2629743);
+        this.map = redisManager.new CacheRetriever<FakeMessage>() {
+        }.getCache(2629743);
     }
 
     public void add(Message message) {

@@ -1,6 +1,7 @@
 # CheckToken
 
 ## Path
+
 `api/util/checktoken`
 
 ## Opis
@@ -8,11 +9,13 @@
 Zwraca prawidłowość tokenu
 
 ## Headers
+
 | Key           | Value   |
 |---------------|---------|
 | Authorization | API Key |
 
 ## Przykłady
+
 ```json
 {
   "success": true,

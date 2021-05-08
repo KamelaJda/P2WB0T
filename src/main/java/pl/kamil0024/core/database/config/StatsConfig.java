@@ -35,7 +35,8 @@ import java.util.ArrayList;
 @Data
 @AllArgsConstructor
 public class StatsConfig {
-    public StatsConfig() {}
+    public StatsConfig() {
+    }
 
     public StatsConfig(String id) {
         this.id = id;
@@ -64,7 +65,8 @@ public class StatsConfig {
                 if (stat.getDay() == date) {
                     return stat;
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
         return null;
     }

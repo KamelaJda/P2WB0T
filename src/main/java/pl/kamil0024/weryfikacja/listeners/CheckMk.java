@@ -33,7 +33,8 @@ import java.util.Date;
 
 public class CheckMk {
 
-    @Getter private final Member member;
+    @Getter
+    private final Member member;
 
     public CheckMk(Member member) {
         this.member = member;

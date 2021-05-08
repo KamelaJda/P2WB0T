@@ -34,7 +34,8 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class TicketConfig {
-    public TicketConfig() { }
+    public TicketConfig() {
+    }
 
     public TicketConfig(String id) {
         this.id = id;

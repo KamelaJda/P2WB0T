@@ -106,7 +106,9 @@ public class Logger extends ListenerAdapter {
             EmbedBuilder eb = getLogMessage(Action.DELETED, msg, null);
             String content = msg.getContent();
             if (!content.isEmpty()) {
-                if (content.length() > 1024) { content = content.substring(0, 1024); }
+                if (content.length() > 1024) {
+                    content = content.substring(0, 1024);
+                }
                 eb.addField("Treść wiadomości:", content, false);
             }
             sendLog(eb);
@@ -124,7 +126,9 @@ public class Logger extends ListenerAdapter {
         FakeMessage msg = manager.get(event.getMessage().getId());
 
         if (msg == null) return;
-        if (event.getMessage().getContentRaw().equals(msg.getContent())) { return; }
+        if (event.getMessage().getContentRaw().equals(msg.getContent())) {
+            return;
+        }
 
         EmbedBuilder eb = getLogMessage(Action.EDITED, msg, null);
         eb.addField("Stara treść wiadomości:", msg.getContent(), false);
@@ -186,7 +190,8 @@ public class Logger extends ListenerAdapter {
         DELETED("Wiadomość usunięta"),
         EDITED("Wiadomość edytowana");
 
-        @Getter private final String slownie;
+        @Getter
+        private final String slownie;
 
     }
 

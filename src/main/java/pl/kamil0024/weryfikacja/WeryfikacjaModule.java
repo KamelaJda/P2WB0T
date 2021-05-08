@@ -57,7 +57,8 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
     public final WeryfikacjaDao weryfikacjaDao;
     public final APIModule apiModule;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean start = false;
     private ChangeNickname changeNickname;
 
@@ -115,7 +116,7 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
             }
 
             WeryfikacjaConfig werc = weryfikacjaDao.getByDiscordId(userId);
-            if (werc != null && !werc.isDisabled() &&  !werc.getMcnick().equals(config.getNick())) {
+            if (werc != null && !werc.isDisabled() && !werc.getMcnick().equals(config.getNick())) {
                 channel.sendMessage(member.getAsMention() + ", powinieneś zweryfikować się z nicku `" + werc.getMcnick() + "`, a nie `" + config.getNick() + "`. Zmieniłeś konto? Napisz do nas!")
                         .queue(m -> m.delete().queueAfter(20, TimeUnit.SECONDS));
                 apiModule.getDcCache().invalidate(config.getKod());
@@ -188,7 +189,8 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
 
         try {
             g.modifyNickname(member, nickname + " " + config.getNick()).complete();
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         MultiConfig conf = multiDao.get(member.getId());
         conf.getNicki().add(new Nick(config.getNick(), nickname, new BDate().getTimestamp()));
@@ -216,12 +218,14 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        if (!event.getChannel().getId().equals("740157959207780362") || event.getAuthor().isBot() || !event.isFromGuild()) return;
+        if (!event.getChannel().getId().equals("740157959207780362") || event.getAuthor().isBot() || !event.isFromGuild())
+            return;
 
         String msg = event.getMessage().getContentRaw();
         try {
             event.getMessage().delete().complete();
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
 
         executeCode(event.getMember(), event.getChannel(), msg, event.getGuild(), false);
     }

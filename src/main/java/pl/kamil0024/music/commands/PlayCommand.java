@@ -51,7 +51,7 @@ public class PlayCommand extends Command {
     public boolean execute(@NotNull CommandContext context) {
         String url = context.getArgs().get(0);
         if (url == null) throw new UsageException();
-        
+
         if (!isVoice(context.getMember())) {
             context.sendTranslate("play.nochannel").queue();
             return false;
@@ -63,7 +63,7 @@ public class PlayCommand extends Command {
                 return false;
             }
         }
-        
+
         if (!hasPermission(context.getGuild().getSelfMember(), getVc(context.getMember()))) {
             context.sendTranslate("play.noperms").queue();
             return false;
@@ -71,18 +71,18 @@ public class PlayCommand extends Command {
 
         return musicModule.loadAndPlay(context.getChannel(), url, getVc(context.getMember()));
     }
-    
+
     public static boolean isVoice(Member member) {
         GuildVoiceState gvc = member.getVoiceState();
         if (gvc == null) return false;
         return gvc.getChannel() != null;
     }
-    
+
     @NotNull
     public static VoiceChannel getVc(Member mem) {
         return Objects.requireNonNull(Objects.requireNonNull(mem.getVoiceState()).getChannel());
     }
-    
+
     public static boolean hasPermission(Member mem, VoiceChannel vc) {
         return mem.hasPermission(vc, Permission.VOICE_CONNECT, Permission.VOICE_SPEAK);
     }

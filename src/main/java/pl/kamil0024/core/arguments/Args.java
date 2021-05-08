@@ -25,7 +25,8 @@ import pl.kamil0024.core.command.CommandContext;
 
 public abstract class Args {
 
-    @Getter protected String name;
+    @Getter
+    protected String name;
 
     public Object parsed(String o, JDA jda, CommandContext context) {
         throw new UnsupportedOperationException("Argu nie ma zaimplementowanej funkcji execute()");

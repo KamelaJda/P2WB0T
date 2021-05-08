@@ -32,8 +32,10 @@ public enum PermLevel {
     ADMINISTRATOR(5, "permlvl.adm"),
     DEVELOPER(10, "permlvl.dev");
 
-    @Getter private final int numer;
-    @Getter private final String tranlsateKey;
+    @Getter
+    private final int numer;
+    @Getter
+    private final String tranlsateKey;
 
     PermLevel(int numer, String tranlsateKey) {
         this.numer = numer;

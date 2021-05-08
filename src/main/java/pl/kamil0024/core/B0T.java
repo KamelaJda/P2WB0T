@@ -103,18 +103,23 @@ public class B0T {
     private SocketManager socketManager;
     private VoiceStateDao voiceStateDao;
 
-    @Getter private final HashMap<String, Modul> modules;
+    @Getter
+    private final HashMap<String, Modul> modules;
 
     @SneakyThrows
     public B0T(String token) {
         //#region fix self-assigne certs
-        TrustManager[] trustAllCerts = new TrustManager[] {
+        TrustManager[] trustAllCerts = new TrustManager[]{
                 new X509TrustManager() {
                     public java.security.cert.X509Certificate[] getAcceptedIssuers() {
                         return null;
                     }
-                    public void checkClientTrusted(X509Certificate[] certs, String authType) {  }
-                    public void checkServerTrusted(X509Certificate[] certs, String authType) {  }
+
+                    public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                    }
+
+                    public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                    }
                 }
         };
 
@@ -126,7 +131,7 @@ public class B0T {
         //#endregion fix self-assigne certs
 
         AsyncEventBus eventBus = new AsyncEventBus(Executors.newFixedThreadPool(16), EventBusErrorHandler.instance);
-        
+
         modules = new HashMap<>();
         Tlumaczenia tlumaczenia = new Tlumaczenia();
         ArgumentManager argumentManager = new ArgumentManager();
@@ -167,10 +172,10 @@ public class B0T {
         tlumaczenia.load();
 
         Sentry.init(option -> {
-           option.setDsn(Ustawienia.instance.sentry.dns);
-           option.setRelease("P2WB0T@" + WERSJA);
-           option.setShutdownTimeout(5000);
-           option.setServerName("s1.p2w");
+            option.setDsn(Ustawienia.instance.sentry.dns);
+            option.setRelease("P2WB0T@" + WERSJA);
+            option.setShutdownTimeout(5000);
+            option.setServerName("s1.p2w");
         });
 
         this.api = null;
@@ -200,11 +205,12 @@ public class B0T {
             System.exit(1);
         }
 
-        while(api.getShards().stream().allMatch(s -> s.getStatus() != JDA.Status.CONNECTED)) {
+        while (api.getShards().stream().allMatch(s -> s.getStatus() != JDA.Status.CONNECTED)) {
             try {
                 //noinspection BusyWait
                 Thread.sleep(100);
-            } catch (InterruptedException ignored) { }
+            } catch (InterruptedException ignored) {
+            }
         }
 
         Optional<JDA> shard = api.getShards().stream().filter(s -> {
@@ -228,30 +234,30 @@ public class B0T {
             System.exit(1);
         }
 
-        this.voiceStateDao  = new VoiceStateDao(databaseManager);
+        this.voiceStateDao = new VoiceStateDao(databaseManager);
         this.socketManager = new SocketManager(eventBus, api, eventWaiter, voiceStateDao);
         SocketServer socketServer = new SocketServer(eventBus, socketManager);
         socketServer.start();
 
-        RedisManager       redisManager        = new RedisManager(getshard.getSelfUser().getIdLong());
-        EmbedRedisManager  embedRedisManager   = new EmbedRedisManager(redisManager);
+        RedisManager redisManager = new RedisManager(getshard.getSelfUser().getIdLong());
+        EmbedRedisManager embedRedisManager = new EmbedRedisManager(redisManager);
 
-        CaseDao            caseDao             = new CaseDao(databaseManager);
-        UserDao            userDao             = new UserDao(databaseManager);
-        NieobecnosciDao    nieobecnosciDao     = new NieobecnosciDao(databaseManager);
-        RemindDao          remindDao           = new RemindDao(databaseManager);
-        GiveawayDao        giveawayDao         = new GiveawayDao(databaseManager);
-        StatsDao           statsDao            = new StatsDao(databaseManager);
-        MultiDao           multiDao            = new MultiDao(databaseManager);
-        TicketDao          ticketDao           = new TicketDao(databaseManager);
-        ApelacjeDao        apelacjeDao         = new ApelacjeDao(databaseManager);
-        AnkietaDao         ankietaDao          = new AnkietaDao(databaseManager, api);
-        WeryfikacjaDao     weryfikacjaDao      = new WeryfikacjaDao(databaseManager);
-        AcBanDao           acBanDao            = new AcBanDao(databaseManager);
-        RecordingDao       recordingDao        = new RecordingDao(databaseManager);
-        AntiRaidDao        antiRaidDao         = new AntiRaidDao(databaseManager);
-        DeletedMessagesDao deletedMessagesDao  = new DeletedMessagesDao(databaseManager);
-        UserstatsDao       userstatsDao        = new UserstatsDao(databaseManager);
+        CaseDao caseDao = new CaseDao(databaseManager);
+        UserDao userDao = new UserDao(databaseManager);
+        NieobecnosciDao nieobecnosciDao = new NieobecnosciDao(databaseManager);
+        RemindDao remindDao = new RemindDao(databaseManager);
+        GiveawayDao giveawayDao = new GiveawayDao(databaseManager);
+        StatsDao statsDao = new StatsDao(databaseManager);
+        MultiDao multiDao = new MultiDao(databaseManager);
+        TicketDao ticketDao = new TicketDao(databaseManager);
+        ApelacjeDao apelacjeDao = new ApelacjeDao(databaseManager);
+        AnkietaDao ankietaDao = new AnkietaDao(databaseManager, api);
+        WeryfikacjaDao weryfikacjaDao = new WeryfikacjaDao(databaseManager);
+        AcBanDao acBanDao = new AcBanDao(databaseManager);
+        RecordingDao recordingDao = new RecordingDao(databaseManager);
+        AntiRaidDao antiRaidDao = new AntiRaidDao(databaseManager);
+        DeletedMessagesDao deletedMessagesDao = new DeletedMessagesDao(databaseManager);
+        UserstatsDao userstatsDao = new UserstatsDao(databaseManager);
 
         ArrayList<Object> listeners = new ArrayList<>();
         CommandExecute commandExecute = new CommandExecute(commandManager, tlumaczenia, argumentManager, userDao);
@@ -261,7 +267,7 @@ public class B0T {
         this.modulManager = new ModulManager();
         ModLog modLog = new ModLog(api, caseDao);
         NieobecnosciManager nieobecnosciManager = new NieobecnosciManager(api, nieobecnosciDao);
-        UserstatsManager    userstatsManager    = new UserstatsManager(redisManager, userstatsDao, api);
+        UserstatsManager userstatsManager = new UserstatsManager(redisManager, userstatsDao, api);
 
         api.addEventListener(modLog);
         api.addEventListener(userstatsManager);

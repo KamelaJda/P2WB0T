@@ -146,7 +146,8 @@ public class CommandExecute extends ListenerAdapter {
                 Runnable task = () -> {
                     try {
                         e.getMessage().clearReactions().complete();
-                    } catch (Exception ignored) { }
+                    } catch (Exception ignored) {
+                    }
                 };
                 ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
                 ses.schedule(task, 1, TimeUnit.SECONDS);
@@ -218,7 +219,8 @@ public class CommandExecute extends ListenerAdapter {
 
         try {
             onExecuteEvent(cmdc);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 
     @NotNull
@@ -242,7 +244,8 @@ public class CommandExecute extends ListenerAdapter {
     private static void zareaguj(Message msg, User user, boolean bol) {
         try {
             msg.addReaction(getReaction(user, bol)).complete();
-        } catch (ErrorResponseException ignored) { }
+        } catch (ErrorResponseException ignored) {
+        }
     }
 
     private void setCooldown(User user, Command command) {
@@ -269,7 +272,9 @@ public class CommandExecute extends ListenerAdapter {
         String msg = "`%s` użył komendy %s(%s) na serwerze %s[%s]";
         StringBuilder b = new StringBuilder(" ");
 
-        for (Map.Entry<Integer, String> m : context.getArgs().entrySet()) { b.append(m.getValue()).append(",");}
+        for (Map.Entry<Integer, String> m : context.getArgs().entrySet()) {
+            b.append(m.getValue()).append(",");
+        }
 
         msg = String.format(msg, UserUtil.getLogName(context.getUser()),
                 context.getCommand(), b.toString().replaceAll("@", "@\u200b$1"), context.getGuild(), context.getGuild().getId());

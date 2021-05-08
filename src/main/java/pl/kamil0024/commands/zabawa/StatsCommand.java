@@ -127,7 +127,7 @@ public class StatsCommand extends Command {
     }
 
     private static HashMap<String, Long> sortByValue(Map<String, Long> hm) {
-        List<Map.Entry<String, Long> > list =
+        List<Map.Entry<String, Long>> list =
                 new LinkedList<>(hm.entrySet());
         list.sort(Map.Entry.comparingByValue());
         Collections.reverse(list);

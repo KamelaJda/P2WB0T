@@ -66,8 +66,7 @@ public class MultiCommand extends Command {
         if (user != null) {
             mc = Collections.singletonList(multiDao.get(user.getId()));
             gracz = UserUtil.getLogName(user);
-        }
-        else {
+        } else {
             mc = multiDao.getByNick(context.getArgs().get(0));
             showUser = true;
         }

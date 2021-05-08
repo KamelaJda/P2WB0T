@@ -40,7 +40,9 @@ public class TicketStatsHandler implements HttpHandler {
 
     @Override
     public void handleRequest(HttpServerExchange ex) {
-        if (!Response.checkIp(ex)) { return; }
+        if (!Response.checkIp(ex)) {
+            return;
+        }
 
         long start, end;
 
@@ -84,7 +86,8 @@ public class TicketStatsHandler implements HttpHandler {
 
     @Data
     private static class UserTicketStats {
-        public UserTicketStats() { }
+        public UserTicketStats() {
+        }
 
         private int liczbaZgloszen = 0;
         private int negatywneZgloszenia = 0;
@@ -94,7 +97,8 @@ public class TicketStatsHandler implements HttpHandler {
 
     @Data
     private static class TicketStats {
-        public TicketStats() { }
+        public TicketStats() {
+        }
 
         private int liczbaZgloszen = 0;
         private Map<String, UserTicketStats> stats = new HashMap<>();

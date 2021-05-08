@@ -1,6 +1,7 @@
 # CheckToken
 
 ## Path
+
 `api/util/channels`
 
 ## Opis

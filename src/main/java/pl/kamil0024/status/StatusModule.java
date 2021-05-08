@@ -45,12 +45,14 @@ public class StatusModule implements Modul {
 
     public final Cache<String> cache;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean start = false;
 
     public StatusModule(ShardManager api, RedisManager redisManager) {
         this.api = api;
-        this.cache = redisManager.new CacheRetriever<String>() {}.getCache(300);
+        this.cache = redisManager.new CacheRetriever<String>() {
+        }.getCache(300);
     }
 
     @Override
@@ -84,13 +86,14 @@ public class StatusModule implements Modul {
                         String[] s = entry.getValue().split("-");
                         Integer.parseInt(s[0]);
                         if (s.length == 2) continue;
-                    } catch (Exception ignored) { }
+                    } catch (Exception ignored) {
+                    }
                     cache.put(entry.getKey(), entry.getValue());
                 }
 
             }
 
-         } catch (Exception e) {
+        } catch (Exception e) {
             Log.newError(e, getClass());
         }
     }

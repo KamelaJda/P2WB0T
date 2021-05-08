@@ -67,7 +67,9 @@ public class StatusyGetHandler implements HttpHandler {
 
     @Data
     private static class Encoder {
-        public Encoder() { }
+        public Encoder() {
+        }
+
         private UserinfoConfig member;
         private String status;
     }

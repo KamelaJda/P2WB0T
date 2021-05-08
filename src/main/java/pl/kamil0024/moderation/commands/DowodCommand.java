@@ -30,6 +30,7 @@ import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
+import pl.kamil0024.core.command.SubCommand;
 import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.database.CaseDao;
@@ -68,54 +69,12 @@ public class DowodCommand extends Command {
     @Override
     public boolean execute(@NotNull CommandContext context) {
         String arg = context.getArgs().get(0);
-        String typ = context.getArgs().get(1);
-
         if (arg == null) throw new UsageException();
-        if (equalsIgnoreCase(typ, "list", "lista")) {
-            List<FutureTask<EmbedBuilder>> futurePages = new ArrayList<>();
-            List<EmbedBuilder> pages = new ArrayList<>();
-            CaseConfig cc = caseDao.get(arg);
-            if (cc.getKara() == null) {
-                context.sendTranslate("dowod.invalidcase").queue();
-                return false;
-            }
-            if (cc.getKara().getDowody() != null && !cc.getKara().getDowody().isEmpty()) {
-                for (Dowod dowod : cc.getKara().getDowody()) {
-                    pages.add(getEmbed(dowod, context));
-                }
-                pages.forEach(p -> futurePages.add(new FutureTask<>(() -> p)));
-            } else {
-                context.sendTranslate("dowod.nullreports").queue();
-                return false;
-            }
-            new DynamicEmbedPageinator(futurePages, context.getUser(), eventWaiter, context.getJDA(), 2137).create(context.getChannel(), context.getMessage());
-            return true;
-        }
 
-        if (equalsIgnoreCase(typ, "remove", "delete", "usun", "usuń")) {
-            try {
-                CaseConfig kara = caseDao.get(arg);
-                if (kara.getKara() == null) {
-                    context.sendTranslate("Nie ma kary o takim ID!").queue();
-                    return false;
-                }
-                if (kara.getKara().getDowody() == null) {
-                    kara.getKara().setDowody(new ArrayList<>());
-                }
-
-                Dowod d = Dowod.getDowodById(Integer.parseInt(context.getArgs().get(2)), kara.getKara().getDowody());
-                if (d == null) {
-                    context.sendTranslate("dowod.invaliddowod").queue();
-                    return false;
-                }
-                kara.getKara().getDowody().remove(d);
-                caseDao.save(kara);
-                context.sendTranslate("dowod.successdelete").queue();
-                return true;
-            } catch (Exception e) {
-                context.sendTranslate("dowod.removeusage", context.getPrefix());
-                return false;
-            }
+        String s = context.getArgs().get(1);
+        if (s != null && (s.contains("list") || s.contains("remove") || s.contains("delete"))) {
+            context.send("Najprawdopodobniej próbujesz zobaczyć/usunąć dowód(-ody)! Użyj " + context.getPrefix() + "dowod <list|delete> <id kary>").queue();
+            return false;
         }
 
         CaseConfig cc = caseDao.get(arg);
@@ -139,14 +98,57 @@ public class DowodCommand extends Command {
         return true;
     }
 
-    private boolean equalsIgnoreCase(String typ, String... s) {
-        if (typ == null || typ.isEmpty()) return false;
-        for (String s1 : s) {
-            if (typ.equalsIgnoreCase(s1)) {
-                return true;
-            }
+    @SubCommand(name = "list", aliases = {"lista"})
+    public boolean list(CommandContext context) {
+        String arg = context.getArgs().get(1);
+        if (arg == null) throw new UsageException();
+        List<FutureTask<EmbedBuilder>> futurePages = new ArrayList<>();
+        List<EmbedBuilder> pages = new ArrayList<>();
+        CaseConfig cc = caseDao.get(arg);
+        if (cc.getKara() == null) {
+            context.sendTranslate("dowod.invalidcase").queue();
+            return false;
         }
-        return false;
+        if (cc.getKara().getDowody() != null && !cc.getKara().getDowody().isEmpty()) {
+            for (Dowod dowod : cc.getKara().getDowody()) {
+                pages.add(getEmbed(dowod, context));
+            }
+            pages.forEach(p -> futurePages.add(new FutureTask<>(() -> p)));
+        } else {
+            context.sendTranslate("dowod.nullreports").queue();
+            return false;
+        }
+        new DynamicEmbedPageinator(futurePages, context.getUser(), eventWaiter, context.getJDA(), 2137).create(context.getChannel(), context.getMessage());
+        return true;
+    }
+
+    @SubCommand(name = "remove", aliases = {"delete", "usun", "usuń"})
+    public boolean remove(CommandContext context) {
+        String arg = context.getArgs().get(1);
+        if (arg == null) throw new UsageException();
+        try {
+            CaseConfig kara = caseDao.get(arg);
+            if (kara.getKara() == null) {
+                context.sendTranslate("Nie ma kary o takim ID!").queue();
+                return false;
+            }
+            if (kara.getKara().getDowody() == null) {
+                kara.getKara().setDowody(new ArrayList<>());
+            }
+
+            Dowod d = Dowod.getDowodById(Integer.parseInt(context.getArgs().get(2)), kara.getKara().getDowody());
+            if (d == null) {
+                context.sendTranslate("dowod.invaliddowod").queue();
+                return false;
+            }
+            kara.getKara().getDowody().remove(d);
+            caseDao.save(kara);
+            context.sendTranslate("dowod.successdelete").queue();
+            return true;
+        } catch (Exception e) {
+            context.sendTranslate("dowod.removeusage", context.getPrefix());
+            return false;
+        }
     }
 
     public static EmbedBuilder getEmbed(Dowod dowod, CommandContext context) {
@@ -155,7 +157,8 @@ public class DowodCommand extends Command {
         eb.setColor(UserUtil.getColor(context.getMember()));
         eb.addField(context.getTranslate("dowod.reporter"), UserUtil.getFullName(context.getJDA(), dowod.getUser()), false);
 
-        if (dowod.getContent() != null && !dowod.getContent().isEmpty()) eb.addField("Treść zgłoszenia: ", dowod.getContent(), false);
+        if (dowod.getContent() != null && !dowod.getContent().isEmpty())
+            eb.addField("Treść zgłoszenia: ", dowod.getContent(), false);
         if (dowod.getImage() != null) eb.setImage(getImageUrl(dowod.getImage()));
         eb.addField(" ", context.getTranslate("dowod.reportid") + " " + dowod.getId(), false);
         return eb;
@@ -222,8 +225,7 @@ public class DowodCommand extends Command {
                 dowody.add(d);
                 id++;
             }
-        }
-        else dowody.add(new Dowod(1, msg.getAuthor().getId(), content, null));
+        } else dowody.add(new Dowod(1, msg.getAuthor().getId(), content, null));
 
         if (deleteMsg && !inCmd) msg.delete().queueAfter(5, TimeUnit.SECONDS);
         return dowody;
@@ -245,7 +247,8 @@ public class DowodCommand extends Command {
                 if (!m.getAttachments().isEmpty()) { // Czyli zawsze
                     msg.add(m);
                 }
-            } catch (Exception ignored) { }
+            } catch (Exception ignored) {
+            }
         }
         return msg;
     }

@@ -35,7 +35,8 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 public class AnkietaConfig {
-    public AnkietaConfig() { }
+    public AnkietaConfig() {
+    }
 
     public AnkietaConfig(String id) {
         this.id = id;

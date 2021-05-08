@@ -34,7 +34,9 @@ public class RecordingHandler implements HttpHandler {
 
     @Override
     public void handleRequest(HttpServerExchange ex) {
-        if (!Response.checkIp(ex)) { return; }
+        if (!Response.checkIp(ex)) {
+            return;
+        }
 
         try {
             Response.sendObjectResponse(ex, recordingDao.get(ex.getQueryParameters().get("id").getFirst()));

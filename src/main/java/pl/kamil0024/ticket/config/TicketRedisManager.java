@@ -29,7 +29,8 @@ public class TicketRedisManager {
     private final Cache<ChannelTicketConfig> channelCache;
 
     public TicketRedisManager(RedisManager redisManager) {
-        this.channelCache = redisManager.new CacheRetriever<ChannelTicketConfig>() {}.getCache(3600);
+        this.channelCache = redisManager.new CacheRetriever<ChannelTicketConfig>() {
+        }.getCache(3600);
     }
 
     @Nullable

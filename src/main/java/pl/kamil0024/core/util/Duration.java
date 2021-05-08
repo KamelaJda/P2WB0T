@@ -28,8 +28,12 @@ import pl.kamil0024.bdate.util.Time;
 
 public class Duration {
 
-    @Getter @Setter private Long now;
-    @Getter @Setter private Long date;
+    @Getter
+    @Setter
+    private Long now;
+    @Getter
+    @Setter
+    private Long date;
 
     public Duration() {
         now = new BDate().getTimestamp();
@@ -63,7 +67,9 @@ public class Duration {
             long l = Long.parseLong(czas[0]);
             if (l <= 0) return null;
             longg = l;
-        } catch (NumberFormatException e) { return null; }
+        } catch (NumberFormatException e) {
+            return null;
+        }
 
         return new BDate(now, getLang()).add(longg, time).getTimestamp();
     }
