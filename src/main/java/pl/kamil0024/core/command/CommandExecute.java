@@ -45,6 +45,7 @@ import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.util.Error;
 import pl.kamil0024.core.util.*;
 
+import java.lang.reflect.Method;
 import java.time.Instant;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -62,7 +63,8 @@ public class CommandExecute extends ListenerAdapter {
     private final Tlumaczenia tlumaczenia;
     private final UserDao userDao;
 
-    @Getter HashMap<String, UserConfig> userConfig;
+    @Getter
+    HashMap<String, UserConfig> userConfig;
 
     private final Map<String, Instant> cooldowns = new HashMap<>();
 
@@ -184,8 +186,14 @@ public class CommandExecute extends ListenerAdapter {
         }
 
         CommandContext cmdc = new CommandContext(e, prefix, parsedArgs, tlumaczenia, argumentManager, c);
+
         try {
-            if (c.execute(cmdc)) udaloSie = true;
+            String subcommand = parsedArgs.get(0);
+            if (subcommand != null && c.getSubCommands().containsKey(subcommand.toLowerCase())) {
+                Method method = c.getSubCommands().get(subcommand.toLowerCase());
+                Boolean bol = (Boolean) method.invoke(this, cmdc);
+                if (bol) udaloSie = true;
+            } else if (c.execute(cmdc)) udaloSie = true;
         } catch (UsageException u) {
             Error.usageError(cmdc);
         } catch (Exception omegalul) {

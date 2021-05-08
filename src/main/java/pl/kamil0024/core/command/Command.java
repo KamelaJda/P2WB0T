@@ -18,12 +18,14 @@
 package pl.kamil0024.core.command;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.command.enums.PermLevel;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class Command {
 
@@ -35,7 +37,9 @@ public abstract class Command {
     @Getter protected boolean enabledInRekru = false;
     @Getter protected boolean onlyInRekru = false;
 
-    protected boolean execute(@NotNull CommandContext context) {
+    @Getter protected final Map<String, Method> subCommands = new HashMap<>();
+
+    protected boolean execute(CommandContext context) {
         throw new UnsupportedOperationException("Komenda nie ma zaimplementowanej funkcji execute()");
     }
 
