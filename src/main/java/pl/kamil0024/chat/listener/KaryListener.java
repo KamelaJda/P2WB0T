@@ -44,7 +44,8 @@ import java.util.concurrent.TimeUnit;
 
 public class KaryListener extends ListenerAdapter {
 
-    @Getter private final Cache<Action> embedy;
+    @Getter
+    private final Cache<Action> embedy;
 
     private final KaryJSON karyJSON;
     private final CaseDao caseDao;
@@ -56,7 +57,8 @@ public class KaryListener extends ListenerAdapter {
         this.caseDao = caseDao;
         this.modLog = modLog;
         this.statsModule = statsModule;
-        this.embedy = redisManager.new CacheRetriever<Action>(){}.getCache(-1);
+        this.embedy = redisManager.new CacheRetriever<Action>() {
+        }.getCache(-1);
     }
 
     @Override
@@ -77,7 +79,8 @@ public class KaryListener extends ListenerAdapter {
         Message msg = null;
         try {
             msg = event.getChannel().retrieveMessageById(event.getMessageId()).complete();
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
         if (msg == null || event.getReactionEmote().getId().equals(Ustawienia.instance.emote.red)) {
             deleteMessage(msg);
             embedy.invalidate(event.getMessageId());
@@ -85,7 +88,8 @@ public class KaryListener extends ListenerAdapter {
         }
         try {
             deleteMessage(event.getGuild().getTextChannelById(action.getMsg().getChannel()).retrieveMessageById(action.getMsg().getId()).complete());
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
         deleteMessage(msg);
 
         if (event.getReactionEmote().getId().equals("623630774171729931")) {
@@ -101,7 +105,8 @@ public class KaryListener extends ListenerAdapter {
         Member mem = null;
         try {
             mem = event.getGuild().retrieveMemberById(action.getMsg().getAuthor()).complete();
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
 
         if (mem == null) {
             event.getChannel().sendMessage(event.getMember().getAsMention() + ", użytkownik wyszedł z serwera??")
@@ -127,8 +132,10 @@ public class KaryListener extends ListenerAdapter {
     private void deleteMessage(Message... m) {
         for (Message message : m) {
             try {
-                message.delete().queue(s -> {});
-            } catch (Exception ignored) { }
+                message.delete().queue(s -> {
+                });
+            } catch (Exception ignored) {
+            }
         }
     }
 

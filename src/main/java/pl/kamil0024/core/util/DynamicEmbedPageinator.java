@@ -143,12 +143,14 @@ public class DynamicEmbedPageinator {
                 case STOP_EMOJI:
                     botMsg.delete().queue();
                     return;
-                default: return;
+                default:
+                    return;
             }
         }
         try {
             event.getReaction().removeReaction(event.getUser()).queue();
-        } catch (PermissionException ignored) { }
+        } catch (PermissionException ignored) {
+        }
         botMsg.editMessage(render(thisPage)).override(true).complete();
         waitForReaction();
     }
@@ -193,8 +195,7 @@ public class DynamicEmbedPageinator {
             if (page == 1) {
                 if (pageEmbed.get() == null) throw new IllegalStateException("pEmbed == null");
                 eb = new EmbedBuilder(pageEmbed.get().build());
-            }
-            else {
+            } else {
                 EmbedBuilder pEmbed = pageEmbed.get(5, TimeUnit.SECONDS);
                 if (pEmbed == null) throw new IllegalStateException("pEmbed == null");
                 eb = new EmbedBuilder(pEmbed.build());
@@ -222,7 +223,8 @@ public class DynamicEmbedPageinator {
     }
 
     private static class LoadingException extends RuntimeException {
-        @Getter private final boolean firstPage;
+        @Getter
+        private final boolean firstPage;
 
         LoadingException() {
             this(false);

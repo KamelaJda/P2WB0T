@@ -38,7 +38,8 @@ public class AntiRaidModule implements Modul {
     private final CaseDao caseDao;
     private final ModLog modLog;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean start = false;
 
     private AntiRaidListener antiRaidListener;
@@ -48,7 +49,7 @@ public class AntiRaidModule implements Modul {
         this.dao = dao;
         this.redisManager = redisManager;
         this.caseDao = caseDao;
-        this.modLog= modLog;
+        this.modLog = modLog;
     }
 
     @Override

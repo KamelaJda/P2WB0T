@@ -100,7 +100,8 @@ public class CommandsModule implements Modul {
     private final APIModule apiModule;
     private final SpotifyUtil spotifyUtil;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean start = false;
     private final ModLog modLog;
 

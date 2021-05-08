@@ -62,7 +62,8 @@ public class YouTubeCommand extends Command {
 
         try {
             audioTrackList = musicModule.search(tytul);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         if (audioTrackList.isEmpty()) {
             context.sendTranslate("youtube.bad").queue();
@@ -106,7 +107,6 @@ public class YouTubeCommand extends Command {
 
         return true;
     }
-
 
 
 }

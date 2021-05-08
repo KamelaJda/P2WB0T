@@ -113,9 +113,9 @@ public class BotinfoCommand extends Command {
 
     public static int calcCPU(long cpuStartTime, long elapsedStartTime, int cpuCount) {
         long end = System.nanoTime();
-        long totalAvailCPUTime = cpuCount * (end-elapsedStartTime);
-        long totalUsedCPUTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime()-cpuStartTime;
-        float per = ((float)totalUsedCPUTime*100)/(float)totalAvailCPUTime;
+        long totalAvailCPUTime = cpuCount * (end - elapsedStartTime);
+        long totalUsedCPUTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime() - cpuStartTime;
+        float per = ((float) totalUsedCPUTime * 100) / (float) totalAvailCPUTime;
         return (int) per;
     }
 

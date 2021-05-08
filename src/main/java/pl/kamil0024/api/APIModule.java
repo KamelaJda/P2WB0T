@@ -73,7 +73,8 @@ public class APIModule implements Modul {
 
     private final Guild guild;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean start = false;
 
     public APIModule(ShardManager api, CaseDao caseDao, RedisManager redisManager, NieobecnosciDao nieobecnosciDao, StatsDao statsDao, VoiceStateDao voiceStateDao, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, AcBanDao acBanDao, RecordingDao recordingDao, DeletedMessagesDao deletedMessagesDao, KaryJSON karyJSON, ModLog modLog, StatsModule statsModule, StatusModule statusModule) {
@@ -98,8 +99,10 @@ public class APIModule implements Modul {
         this.deletedMessagesDao = deletedMessagesDao;
         this.statusModule = statusModule;
 
-        this.dcCache = redisManager.new CacheRetriever<DiscordInviteConfig>() {}.getCache(3600);
-        this.newWery = redisManager.new CacheRetriever<DiscordInviteConfig>() {}.getCache(3600);
+        this.dcCache = redisManager.new CacheRetriever<DiscordInviteConfig>() {
+        }.getCache(3600);
+        this.newWery = redisManager.new CacheRetriever<DiscordInviteConfig>() {
+        }.getCache(3600);
     }
 
     @Override
@@ -184,7 +187,7 @@ public class APIModule implements Modul {
     public DiscordInviteConfig getDiscordConfig(String nick) {
         return dcCache.getIfPresent(nick);
     }
-    
+
     public void putDiscordConfig(String nick, String kod, String ranga) {
         dcCache.put(kod, new DiscordInviteConfig(nick, kod, ranga));
     }

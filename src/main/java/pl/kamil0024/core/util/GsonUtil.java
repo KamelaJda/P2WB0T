@@ -26,7 +26,8 @@ import java.lang.reflect.Type;
 
 public class GsonUtil {
 
-    private GsonUtil() {}
+    private GsonUtil() {
+    }
 
     public static final Gson GSON;
 

@@ -80,7 +80,8 @@ public class McpremiumCommand extends Command {
                 }
             }
             listaNazw.add(0, "**" + tekstPierw.toString() + "** " + tekstDalej.toString());
-        } catch (JSONException | IOException ignored) { }
+        } catch (JSONException | IOException ignored) {
+        }
 
         if (name == null || uuid == null) {
             context.send(context.getTranslate("mcpremium.alex", context.getMember().getAsMention())).queue();

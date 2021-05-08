@@ -51,21 +51,21 @@ public class PgMapper<T> {
 
     private void init() {
         // Scan to ensure required annotations
-        if(!type.isAnnotationPresent(Table.class)) {
+        if (!type.isAnnotationPresent(Table.class)) {
             throw new IllegalStateException("Got class " + type.getName() + " to map, but it has no @Table!?");
         }
         table = type.getDeclaredAnnotation(Table.class);
         // Scan the class for a primary key
         boolean havePk = false;
         pkField = null;
-        for(final Field field : type.getDeclaredFields()) {
+        for (final Field field : type.getDeclaredFields()) {
             field.setAccessible(true);
-            if(field.isAnnotationPresent(PrimaryKey.class)) {
+            if (field.isAnnotationPresent(PrimaryKey.class)) {
                 havePk = true;
                 pkField = field;
             }
         }
-        if(!havePk) {
+        if (!havePk) {
             throw new IllegalStateException("Class " + type.getName() + " has no @PrimaryKey!?");
         }
         // Ensure that it's a valid type
@@ -78,9 +78,9 @@ public class PgMapper<T> {
                 ");");
         Log.info("Created table %s for entity class %s.", table.value(), type.getName());
         // Create the indexes
-        if(type.isAnnotationPresent(BtreeIndex.class)) {
+        if (type.isAnnotationPresent(BtreeIndex.class)) {
             final BtreeIndex btreeIndex = type.getDeclaredAnnotation(BtreeIndex.class);
-            for(final String s : btreeIndex.value()) {
+            for (final String s : btreeIndex.value()) {
                 final String idx = "idx_btree_" + table.value() + '_' + s;
                 store.sql("CREATE INDEX IF NOT EXISTS " + idx + " ON " + table.value() + " USING BTREE ((data->'" + s + "'));");
                 Log.info("Created index %s on %s for entity class %s.", idx, table.value(), type.getName());
@@ -90,9 +90,9 @@ public class PgMapper<T> {
         final String dataGinIdx = "idx_gin_" + table.value() + "_data";
         store.sql("CREATE INDEX IF NOT EXISTS " + dataGinIdx + " ON " + table.value() + " USING GIN (data);");
         Log.info("Created index idx_gin_data on %s for entity class %s.", table.value(), type.getName());
-        if(type.isAnnotationPresent(GIndex.class)) {
+        if (type.isAnnotationPresent(GIndex.class)) {
             final GIndex gin = type.getDeclaredAnnotation(GIndex.class);
-            for(final String s : gin.value()) {
+            for (final String s : gin.value()) {
                 final String idx = "idx_gin_" + table.value() + '_' + s;
                 store.sql("CREATE INDEX IF NOT EXISTS " + idx + " ON " + table.value() + " USING GIN ((data->'" + s + "'));");
                 Log.info("Created index %s on %s for entity class %s.", idx, table.value(), type.getName());
@@ -115,9 +115,9 @@ public class PgMapper<T> {
                 c.setString(4, json);
                 c.execute();
             });
-        } catch(final IllegalAccessException e) {
+        } catch (final IllegalAccessException e) {
             Log.error("Couldn't access primary key for entity %s (value: %s): %s", type.getName(), entity, e);
-        } catch(final JsonProcessingException e) {
+        } catch (final JsonProcessingException e) {
             Log.error("Couldn't map entity %s (value: %s) to JSON: %s", type.getName(), entity, e);
         }
     }
@@ -127,11 +127,11 @@ public class PgMapper<T> {
         store.sql("SELECT * FROM " + table.value() + " WHERE " + primaryKey.value() + " = ?;", c -> {
             c.setObject(1, pk);
             final ResultSet resultSet = c.executeQuery();
-            if(resultSet.isBeforeFirst()) {
+            if (resultSet.isBeforeFirst()) {
                 resultSet.next();
                 try {
                     result.setValue(loadFromResultSet(resultSet));
-                } catch(final IllegalStateException e) {
+                } catch (final IllegalStateException e) {
                     Log.error("Load error: %s", e);
                     // Optional API says this will return Optional.empty()
                     result.setValue(null);
@@ -161,7 +161,6 @@ public class PgMapper<T> {
      * @param subKey     The subkey to query on. Ex. {@code data->'type'}.
      * @param subKeyData The subkey data to search for. Ex.
      *                   {@code type.whatever}.
-     *
      * @return A list of {@code <T>}s that has the given value for the given
      * subkey.
      */
@@ -170,11 +169,11 @@ public class PgMapper<T> {
         store.sql("SELECT * FROM " + table.value() + " WHERE " + subKey + " = ?;", c -> {
             c.setObject(1, subKeyData);
             final ResultSet resultSet = c.executeQuery();
-            if(resultSet.isBeforeFirst()) {
-                while(resultSet.next()) {
+            if (resultSet.isBeforeFirst()) {
+                while (resultSet.next()) {
                     try {
                         data.add(loadFromResultSet(resultSet));
-                    } catch(final IllegalStateException e) {
+                    } catch (final IllegalStateException e) {
                         Log.error("Load error: %s", e);
                     }
                 }
@@ -188,11 +187,11 @@ public class PgMapper<T> {
         store.sql("SELECT * FROM " + table.value() + " WHERE " + subKey + " = ? LIMIT " + limit + ";", c -> {
             c.setObject(1, subKeyData);
             final ResultSet resultSet = c.executeQuery();
-            if(resultSet.isBeforeFirst()) {
-                while(resultSet.next()) {
+            if (resultSet.isBeforeFirst()) {
+                while (resultSet.next()) {
                     try {
                         data.add(loadFromResultSet(resultSet));
-                    } catch(final IllegalStateException e) {
+                    } catch (final IllegalStateException e) {
                         Log.error("Load error: %s", e);
                     }
                 }
@@ -206,10 +205,10 @@ public class PgMapper<T> {
         store.sql("SELECT * FROM " + table.value() + ";", c -> {
             final ResultSet resultSet = c.executeQuery();
             if (resultSet.isBeforeFirst()) {
-                while(resultSet.next()) {
+                while (resultSet.next()) {
                     try {
                         data.add(loadFromResultSet(resultSet));
-                    } catch(final IllegalStateException e) {
+                    } catch (final IllegalStateException e) {
                         Log.error("Load error: %s", e);
                     }
                 }
@@ -223,10 +222,10 @@ public class PgMapper<T> {
         store.sql("SELECT SUM(" + columnName + ") FROM " + table.value() + " WHERE " + where + " ;", c -> {
             final ResultSet resultSet = c.executeQuery();
             if (resultSet.isBeforeFirst()) {
-                while(resultSet.next()) {
+                while (resultSet.next()) {
                     try {
                         data.add(loadFromResultSet(resultSet));
-                    } catch(final IllegalStateException e) {
+                    } catch (final IllegalStateException e) {
                         Log.error("Load error: %s", e);
                     }
                 }
@@ -246,7 +245,7 @@ public class PgMapper<T> {
 
     public Optional<Boolean> delete(final int id) {
         AtomicReference<Optional<Boolean>> result = new AtomicReference<>(Optional.empty());
-        store.sql("DELETE FROM " + table.value() + " WHERE " + primaryKey.value() + " = '"+ id +"';");
+        store.sql("DELETE FROM " + table.value() + " WHERE " + primaryKey.value() + " = '" + id + "';");
         return result.get();
     }
 
@@ -260,10 +259,10 @@ public class PgMapper<T> {
             }
             final ResultSet resultSet = c.executeQuery();
             if (resultSet.isBeforeFirst()) {
-                while(resultSet.next()) {
+                while (resultSet.next()) {
                     try {
                         data.add(loadFromResultSet(resultSet));
-                    } catch(final IllegalStateException e) {
+                    } catch (final IllegalStateException e) {
                         Log.error("Load error: %s", e);
                     }
                 }
@@ -277,24 +276,24 @@ public class PgMapper<T> {
             final String json = resultSet.getString("data");
             try { //NOSONAR
                 return MAPPER.readValue(json, type);
-            } catch(final IOException e) {
+            } catch (final IOException e) {
                 Log.error("Couldn't load entity %s from JSON %s: %s", type.getName(), json, e);
                 throw new IllegalStateException("Couldn't load entity " + type.getName() + " from JSON " + json, e);
             }
-        } catch(final SQLException e) {
+        } catch (final SQLException e) {
             Log.error("Couldn't load entity %s from JSON: %s", type.getName(), e);
             throw new IllegalStateException("Couldn't load entity " + type.getName(), e);
         }
     }
 
     private String typeToSqlType(final Class<?> type) {
-        if(type.equals(String.class)) {
+        if (type.equals(String.class)) {
             return "TEXT";
-        } else if(type.equals(Integer.class) || type.equals(int.class)) {
+        } else if (type.equals(Integer.class) || type.equals(int.class)) {
             return "INT";
-        } else if(type.equals(Long.class) || type.equals(long.class)) {
+        } else if (type.equals(Long.class) || type.equals(long.class)) {
             return "BIGINT";
-        } else if(type.equals(java.sql.Date.class)) {
+        } else if (type.equals(java.sql.Date.class)) {
             return "DATE";
         } else {
             throw new IllegalArgumentException("No SQL type mapping known for class of type: " + type.getName());
@@ -307,10 +306,10 @@ public class PgMapper<T> {
         store.sql(msg, c -> {
             final ResultSet resultSet = c.executeQuery();
             if (resultSet.isBeforeFirst()) {
-                while(resultSet.next()) {
+                while (resultSet.next()) {
                     try {
                         data.add(loadFromResultSet(resultSet));
-                    } catch(final IllegalStateException e) {
+                    } catch (final IllegalStateException e) {
                         Log.error("Load error: %s", e);
                     }
                 }
@@ -325,10 +324,10 @@ public class PgMapper<T> {
         store.sql(msg, c -> {
             final ResultSet resultSet = c.executeQuery();
             if (resultSet.isBeforeFirst()) {
-                while(resultSet.next()) {
+                while (resultSet.next()) {
                     try {
                         data.add(loadFromResultSet(resultSet));
-                    } catch(final IllegalStateException e) {
+                    } catch (final IllegalStateException e) {
                         Log.error("Load error: %s", e);
                     }
                 }
@@ -343,10 +342,10 @@ public class PgMapper<T> {
         store.sql(msg, c -> {
             final ResultSet resultSet = c.executeQuery();
             if (resultSet.isBeforeFirst()) {
-                while(resultSet.next()) {
+                while (resultSet.next()) {
                     try {
                         data.add(loadFromResultSet(resultSet));
-                    } catch(final IllegalStateException e) {
+                    } catch (final IllegalStateException e) {
                         Log.error("Load error: %s", e);
                     }
                 }
@@ -361,10 +360,10 @@ public class PgMapper<T> {
         store.sql(msg, c -> {
             final ResultSet resultSet = c.executeQuery();
             if (resultSet.isBeforeFirst()) {
-                while(resultSet.next()) {
+                while (resultSet.next()) {
                     try {
                         data.add(loadFromResultSet(resultSet));
-                    } catch(final IllegalStateException e) {
+                    } catch (final IllegalStateException e) {
                         Log.error("Load error: %s", e);
                     }
                 }
@@ -379,10 +378,10 @@ public class PgMapper<T> {
         store.sql(msg, c -> {
             final ResultSet resultSet = c.executeQuery();
             if (resultSet.isBeforeFirst()) {
-                while(resultSet.next()) {
+                while (resultSet.next()) {
                     try {
                         data.add(loadFromResultSet(resultSet));
-                    } catch(final IllegalStateException e) {
+                    } catch (final IllegalStateException e) {
                         Log.error("Load error: %s", e);
                     }
                 }
@@ -397,10 +396,10 @@ public class PgMapper<T> {
         store.sql(msg, c -> {
             final ResultSet resultSet = c.executeQuery();
             if (resultSet.isBeforeFirst()) {
-                while(resultSet.next()) {
+                while (resultSet.next()) {
                     try {
                         data.add(loadFromResultSet(resultSet));
-                    } catch(final IllegalStateException e) {
+                    } catch (final IllegalStateException e) {
                         Log.error("Load error: %s", e);
                     }
                 }
@@ -418,10 +417,10 @@ public class PgMapper<T> {
         store.sql(msg, c -> {
             final ResultSet resultSet = c.executeQuery();
             if (resultSet.isBeforeFirst()) {
-                while(resultSet.next()) {
+                while (resultSet.next()) {
                     try {
                         data.add(loadFromResultSet(resultSet));
-                    } catch(final IllegalStateException e) {
+                    } catch (final IllegalStateException e) {
                         Log.error("Load error: %s", e);
                     }
                 }
@@ -436,10 +435,10 @@ public class PgMapper<T> {
         store.sql(msg, c -> {
             final ResultSet resultSet = c.executeQuery();
             if (resultSet.isBeforeFirst()) {
-                while(resultSet.next()) {
+                while (resultSet.next()) {
                     try {
                         data.add(loadFromResultSet(resultSet));
-                    } catch(final IllegalStateException e) {
+                    } catch (final IllegalStateException e) {
                         Log.error("Load error: %s", e);
                     }
                 }
@@ -462,10 +461,10 @@ public class PgMapper<T> {
         store.sql(msg, c -> {
             final ResultSet resultSet = c.executeQuery();
             if (resultSet.isBeforeFirst()) {
-                while(resultSet.next()) {
+                while (resultSet.next()) {
                     try {
                         data.add(loadFromResultSet(resultSet));
-                    } catch(final IllegalStateException e) {
+                    } catch (final IllegalStateException e) {
                         Log.error("Load error: %s", e);
                     }
                 }
@@ -480,10 +479,10 @@ public class PgMapper<T> {
         store.sql(msg, c -> {
             final ResultSet resultSet = c.executeQuery();
             if (resultSet.isBeforeFirst()) {
-                while(resultSet.next()) {
+                while (resultSet.next()) {
                     try {
                         data.add(loadFromResultSet(resultSet));
-                    } catch(final IllegalStateException e) {
+                    } catch (final IllegalStateException e) {
                         Log.error("Load error: %s", e);
                     }
                 }
@@ -498,10 +497,10 @@ public class PgMapper<T> {
         store.sql(msg, c -> {
             final ResultSet resultSet = c.executeQuery();
             if (resultSet.isBeforeFirst()) {
-                while(resultSet.next()) {
+                while (resultSet.next()) {
                     try {
                         data.add(loadFromResultSet(resultSet));
-                    } catch(final IllegalStateException e) {
+                    } catch (final IllegalStateException e) {
                         Log.error("Load error: %s", e);
                     }
                 }
@@ -519,10 +518,10 @@ public class PgMapper<T> {
         store.sql(msg, c -> {
             final ResultSet resultSet = c.executeQuery();
             if (resultSet.isBeforeFirst()) {
-                while(resultSet.next()) {
+                while (resultSet.next()) {
                     try {
                         data.add(loadFromResultSet(resultSet));
-                    } catch(final IllegalStateException e) {
+                    } catch (final IllegalStateException e) {
                         Log.error("Load error: %s", e);
                     }
                 }
@@ -540,10 +539,10 @@ public class PgMapper<T> {
         store.sql(msg, c -> {
             final ResultSet resultSet = c.executeQuery();
             if (resultSet.isBeforeFirst()) {
-                while(resultSet.next()) {
+                while (resultSet.next()) {
                     try {
                         data.add(loadFromResultSet(resultSet));
-                    } catch(final IllegalStateException e) {
+                    } catch (final IllegalStateException e) {
                         Log.error("Load error: %s", e);
                     }
                 }
@@ -551,7 +550,7 @@ public class PgMapper<T> {
         });
         return data;
     }
-    
+
     public List<T> getAllTicketsByFiltr(int offset, String admId, boolean read) {
         final List<T> data = new ArrayList<>();
         String msg = String.format("SELECT * FROM %s WHERE NOT(data::jsonb @> '{\"ocena\": -1}') AND data::jsonb @> '{\"spam\": false}' AND (data->>'readBy')::jsonb ?? '%s' ORDER BY data->>'createdTime';", table.value(), admId);
@@ -561,10 +560,10 @@ public class PgMapper<T> {
         store.sql(msg, c -> {
             final ResultSet resultSet = c.executeQuery();
             if (resultSet.isBeforeFirst()) {
-                while(resultSet.next()) {
+                while (resultSet.next()) {
                     try {
                         data.add(loadFromResultSet(resultSet));
-                    } catch(final IllegalStateException e) {
+                    } catch (final IllegalStateException e) {
                         Log.error("Load error: %s", e);
                     }
                 }
@@ -579,10 +578,10 @@ public class PgMapper<T> {
         store.sql(msg, c -> {
             final ResultSet resultSet = c.executeQuery();
             if (resultSet.isBeforeFirst()) {
-                while(resultSet.next()) {
+                while (resultSet.next()) {
                     try {
                         data.add(loadFromResultSet(resultSet));
-                    } catch(final IllegalStateException e) {
+                    } catch (final IllegalStateException e) {
                         Log.error("Load error: %s", e);
                     }
                 }
@@ -597,10 +596,10 @@ public class PgMapper<T> {
         store.sql(msg, c -> {
             final ResultSet resultSet = c.executeQuery();
             if (resultSet.isBeforeFirst()) {
-                while(resultSet.next()) {
+                while (resultSet.next()) {
                     try {
                         data.add(loadFromResultSet(resultSet));
-                    } catch(final IllegalStateException e) {
+                    } catch (final IllegalStateException e) {
                         Log.error("Load error: %s", e);
                     }
                 }
@@ -615,10 +614,10 @@ public class PgMapper<T> {
         store.sql(msg, c -> {
             final ResultSet resultSet = c.executeQuery();
             if (resultSet.isBeforeFirst()) {
-                while(resultSet.next()) {
+                while (resultSet.next()) {
                     try {
                         data.add(loadFromResultSet(resultSet));
-                    } catch(final IllegalStateException e) {
+                    } catch (final IllegalStateException e) {
                         Log.error("Load error: %s", e);
                     }
                 }
@@ -633,10 +632,10 @@ public class PgMapper<T> {
         store.sql(msg, c -> {
             final ResultSet resultSet = c.executeQuery();
             if (resultSet.isBeforeFirst()) {
-                while(resultSet.next()) {
+                while (resultSet.next()) {
                     try {
                         data.add(loadFromResultSet(resultSet));
-                    } catch(final IllegalStateException e) {
+                    } catch (final IllegalStateException e) {
                         Log.error("Load error: %s", e);
                     }
                 }

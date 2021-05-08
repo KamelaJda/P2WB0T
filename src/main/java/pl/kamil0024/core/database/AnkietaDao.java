@@ -136,8 +136,7 @@ public class AnkietaDao extends ListenerAdapter implements Dao<AnkietaConfig> {
                 bsb.appendLine(opcja.getEmoji() + " **-** " + MarkdownSanitizer.escape(opcja.getText()));
             }
             eb.addField("", bsb.toString(), false);
-        }
-        else {
+        } else {
             eb.setColor(Color.red);
             for (AnkietaConfig.Opcja opcja : config.getOpcje()) {
                 Integer glosy = config.getGlosy().getOrDefault(opcja.getId(), 0);
@@ -156,7 +155,8 @@ public class AnkietaDao extends ListenerAdapter implements Dao<AnkietaConfig> {
                 if (txt == null) throw new NullPointerException("Kanał do ankiet jest nullem");
 
                 Message msg = txt.retrieveMessageById(ac.getMessageId()).complete();
-                if (msg == null) throw new NullPointerException("Wiadomość ankiety o ID " + ac.getId() + " jest nullem");
+                if (msg == null)
+                    throw new NullPointerException("Wiadomość ankiety o ID " + ac.getId() + " jest nullem");
 
                 if (time >= ac.getEndAt()) {
                     ac.setAktywna(false);
@@ -171,10 +171,11 @@ public class AnkietaDao extends ListenerAdapter implements Dao<AnkietaConfig> {
                             }
                         }
                     }
-                    
+
                     try {
                         msg.clearReactions().complete();
-                    } catch (Exception ignored) { }
+                    } catch (Exception ignored) {
+                    }
                     save(ac);
                 }
 

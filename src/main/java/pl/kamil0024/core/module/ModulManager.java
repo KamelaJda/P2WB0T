@@ -25,7 +25,8 @@ import java.util.ArrayList;
 
 public class ModulManager {
 
-    @Getter private final ArrayList<Modul> modules;
+    @Getter
+    private final ArrayList<Modul> modules;
 
     public ModulManager() {
         this.modules = new ArrayList<>();
@@ -58,7 +59,6 @@ public class ModulManager {
         }
 
     }
-
 
 
 }

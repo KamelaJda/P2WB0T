@@ -192,29 +192,32 @@ public class PunishCommand extends Command {
         eventWaiter.waitForEvent(MessageReactionAddEvent.class,
                 (event) -> event.getUserId().equals(context.getUser().getId()) && event.getMessageId().equals(fmsg.getId()),
                 (event) -> {
-            try {
-                if (event.getReactionEmote().getId().equals(red.getId())) {
-                    context.getMessage().delete().complete();
-                    fmsg.delete().complete();
-                    return;
-                }
-                if (event.getReactionEmote().getId().equals(green.getId())) {
-                    putPun(kara, osoby, context.getMember(), context.getChannel(), caseDao, modLog, statsModule, null, eventWaiter);
                     try {
-                        context.getMessage().delete().complete();
-                        event.getChannel().retrieveMessageById(event.getMessageId()).complete().delete().complete();
-                    } catch (Exception ignored) {}
-                }
-                fmsg.clearReactions().complete();
-            } catch (Exception ignored) {}
-            },
+                        if (event.getReactionEmote().getId().equals(red.getId())) {
+                            context.getMessage().delete().complete();
+                            fmsg.delete().complete();
+                            return;
+                        }
+                        if (event.getReactionEmote().getId().equals(green.getId())) {
+                            putPun(kara, osoby, context.getMember(), context.getChannel(), caseDao, modLog, statsModule, null, eventWaiter);
+                            try {
+                                context.getMessage().delete().complete();
+                                event.getChannel().retrieveMessageById(event.getMessageId()).complete().delete().complete();
+                            } catch (Exception ignored) {
+                            }
+                        }
+                        fmsg.clearReactions().complete();
+                    } catch (Exception ignored) {
+                    }
+                },
                 30, TimeUnit.SECONDS,
                 () -> {
-            try {
-                fmsg.getChannel().sendMessage(context.getTranslate("punish.endtime", context.getUser().getAsMention())).queue();
-                fmsg.delete().queue();
-            } catch (Exception ignored) { }
-        });
+                    try {
+                        fmsg.getChannel().sendMessage(context.getTranslate("punish.endtime", context.getUser().getAsMention())).queue();
+                        fmsg.delete().queue();
+                    } catch (Exception ignored) {
+                    }
+                });
         return true;
     }
 
@@ -230,7 +233,9 @@ public class PunishCommand extends Command {
             jegoWarny += cc.size();
             KaryJSON.Tiery jegoTier = null;
             for (KaryJSON.Tiery tiery : kara.getTiery()) {
-                if (tiery.getMaxWarns() == jegoWarny) { jegoTier = tiery; }
+                if (tiery.getMaxWarns() == jegoWarny) {
+                    jegoTier = tiery;
+                }
             }
             if (jegoTier == null && kara.getTiery().get(kara.getTiery().size() - 1).getMaxWarns() >= jegoWarny) {
                 jegoTier = kara.getTiery().get(kara.getTiery().size() - 1);
@@ -317,7 +322,8 @@ public class PunishCommand extends Command {
                         event.getMessage().delete().complete();
                         msg.delete().complete();
                         userMsg.delete().complete();
-                    } catch (Exception ignored) { }
+                    } catch (Exception ignored) {
+                    }
                 },
                 3, TimeUnit.MINUTES,
                 () -> {
@@ -325,11 +331,13 @@ public class PunishCommand extends Command {
                         try {
                             msg.getChannel().sendMessage(context.getTranslate("punish.endtime", context.getUser().getAsMention())).queue();
                             msg.delete().complete();
-                        } catch (Exception ignored) { }
+                        } catch (Exception ignored) {
+                        }
                     }
                 }
         );
     }
+
     public static List<EmbedBuilder> getKaraList(KaryJSON karyJSON, Member mem) {
         return getKaraList(karyJSON, mem, null);
     }

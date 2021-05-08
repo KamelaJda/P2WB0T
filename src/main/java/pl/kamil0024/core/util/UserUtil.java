@@ -35,7 +35,9 @@ public class UserUtil {
 
     public static boolean isOwner(User user) {
         List<String> xd = Ustawienia.instance.devs;
-        for (String id : xd) { if (user.getId().equals(id)) return true; }
+        for (String id : xd) {
+            if (user.getId().equals(id)) return true;
+        }
         return false;
     }
 

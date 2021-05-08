@@ -41,7 +41,8 @@ public class ChatModule implements Modul {
     private final StatsModule statsModule;
     private final RedisManager redisManager;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean start = false;
     private ChatListener chatListener;
     private KaryListener karyListener;

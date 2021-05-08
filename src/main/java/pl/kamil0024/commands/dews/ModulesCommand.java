@@ -23,10 +23,12 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
 import pl.kamil0024.core.command.CommandExecute;
+import pl.kamil0024.core.command.SubCommand;
 import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.module.Modul;
@@ -61,8 +63,6 @@ public class ModulesCommand extends Command {
 
         String red = CommandExecute.getReaction(context.getUser(), false).getAsMention();
         String green = CommandExecute.getReaction(context.getUser(), true).getAsMention();
-        String load = Objects.requireNonNull(context.getJDA().getEmoteById(Ustawienia.instance.emote.load)).getAsMention();
-
         if (arg == null) {
             BetterStringBuilder sb = new BetterStringBuilder();
             EmbedBuilder eb = new EmbedBuilder();
@@ -75,80 +75,75 @@ public class ModulesCommand extends Command {
             context.send(eb.build()).queue();
             return true;
         }
-
-        String name = context.getArgs().get(1);
-        if (name == null) {
-            context.sendTranslate("modules.modulname").queue();
-            return false;
-        }
-
-        Modul modul = null;
-        for (Modul m : modulManager.getModules()) {
-            if (m.getName().equalsIgnoreCase(name)) {
-                modul = m;
-                break;
-            }
-        }
-
-        if (modul == null) {
-            context.send("Moduł `" + name + "` nie istnieje").queue();
-            return false;
-        }
-
-        if (arg.equalsIgnoreCase("reload")) {
-            Message msg = context.send(getReloadEmbed(0, green, red, load)).complete();
-            msg.editMessage(getReloadEmbed(2, green, red, load)).complete();
-            try {
-                modul.shutDown();
-                msg.editMessage(getReloadEmbed(4, green, red, load)).complete();
-            } catch (Exception e) {
-                msg.editMessage(getReloadEmbed(3, green, red, load, "Nie udało się zatrzymać modułu!")).queue();
-                return false;
-            }
-            try {
-                modul.startUp();
-                msg.editMessage(getReloadEmbed(6, green, red, load)).complete();
-                return true;
-            } catch (Exception e) {
-                msg.editMessage(getReloadEmbed(5, green, red, load, "Nie znaleziono modułu")).complete();
-                return false;
-            }
-        }
-
-        if (arg.equalsIgnoreCase("start")) {
-            if (modul.isStart()) {
-                context.send("Ten moduł jest załadowany!").queue();
-                return false;
-            }
-            try {
-                modul.startUp();
-                modul.setStart(true);
-                context.send("Pomyślnie uruchomiono moduł " + modul.getName()).queue();
-                return true;
-            } catch (Exception e) {
-                context.send("Nie udało się wystartować modułu! " + e.getLocalizedMessage());
-                return false;
-            }
-        }
-
-        if (arg.equalsIgnoreCase("stop")) {
-            if (!modul.isStart()) {
-                context.send("Ten moduł jest zatrzymany!").queue();
-                return false;
-            }
-            try {
-                modul.shutDown();
-                modul.setStart(false);
-                context.send("Pomyślnie zatrzymano moduł " + modul.getName()).queue();
-                return true;
-            } catch (Exception e) {
-                context.send("Nie udało się zatrzymać modułu! " + e.getLocalizedMessage());
-                return false;
-            }
-        }
-
         Error.usageError(context);
         return false;
+    }
+
+    @SubCommand(name = "stop")
+    public boolean stop(CommandContext context) {
+        Modul modul = getModule(context);
+        if (modul == null) {
+            context.send("Nie ma takiego modułu!").queue();
+            return false;
+        }
+        if (!modul.isStart()) {
+            context.send("Ten moduł jest zatrzymany!").queue();
+            return false;
+        }
+        try {
+            modul.shutDown();
+            modul.setStart(false);
+            context.send("Pomyślnie zatrzymano moduł " + modul.getName()).queue();
+            return true;
+        } catch (Exception e) {
+            context.send("Nie udało się zatrzymać modułu! " + e.getLocalizedMessage());
+            return false;
+        }
+    }
+
+    @SubCommand(name = "stop")
+    public boolean start(CommandContext context) {
+        Modul modul = getModule(context);
+        if (modul == null) return false;
+        if (modul.isStart()) {
+            context.send("Ten moduł jest załadowany!").queue();
+            return false;
+        }
+        try {
+            modul.startUp();
+            modul.setStart(true);
+            context.send("Pomyślnie uruchomiono moduł " + modul.getName()).queue();
+            return true;
+        } catch (Exception e) {
+            context.send("Nie udało się wystartować modułu! " + e.getLocalizedMessage());
+            return false;
+        }
+    }
+
+    @SubCommand(name = "reload")
+    public boolean reload(CommandContext context) {
+        Modul modul = getModule(context);
+        if (modul == null) return false;
+        String red = CommandExecute.getReaction(context.getUser(), false).getAsMention();
+        String green = CommandExecute.getReaction(context.getUser(), true).getAsMention();
+        String load = Objects.requireNonNull(context.getJDA().getEmoteById(Ustawienia.instance.emote.load)).getAsMention();
+        Message msg = context.send(getReloadEmbed(0, green, red, load)).complete();
+        msg.editMessage(getReloadEmbed(2, green, red, load)).complete();
+        try {
+            modul.shutDown();
+            msg.editMessage(getReloadEmbed(4, green, red, load)).complete();
+        } catch (Exception e) {
+            msg.editMessage(getReloadEmbed(3, green, red, load, "Nie udało się zatrzymać modułu!")).queue();
+            return false;
+        }
+        try {
+            modul.startUp();
+            msg.editMessage(getReloadEmbed(6, green, red, load)).complete();
+            return true;
+        } catch (Exception e) {
+            msg.editMessage(getReloadEmbed(5, green, red, load, "Nie znaleziono modułu")).complete();
+            return false;
+        }
     }
 
     private MessageEmbed getReloadEmbed(int status, String green, String red, String reload) {
@@ -200,6 +195,20 @@ public class ModulesCommand extends Command {
         eb.setDescription(sb.build());
 
         return eb.build();
+    }
+
+    @Nullable
+    private Modul getModule(CommandContext context) {
+        String modulS = context.getArgs().get(1);
+        if (modulS == null) {
+            context.send("Nie ma takiego modułu!").queue();
+            return null;
+        }
+        for (Modul m : modulManager.getModules()) {
+            if (m.getName().equalsIgnoreCase(modulS)) return m;
+        }
+        context.send("Nie ma takiego modułu!").queue();
+        return null;
     }
 
 }

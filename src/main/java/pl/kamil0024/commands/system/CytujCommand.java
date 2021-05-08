@@ -101,8 +101,9 @@ public class CytujCommand extends Command {
     public static Message kurwaJDA(TextChannel txt, String msgId) {
         try {
             return txt.retrieveMessageById(msgId).complete();
-        } catch (ErrorResponseException ignored) { }
+        } catch (ErrorResponseException ignored) {
+        }
         return null;
     }
-    
+
 }

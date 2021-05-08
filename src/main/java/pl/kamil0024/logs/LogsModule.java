@@ -36,10 +36,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class LogsModule implements Modul {
-    
+
     private final ShardManager api;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean start = false;
 
     private MessageManager messageManager;
@@ -64,7 +65,7 @@ public class LogsModule implements Modul {
         }, 1, 1, TimeUnit.HOURS);
 
     }
-    
+
     @Override
     public boolean startUp() {
         messageManager = new MessageManager(redisManager);

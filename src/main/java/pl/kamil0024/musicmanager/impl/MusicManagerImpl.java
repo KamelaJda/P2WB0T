@@ -45,7 +45,8 @@ public class MusicManagerImpl implements MusicManager {
 
     @Override
     public void connect(GuildVoiceState vs) {
-        if (vs == null || vs.getChannel() == null) throw new UnsupportedOperationException("Kanał głosowy jest nullem!");
+        if (vs == null || vs.getChannel() == null)
+            throw new UnsupportedOperationException("Kanał głosowy jest nullem!");
         guild.getAudioManager().openAudioConnection(vs.getChannel());
     }
 

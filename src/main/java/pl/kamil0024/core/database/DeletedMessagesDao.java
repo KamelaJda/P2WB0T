@@ -26,7 +26,7 @@ import pl.kamil0024.core.database.config.DeletedMessagesConfig;
 
 import java.util.List;
 
-public class DeletedMessagesDao implements Dao<DeletedMessagesConfig>  {
+public class DeletedMessagesDao implements Dao<DeletedMessagesConfig> {
 
     public final PgMapper<DeletedMessagesConfig> mapper;
 

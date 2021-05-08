@@ -96,7 +96,7 @@ public class TicketDao implements Dao<TicketConfig> {
 
         for (int i = 0; i < n; i++) {
             int index
-                    = (int)(alphaNumericString.length()
+                    = (int) (alphaNumericString.length()
                     * Math.random());
             sb.append(alphaNumericString
                     .charAt(index));
@@ -127,7 +127,8 @@ public class TicketDao implements Dao<TicketConfig> {
 
             save(tc);
             member.getUser().openPrivateChannel().complete().sendMessage(msg.toString()).complete();
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
     }
 
 }

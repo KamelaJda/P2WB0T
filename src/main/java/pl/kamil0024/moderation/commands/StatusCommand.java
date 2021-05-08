@@ -64,7 +64,7 @@ public class StatusCommand extends Command {
         if (txt == null) throw new NullPointerException("Kanal do statusu jest nullem");
 
         if (!txt.canTalk()) {
-            context.sendTranslate("status.perms",  txt.getAsMention()).queue();
+            context.sendTranslate("status.perms", txt.getAsMention()).queue();
             return false;
         }
 
@@ -128,7 +128,7 @@ public class StatusCommand extends Command {
 
                     waitMsg.editMessage(context.getTranslate("status.succes")).queue();
                     waitMsg.clearReactions().queue();
-                },30, TimeUnit.SECONDS, () -> waitMsg.clearReactions().queue());
+                }, 30, TimeUnit.SECONDS, () -> waitMsg.clearReactions().queue());
 
         return true;
     }

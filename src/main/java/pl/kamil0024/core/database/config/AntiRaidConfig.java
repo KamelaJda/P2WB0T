@@ -25,16 +25,14 @@ import gg.amy.pgorm.annotations.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Table("antiraid")
 @GIndex({"id"})
 @Data
 @AllArgsConstructor
 public class AntiRaidConfig {
 
-    public AntiRaidConfig() { }
+    public AntiRaidConfig() {
+    }
 
     public AntiRaidConfig(String id) {
         this.id = id;

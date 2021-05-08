@@ -30,7 +30,8 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class UserConfig {
-    public UserConfig() {}
+    public UserConfig() {
+    }
 
     public UserConfig(String id) {
         this.id = id;

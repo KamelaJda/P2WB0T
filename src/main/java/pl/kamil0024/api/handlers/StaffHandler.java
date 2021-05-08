@@ -44,7 +44,7 @@ public class StaffHandler implements HttpHandler {
     // 
 
     @Override
-    public void handleRequest(HttpServerExchange ex){
+    public void handleRequest(HttpServerExchange ex) {
         if (!Response.checkToken(ex)) return;
 
         Guild g = api.getGuildById(Ustawienia.instance.bot.guildId);
@@ -73,7 +73,8 @@ public class StaffHandler implements HttpHandler {
                     break;
                 case DEVELOPER:
                     String s = UserUtil.getPrefix(member);
-                    if (s == null || member.getRoles().contains(api.getRoleById(Ustawienia.instance.rangi.korona))) break;
+                    if (s == null || member.getRoles().contains(api.getRoleById(Ustawienia.instance.rangi.korona)))
+                        break;
                     Osoba o = getOsoba(member);
                     switch (s) {
                         case "[POM]":

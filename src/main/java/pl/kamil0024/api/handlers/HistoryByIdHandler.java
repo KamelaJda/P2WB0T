@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.sharding.ShardManager;
 import pl.kamil0024.api.Response;
 import pl.kamil0024.core.database.CaseDao;
 import pl.kamil0024.core.database.config.CaseConfig;
+
 @AllArgsConstructor
 public class HistoryByIdHandler implements HttpHandler {
 

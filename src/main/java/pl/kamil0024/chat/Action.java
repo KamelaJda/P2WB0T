@@ -45,7 +45,8 @@ public class Action {
     private String imageUrl = null;
     private String description = null;
 
-    public Action() { }
+    public Action() {
+    }
 
     public void send(KaryListener karyListener, Guild api) {
         if (kara == null || msg == null) throw new NullPointerException("kara lub msg jest nullem");
@@ -71,11 +72,11 @@ public class Action {
         TextChannel txt = api.getTextChannelById(Ustawienia.instance.channel.moddc);
         if (txt == null) throw new NullPointerException("Kanał do modów dc jest nullem");
         txt.sendMessage(eb.build()).queue(m -> {
-                m.addReaction(CommandExecute.getReaction(api.getSelfMember().getUser(), true)).queue();
-                m.addReaction(CommandExecute.getReaction(api.getSelfMember().getUser(), false)).queue();
-                m.addReaction(Objects.requireNonNull(api.getEmoteById("623630774171729931"))).queue();
-                setBotMsg(m.getId());
-                karyListener.getEmbedy().put(m.getId(), this);
+            m.addReaction(CommandExecute.getReaction(api.getSelfMember().getUser(), true)).queue();
+            m.addReaction(CommandExecute.getReaction(api.getSelfMember().getUser(), false)).queue();
+            m.addReaction(Objects.requireNonNull(api.getEmoteById("623630774171729931"))).queue();
+            setBotMsg(m.getId());
+            karyListener.getEmbedy().put(m.getId(), this);
         });
     }
 
@@ -86,7 +87,8 @@ public class Action {
         PING("Znieważanie osoby zmrałej"),
         TEXT_SWEAR("Umieszczanie zdjęć zawierających wulgaryzmy");
 
-        @Getter private final String powod;
+        @Getter
+        private final String powod;
 
         ListaKar(String powod) {
             this.powod = powod;

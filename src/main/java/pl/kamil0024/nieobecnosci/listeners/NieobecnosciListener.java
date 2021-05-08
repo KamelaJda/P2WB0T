@@ -136,7 +136,7 @@ public class NieobecnosciListener extends ListenerAdapter {
 
         if (start >= end) {
             e.getChannel().sendMessage(e.getAuthor().getAsMention() + " data zakończenia jest wcześniejsza od daty rozpoczęcia").
-                    queue( m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
+                    queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
             return;
         }
 
@@ -146,9 +146,11 @@ public class NieobecnosciListener extends ListenerAdapter {
     @Override
     public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent e) {
         synchronized (e.getGuild().getId()) {
-            if (!e.getChannel().getId().equals(Ustawienia.instance.channel.nieobecnosci) || e.getMember().getUser().isBot()) return;
+            if (!e.getChannel().getId().equals(Ustawienia.instance.channel.nieobecnosci) || e.getMember().getUser().isBot())
+                return;
 
-            if (e.getReactionEmote().isEmoji() || !e.getReactionEmote().getEmote().getId().equals(Ustawienia.instance.emote.red)) return;
+            if (e.getReactionEmote().isEmoji() || !e.getReactionEmote().getEmote().getId().equals(Ustawienia.instance.emote.red))
+                return;
 
             for (Nieobecnosc nieobecnosc : nieobecnosciDao.getAllAktywne()) {
                 if (nieobecnosc.getMsgId().equals(e.getMessageId())) {
@@ -166,7 +168,8 @@ public class NieobecnosciListener extends ListenerAdapter {
                         try {
                             PrivateChannel pv = e.getJDA().retrieveUserById(nieobecnosc.getUserId()).complete().openPrivateChannel().complete();
                             pv.sendMessage("Twój urlop o ID " + nieobecnosc.getId() + " został anulowany przez administratora!").complete();
-                        } catch (Exception ignored) { }
+                        } catch (Exception ignored) {
+                        }
 
                         Message msg = CytujCommand.kurwaJDA(e.getChannel(), e.getMessageId());
                         if (msg == null) continue;

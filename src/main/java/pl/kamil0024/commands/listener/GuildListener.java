@@ -28,7 +28,8 @@ import pl.kamil0024.moderation.commands.MuteCommand;
 
 public class GuildListener extends ListenerAdapter {
 
-    public GuildListener() { }
+    public GuildListener() {
+    }
 
     @Override
     public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent event) {

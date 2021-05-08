@@ -55,7 +55,8 @@ public class EmbedCommand extends Command {
     @Override
     public boolean execute(@NotNull CommandContext context) {
         String firsta = context.getArgs().get(0);
-        if (firsta == null || (!firsta.equalsIgnoreCase("send")) && !firsta.equalsIgnoreCase("edit")) throw new UsageException();
+        if (firsta == null || (!firsta.equalsIgnoreCase("send")) && !firsta.equalsIgnoreCase("edit"))
+            throw new UsageException();
 
         TextChannel kanal = context.getParsed().getTextChannel(context.getArgs().get(1));
         if (kanal == null) {
@@ -111,7 +112,7 @@ public class EmbedCommand extends Command {
         if (eb == null) return "embed.badcode";
         return eb;
     }
-    
+
     private EmbedBuilder getEmed(String json) {
         EmbedBuilder eb = new EmbedBuilder();
         Embed embed = GSON.fromJson(json, Embed.class);
@@ -127,7 +128,8 @@ public class EmbedCommand extends Command {
         try {
             if (EmbedBuilder.URL_PATTERN.matcher(embed.getThumbnail()).matches()) eb.setThumbnail(embed.getThumbnail());
             if (EmbedBuilder.URL_PATTERN.matcher(embed.getImage()).matches()) eb.setImage(embed.getImage());
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
 
         eb.setAuthor(embed.getAuthor(), embed.getAuthorlink(), embed.getAuthorurl());
 
@@ -151,7 +153,7 @@ public class EmbedCommand extends Command {
         private final String kolor;
         private final String titleurl;
         private final List<Field> fields;
-        
+
         @Data
         @AllArgsConstructor
         private static class Field {
@@ -159,7 +161,7 @@ public class EmbedCommand extends Command {
             private final String name;
             private final String value;
         }
-        
+
     }
-    
+
 }

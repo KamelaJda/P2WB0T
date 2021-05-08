@@ -44,7 +44,9 @@ public class AcBanHandler implements HttpHandler {
 
     @Override
     public void handleRequest(HttpServerExchange ex) {
-        if (!Response.checkIp(ex)) { return; }
+        if (!Response.checkIp(ex)) {
+            return;
+        }
 
         if (id == 3) {
             try {
@@ -56,7 +58,7 @@ public class AcBanHandler implements HttpHandler {
             }
             return;
         }
-        
+
         JSONObject json = new JSONObject(Response.getBody(ex.getInputStream()));
         AcBanConfig acBanConfig = GSON.fromJson(json.toString(), AcBanConfig.class);
 

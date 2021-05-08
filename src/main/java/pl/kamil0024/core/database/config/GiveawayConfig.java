@@ -34,7 +34,8 @@ import java.util.List;
 @AllArgsConstructor
 public class GiveawayConfig {
 
-    public GiveawayConfig() { }
+    public GiveawayConfig() {
+    }
 
     public GiveawayConfig(String id) {
         this.id = id;

@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("DuplicatedCode")
 public class EmbedPageintaor {
-    
+
     private static final String FIRST_EMOJI = "\u23EE";
     private static final String LEFT_EMOJI = "\u25C0";
     private static final String RIGHT_EMOJI = "\u25B6";
@@ -116,12 +116,14 @@ public class EmbedPageintaor {
                 case STOP_EMOJI:
                     botMsg.delete().queue();
                     return;
-                default: return;
+                default:
+                    return;
             }
         }
         try {
             event.getReaction().removeReaction(event.getUser()).queue();
-        } catch (PermissionException ignored) { }
+        } catch (PermissionException ignored) {
+        }
         botMsg.editMessage(render(thisPage)).override(true).complete();
         waitForReaction();
     }
@@ -173,5 +175,5 @@ public class EmbedPageintaor {
         this.customFooter = bol;
         return this;
     }
-    
+
 }

@@ -36,7 +36,8 @@ public class EmbedGeneratorModule implements Modul {
 
     private ArrayList<Command> cmd;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean start = false;
 
     public EmbedGeneratorModule(CommandManager commandManager, EmbedRedisManager embedRedisManager) {

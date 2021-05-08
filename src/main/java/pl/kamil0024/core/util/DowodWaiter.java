@@ -65,7 +65,8 @@ public class DowodWaiter {
     private void clear() {
         try {
             botMsg.delete().complete();
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
     }
 
     private void event(MessageReceivedEvent e) {

@@ -120,7 +120,7 @@ public class Gra {
         event.getMessage().delete().queue();
         msg = msg.replaceAll(" ", "").replaceAll("gra:", "");
 
-        Slot.ReturnType returnn = getSlot().check(msg,this, event.getMember());
+        Slot.ReturnType returnn = getSlot().check(msg, this, event.getMember());
 
         switch (returnn) {
             case BAD_FORMAT:

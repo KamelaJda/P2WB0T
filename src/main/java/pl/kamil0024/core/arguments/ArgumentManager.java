@@ -31,11 +31,12 @@ public class ArgumentManager {
 
     private static final Logger logger = LoggerFactory.getLogger(ArgumentManager.class);
 
-    @Getter public Map<String, Args> arguments;
+    @Getter
+    public Map<String, Args> arguments;
 
     public ArgumentManager() {
-            arguments = new HashMap<>();
-        }
+        arguments = new HashMap<>();
+    }
 
     public void registerAll() {
         ArrayList<Args> args = new ArrayList<>();
@@ -49,7 +50,8 @@ public class ArgumentManager {
 
     public void register(Args arg) {
         if (arg == null) return;
-        if (arguments.containsKey(arg.toString())) throw new IllegalArgumentException("Ten argument jest juz zarejestrowany!");
+        if (arguments.containsKey(arg.toString()))
+            throw new IllegalArgumentException("Ten argument jest juz zarejestrowany!");
         arguments.put(arg.toString(), arg);
         logger.debug("Rejestruje argument '{}'", arg.getName());
     }

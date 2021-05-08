@@ -30,7 +30,8 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class WeryfikacjaConfig {
-    public WeryfikacjaConfig() { }
+    public WeryfikacjaConfig() {
+    }
 
     public WeryfikacjaConfig(String mcnick) {
         this.mcnick = mcnick;

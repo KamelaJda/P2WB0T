@@ -35,7 +35,8 @@ import java.util.stream.Collectors;
 @Data
 @AllArgsConstructor
 public class UserinfoConfig {
-    public UserinfoConfig() {}
+    public UserinfoConfig() {
+    }
 
     public UserinfoConfig(String id) {
         this.id = id;

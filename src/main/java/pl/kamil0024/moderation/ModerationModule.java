@@ -50,14 +50,15 @@ public class ModerationModule implements Modul {
 
     private ArrayList<Command> cmd;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean start = false;
 
     public ModerationModule(CommandManager commandManager, EventWaiter eventWaiter, CaseDao caseDao, StatsModule statsModule, NieobecnosciManager nieobecnosciManager, NieobecnosciDao nieobecnosciDao, ModLog modLog, KaryJSON karyJSON, MultiDao multiDao) {
         this.commandManager = commandManager;
         this.eventWaiter = eventWaiter;
         this.caseDao = caseDao;
-        this.statsModule= statsModule;
+        this.statsModule = statsModule;
         this.nieobecnosciManager = nieobecnosciManager;
         this.nieobecnosciDao = nieobecnosciDao;
         this.modLog = modLog;

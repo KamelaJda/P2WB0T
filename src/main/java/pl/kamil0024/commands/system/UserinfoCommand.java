@@ -63,7 +63,8 @@ public class UserinfoCommand extends Command {
         Member member = null;
         try {
             member = context.getGuild().retrieveMemberById(user.getId()).complete();
-        } catch (ErrorResponseException ignored) {}
+        } catch (ErrorResponseException ignored) {
+        }
 
         eb.setColor(UserUtil.getColor(context.getMember()));
         eb.setFooter("Wykonane przez: " + UserUtil.getName(context.getMember().getUser()) + " [" + UserUtil.getMcNick(context.getMember()) + "]");
@@ -81,10 +82,12 @@ public class UserinfoCommand extends Command {
             BDate serwer = new BDate(member.getTimeJoined().toInstant().toEpochMilli(), ModLog.getLang());
 
             eb.addField(context.getTranslate("userinfo.serverjoin"), sfd.format(new Date(serwer.getTimestamp())) + " `" + serwer.difference(new BDate()) + "` temu", false); // + " `" + new BDate(lonk2, ModLog.getLang()).difference(date) + "` temu"
-            if (member.getOnlineStatus() != OnlineStatus.OFFLINE) eb.addField(context.getTranslate("userinfo.status"), translateStatus(member.getOnlineStatus()), false);
+            if (member.getOnlineStatus() != OnlineStatus.OFFLINE)
+                eb.addField(context.getTranslate("userinfo.status"), translateStatus(member.getOnlineStatus()), false);
             try {
                 eb.addField(context.getTranslate("userinfo.game"), member.getActivities().get(0).getName(), false);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
         PermLevel pm = UserUtil.getPermLevel(user);
         eb.addField(context.getTranslate("userinfo.permlvl"), context.getTranslate(pm.getTranlsateKey()) + " (" + pm.getNumer() + ")", false);

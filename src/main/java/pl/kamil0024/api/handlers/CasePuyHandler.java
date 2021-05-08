@@ -100,7 +100,8 @@ public class CasePuyHandler implements HttpHandler {
     @Data
     @AllArgsConstructor
     private static class Deserializer {
-        public Deserializer() { }
+        public Deserializer() {
+        }
 
         private String adm;
         private String powod;

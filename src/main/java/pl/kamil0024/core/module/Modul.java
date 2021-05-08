@@ -28,6 +28,7 @@ public interface Modul {
     String getName();
 
     boolean isStart();
+
     void setStart(boolean bol);
 
 }

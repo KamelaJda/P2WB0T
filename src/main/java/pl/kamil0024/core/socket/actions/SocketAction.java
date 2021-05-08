@@ -27,9 +27,13 @@ import java.util.Map;
 public interface SocketAction {
 
     Boolean getSendMessage();
+
     String getMemberId();
+
     String getChannelId();
+
     String getTopic();
+
     int getSocketId();
 
     void setSendMessage(Boolean bol);

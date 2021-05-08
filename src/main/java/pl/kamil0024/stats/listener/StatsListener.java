@@ -40,7 +40,8 @@ public class StatsListener extends ListenerAdapter {
         Category category = event.getChannel().getParent();
         if (category == null || event.getAuthor().isBot()) return;
 
-        if (!Objects.requireNonNull(event.getMember()).getRoles().contains(event.getGuild().getRoleById(Ustawienia.instance.roles.chatMod))) return;
+        if (!Objects.requireNonNull(event.getMember()).getRoles().contains(event.getGuild().getRoleById(Ustawienia.instance.roles.chatMod)))
+            return;
 
         if (category.getId().equals("425673488456482817") || category.getId().equals("506210855231291393") || category.getId().equals("494507499739676686")) {
             statsModule.getStatsCache().addNapisanychWiadomosci(event.getAuthor().getId(), 1);

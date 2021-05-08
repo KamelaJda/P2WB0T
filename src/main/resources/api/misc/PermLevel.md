@@ -1,5 +1,7 @@
 # PermLevel
+
 ### Informacja
+
 PermLevel to określenie permisji użytkownika
 
 | Poziom uprawnień | Nazwa         |
@@ -12,8 +14,8 @@ PermLevel to określenie permisji użytkownika
 | 5                | ADMINISTRATOR |
 | 10               | DEVELOPER     |
 
-
 ### Przykłady
+
 ```json
 {
   "permLevel": "DEVELOPER"

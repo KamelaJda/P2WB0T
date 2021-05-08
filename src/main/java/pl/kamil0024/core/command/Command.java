@@ -18,24 +18,36 @@
 package pl.kamil0024.core.command;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.command.enums.PermLevel;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class Command {
 
-    @Getter protected String name;
-    @Getter protected int cooldown = 0;
-    @Getter protected CommandCategory category = CommandCategory.SYSTEM;
-    @Getter protected PermLevel permLevel = PermLevel.MEMBER;
-    @Getter protected List<String> aliases = new ArrayList<>();
-    @Getter protected boolean enabledInRekru = false;
-    @Getter protected boolean onlyInRekru = false;
+    @Getter
+    protected String name;
+    @Getter
+    protected int cooldown = 0;
+    @Getter
+    protected CommandCategory category = CommandCategory.SYSTEM;
+    @Getter
+    protected PermLevel permLevel = PermLevel.MEMBER;
+    @Getter
+    protected List<String> aliases = new ArrayList<>();
+    @Getter
+    protected boolean enabledInRekru = false;
+    @Getter
+    protected boolean onlyInRekru = false;
 
-    protected boolean execute(@NotNull CommandContext context) {
+    @Getter
+    protected final Map<String, Method> subCommands = new HashMap<>();
+
+    protected boolean execute(CommandContext context) {
         throw new UnsupportedOperationException("Komenda nie ma zaimplementowanej funkcji execute()");
     }
 

@@ -18,8 +18,8 @@
   -->
 
 <configuration>
-    <property scope="context" name="COLORIZER_COLORS" value="boldred@,yellow@,green@,blue@,cyan@" />
-    <conversionRule conversionWord="colorize" converterClass="org.tuxdude.logback.extensions.LogColorizer" />
+    <property scope="context" name="COLORIZER_COLORS" value="boldred@,yellow@,green@,blue@,cyan@"/>
+    <conversionRule conversionWord="colorize" converterClass="org.tuxdude.logback.extensions.LogColorizer"/>
 
     <encoder>
         <pattern>[%d{HH:mm:ss.SSS}] [%level] [%class{36}.%M %L] %msg\n</pattern>

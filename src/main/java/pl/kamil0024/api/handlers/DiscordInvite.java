@@ -29,7 +29,7 @@ import pl.kamil0024.core.database.config.DiscordInviteConfig;
 
 import java.util.Map;
 
-public class DiscordInvite implements HttpHandler  {
+public class DiscordInvite implements HttpHandler {
 
     private final APIModule apiModule;
 

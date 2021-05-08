@@ -36,8 +36,10 @@ import pl.kamil0024.core.util.UserUtil;
 
 import javax.crypto.IllegalBlockSizeException;
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class AntiRaidManager {
@@ -48,7 +50,8 @@ public class AntiRaidManager {
 
     public AntiRaidManager(AntiRaidDao dao, RedisManager redis) {
         this.dao = dao;
-        this.cache = redis.new CacheRetriever<List<FakeAntiRaidMessage>>(){}.getCache(21600);
+        this.cache = redis.new CacheRetriever<List<FakeAntiRaidMessage>>() {
+        }.getCache(21600);
     }
 
     public List<FakeAntiRaidMessage> getMessages(String userId) {
@@ -138,7 +141,8 @@ public class AntiRaidManager {
             try {
                 eb.addField("Wiadomość nr:  " + i, message.getContent(), false);
                 dowodMsg.append(message.getContent()).append("\n");
-            } catch(Exception ignored) {}
+            } catch (Exception ignored) {
+            }
             i++;
         }
         eb.addField("Powód", reason, false);

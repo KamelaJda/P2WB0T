@@ -1,9 +1,13 @@
 # Userinfo
+
 ### Informacja
-Userinfo jest używane, kiedy serwer chce zwrócić użytkownika Discorda. 
+
+Userinfo jest używane, kiedy serwer chce zwrócić użytkownika Discorda.
 
 ### Przykłady
+
 Jeżeli użytkownik jest na serwerze
+
 ```json
 {
   "id": "id użytkownika",
@@ -18,6 +22,7 @@ Jeżeli użytkownik jest na serwerze
 ```
 
 Jeżeli użytkownika nie ma na serwerze, otrzymamy to
+
 ```json
 {
   "id": "id użytkownika",

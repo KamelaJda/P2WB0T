@@ -30,7 +30,8 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class AcBanConfig {
-    public AcBanConfig() { }
+    public AcBanConfig() {
+    }
 
     public AcBanConfig(String id) {
         this.id = id;

@@ -35,14 +35,18 @@ public class Tlumaczenia {
 
     private final Logger logger = LoggerFactory.getLogger(Tlumaczenia.class);
 
-    @Getter private Properties languages = getProp();
-    @Getter @Setter private String lang;
+    @Getter
+    private Properties languages = getProp();
+    @Getter
+    @Setter
+    private String lang;
 
-    public Tlumaczenia() { }
+    public Tlumaczenia() {
+    }
 
     public Properties getProp() {
         Properties p = new Properties();
-        
+
         try {
             InputStream input = Main.class.getClassLoader().getResourceAsStream("pl.properties");
             p.load(input);
@@ -52,7 +56,7 @@ public class Tlumaczenia {
         }
         return p;
     }
-    
+
     public boolean load() {
         languages = getProp();
         logger.debug(get("translation.load"));

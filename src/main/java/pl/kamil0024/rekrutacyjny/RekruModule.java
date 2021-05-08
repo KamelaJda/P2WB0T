@@ -34,10 +34,11 @@ public class RekruModule implements Modul {
 
     private ArrayList<Command> cmd;
 
-    CommandManager commandManager;
-    ShardManager api;
+    private final CommandManager commandManager;
+    private final ShardManager api;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean start = false;
 
     private SyncListener listener;

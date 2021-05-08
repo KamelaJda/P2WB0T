@@ -32,7 +32,8 @@ public class NieobecnosciModule implements Modul {
     private final ShardManager api;
     private final NieobecnosciDao nieobecnosciDao;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean start = false;
 
     private NieobecnosciListener nieobecnosciListener;

@@ -31,7 +31,8 @@ import pl.kamil0024.logs.logger.FakeMessage;
 @Data
 @AllArgsConstructor
 public class DeletedMessagesConfig {
-    public DeletedMessagesConfig() { }
+    public DeletedMessagesConfig() {
+    }
 
     public DeletedMessagesConfig(String id) {
         this.id = id;

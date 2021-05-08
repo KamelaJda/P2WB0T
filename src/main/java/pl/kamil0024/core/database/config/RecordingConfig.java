@@ -30,7 +30,8 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class RecordingConfig {
-    public RecordingConfig() { }
+    public RecordingConfig() {
+    }
 
     public RecordingConfig(String id) {
         this.id = id;

@@ -40,7 +40,9 @@ public class TicketHandler implements HttpHandler {
 
     @Override
     public void handleRequest(HttpServerExchange ex) {
-        if (!Response.checkIp(ex)) { return; }
+        if (!Response.checkIp(ex)) {
+            return;
+        }
 
         if (type == 0) {
             try {
@@ -52,7 +54,8 @@ public class TicketHandler implements HttpHandler {
                 String uwaga = null;
                 try {
                     uwaga = json.getString("uwagi");
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
                 TicketConfig tc = ticketDao.get(id);
                 if (!TicketConfig.exist(tc)) {
                     Response.sendErrorResponse(ex, "Błąd!", "Nie ma ticketa o takim ID!");
@@ -126,7 +129,7 @@ public class TicketHandler implements HttpHandler {
             }
             return;
         }
-        
+
         if (type == 9) {
             try {
                 JSONObject json = new JSONObject(Response.getBody(ex.getInputStream()));
@@ -144,12 +147,14 @@ public class TicketHandler implements HttpHandler {
             String id = "0";
             try {
                 id = ex.getQueryParameters().get("id").getFirst();
-            } catch (NullPointerException ignored) { }
+            } catch (NullPointerException ignored) {
+            }
 
             int offset = 0;
             try {
                 offset = Integer.parseInt(ex.getQueryParameters().get("offset").getFirst());
-            } catch (NumberFormatException ignored) { }
+            } catch (NumberFormatException ignored) {
+            }
             switch (type) {
                 case 1:
                     Response.sendObjectResponse(ex, ticketDao.get(id));

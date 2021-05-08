@@ -17,14 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package pl.kamil0024.core.database.config;
+package pl.kamil0024.core.command;
 
-import java.util.List;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public interface Dao<T> {
-    T get(String id);
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD})
+public @interface SubCommand {
 
-    void save(T toCos);
+    String name() default "";
 
-    List<T> getAll();
+    String[] aliases() default {};
+
 }

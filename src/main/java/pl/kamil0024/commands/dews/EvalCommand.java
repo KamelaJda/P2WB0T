@@ -20,7 +20,6 @@
 package pl.kamil0024.commands.dews;
 
 import com.google.gson.Gson;
-import com.wrapper.spotify.SpotifyApi;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import net.dv8tion.jda.api.EmbedBuilder;

@@ -38,16 +38,27 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class TrackScheduler extends AudioEventAdapter {
     // hahaha @Data robi brrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
 
-    @Getter private AudioPlayer player;
-    @Getter private AudioManager audioManager;
-    @Getter private AudioPlayerManager manager;
-    @Getter private GuildMusicManager guildMusicManager;
+    @Getter
+    private final AudioPlayer player;
+    @Getter
+    private final AudioManager audioManager;
+    @Getter
+    private final AudioPlayerManager manager;
+    @Getter
+    private final GuildMusicManager guildMusicManager;
 
-    @Getter public final BlockingQueue<AudioTrack> queue;
+    @Getter
+    public final BlockingQueue<AudioTrack> queue;
 
-    @Getter @Setter public AudioTrack aktualnaPiosenka = null;
-    @Getter @Setter public Boolean destroy = false;
-    @Getter @Setter public Boolean loop = false;
+    @Getter
+    @Setter
+    public AudioTrack aktualnaPiosenka = null;
+    @Getter
+    @Setter
+    public Boolean destroy = false;
+    @Getter
+    @Setter
+    public Boolean loop = false;
 
     public TrackScheduler(AudioPlayer player, AudioManager audioManager, AudioPlayerManager manager, GuildMusicManager guildMusicManager) {
         this.player = player;
@@ -83,11 +94,16 @@ public class TrackScheduler extends AudioEventAdapter {
                 }
 
                 @Override
-                public void playlistLoaded(AudioPlaylist playlist) {}
+                public void playlistLoaded(AudioPlaylist playlist) {
+                }
+
                 @Override
-                public void noMatches() {}
+                public void noMatches() {
+                }
+
                 @Override
-                public void loadFailed(FriendlyException exception) {}
+                public void loadFailed(FriendlyException exception) {
+                }
 
             });
             return;

@@ -23,14 +23,24 @@ import java.util.function.Function;
 
 public interface Cache<V> {
     V getIfPresent(@NotNull Object key);
+
     V getOrElse(@NotNull Object key, @NotNull V value);
+
     V get(@NotNull String key, @NotNull Function<? super String, ? extends V> mappingFunction);
+
     Map<String, V> getAllPresent(@NotNull Iterable<?> keys);
+
     void put(@NotNull String key, @NotNull V value);
-    void putAll(@NotNull Map<? extends String,? extends V> map);
+
+    void putAll(@NotNull Map<? extends String, ? extends V> map);
+
     void invalidate(@NotNull Object key);
+
     long getTTL(@NotNull Object key);
+
     void invalidateAll();
+
     void invalidateAll(@NotNull Iterable<?> keys);
+
     Map<String, V> asMap();
 }

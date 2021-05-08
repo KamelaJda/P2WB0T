@@ -40,13 +40,16 @@ public class SocketClient {
     @Getter
     private final int socketId;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private String voiceChannel = null;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private List<String> tracksList = new ArrayList<>();
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private String botId;
 
     public SocketClient(Socket socket, AsyncEventBus eventBus, int socketId) {

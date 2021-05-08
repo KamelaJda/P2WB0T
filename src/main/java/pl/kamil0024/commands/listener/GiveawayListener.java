@@ -65,11 +65,14 @@ public class GiveawayListener {
     }
 
     public void createMessage(GiveawayConfig kc) {
-        if (kc.getMessageId() != null) throw new UnsupportedOperationException("Próbowano zdublować wiadomość o konkursie " + kc.getId());
+        if (kc.getMessageId() != null)
+            throw new UnsupportedOperationException("Próbowano zdublować wiadomość o konkursie " + kc.getId());
 
         TextChannel tc = api.getTextChannelById(kc.getKanalId());
-        if (tc == null) throw new UnsupportedOperationException("Próbowano stworzyć wiadomość o konkursie " + kc.getId() + " ale kanał jest nieprawidłowy");
-        if (!tc.canTalk()) throw new UnsupportedOperationException("Próbowano stworzyć konkurs o id " + kc.getId() + " ale bot nie ma permów do pisania na kanale " + tc.getIdLong());
+        if (tc == null)
+            throw new UnsupportedOperationException("Próbowano stworzyć wiadomość o konkursie " + kc.getId() + " ale kanał jest nieprawidłowy");
+        if (!tc.canTalk())
+            throw new UnsupportedOperationException("Próbowano stworzyć konkurs o id " + kc.getId() + " ale bot nie ma permów do pisania na kanale " + tc.getIdLong());
 
         Message msg = tc.sendMessage(createEmbed(kc).build()).complete();
         msg.addReaction(TADA).queue();
@@ -141,7 +144,8 @@ public class GiveawayListener {
                 Message msg = null;
                 try {
                     msg = Objects.requireNonNull(tc).retrieveMessageById(config.getMessageId()).complete();
-                } catch (Exception ignored) { }
+                } catch (Exception ignored) {
+                }
 
                 if (msg == null) {
                     config.setMessageId(null);

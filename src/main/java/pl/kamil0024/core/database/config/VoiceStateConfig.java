@@ -32,7 +32,8 @@ import java.util.ArrayList;
 @Data
 @AllArgsConstructor
 public class VoiceStateConfig {
-    public VoiceStateConfig() {}
+    public VoiceStateConfig() {
+    }
 
     public VoiceStateConfig(String id) {
         this.id = id;

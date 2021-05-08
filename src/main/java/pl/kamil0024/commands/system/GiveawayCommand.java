@@ -32,12 +32,14 @@ import pl.kamil0024.bdate.BDate;
 import pl.kamil0024.commands.listener.GiveawayListener;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
+import pl.kamil0024.core.command.SubCommand;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.database.GiveawayDao;
 import pl.kamil0024.core.database.config.GiveawayConfig;
 import pl.kamil0024.core.util.Duration;
 import pl.kamil0024.core.util.EmbedPageintaor;
 import pl.kamil0024.core.util.EventWaiter;
+import pl.kamil0024.core.util.UsageException;
 import pl.kamil0024.moderation.listeners.ModLog;
 
 import java.util.*;
@@ -45,7 +47,8 @@ import java.util.concurrent.TimeUnit;
 
 public class GiveawayCommand extends Command {
 
-    @Getter private static final HashMap<String, KonkursBuilder> konkurs = new HashMap<>();
+    @Getter
+    private static final HashMap<String, KonkursBuilder> konkurs = new HashMap<>();
 
     private final GiveawayDao giveawayDao;
     private final EventWaiter eventWaiter;
@@ -65,24 +68,28 @@ public class GiveawayCommand extends Command {
 
     @Override
     public boolean execute(@NotNull CommandContext context) {
-        String typ = context.getArgs().get(0);
-        if (typ == null) typ = "create";
+        throw new UsageException();
+    }
+
+    @SubCommand(name = "list", aliases = {"history"})
+    public boolean list(CommandContext context) {
+        List<EmbedBuilder> strony = new ArrayList<>();
+        giveawayDao.getAll().forEach(kd -> strony.add(giveawayListener.createEmbed(kd)));
+        Collections.reverse(strony);
+        if (strony.isEmpty()) {
+            context.sendTranslate("giveaway.emptygive").queue();
+            return false;
+        }
+        new EmbedPageintaor(strony, context.getUser(), eventWaiter, context.getJDA()).create(context.getChannel(), context.getMessage());
+        return true;
+    }
+
+    @SubCommand(name = "create", aliases = {"stworz", "stwórz"})
+    public boolean create(CommandContext context) {
         getKonkurs().remove(context.getUser().getId());
         getKonkurs().put(context.getUser().getId(), new KonkursBuilder());
-        if (typ.equals("list") || typ.equals("history")) {
-            List<EmbedBuilder> strony = new ArrayList<>();
-            giveawayDao.getAll().forEach(kd -> strony.add(giveawayListener.createEmbed(kd)));
-            Collections.reverse(strony);
-            if (strony.isEmpty()) {
-                context.sendTranslate("giveaway.emptygive").queue();
-                return false;
-            }
-            new EmbedPageintaor(strony, context.getUser(), eventWaiter, context.getJDA()).create(context.getChannel(), context.getMessage());
-        }
-        if (typ.equals("create") || typ.equals("stworz")) {
-            Message msg = context.sendTranslate("giveaway.create", CZAS).complete();
-            initWaiter(context.getUser().getIdLong(), context.getChannel().getIdLong(), context.getJDA(), msg, context.getParsed());
-        }
+        Message msg = context.sendTranslate("giveaway.create", CZAS).complete();
+        initWaiter(context.getUser().getIdLong(), context.getChannel().getIdLong(), context.getJDA(), msg, context.getParsed());
         return true;
     }
 
@@ -128,7 +135,7 @@ public class GiveawayCommand extends Command {
                         kb.setIloscOsob(ind);
                         kb.setNapisz("co jest do wygrania");
                     }
-                    if (kb.getWybor() == 4)  {
+                    if (kb.getWybor() == 4) {
                         if (umsg.isEmpty()) {
                             konkurs.remove(String.valueOf(userId));
                             c.sendMessage("Powód jest pusty (jak patrycja) lol").queue();
@@ -179,7 +186,8 @@ public class GiveawayCommand extends Command {
     @AllArgsConstructor
     @Data
     private static class KonkursBuilder {
-        public KonkursBuilder() { }
+        public KonkursBuilder() {
+        }
 
         private String napisz;
         private TextChannel txt;

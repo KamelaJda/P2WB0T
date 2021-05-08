@@ -50,8 +50,10 @@ public class UserstatsManager extends ListenerAdapter {
         this.userstatsDao = userstatsDao;
         this.api = api;
 
-        this.config = redisManager.new CacheRetriever<UserstatsConfig.Config>() {}.getCache(-1);
-        this.voiceStateConfig = redisManager.new CacheRetriever<VoiceStateConfig>() {}.getCache(-1);
+        this.config = redisManager.new CacheRetriever<UserstatsConfig.Config>() {
+        }.getCache(-1);
+        this.voiceStateConfig = redisManager.new CacheRetriever<VoiceStateConfig>() {
+        }.getCache(-1);
 
         ScheduledExecutorService executorSche = Executors.newSingleThreadScheduledExecutor();
         executorSche.scheduleWithFixedDelay(this::load, 30, 30, TimeUnit.MINUTES);

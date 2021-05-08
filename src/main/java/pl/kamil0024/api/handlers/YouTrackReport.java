@@ -1,8 +1,8 @@
 /*
- *    
+ *
  *    Copyright 2020 P2WB0T
- *    
- *    
+ *
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -56,7 +56,8 @@ public class YouTrackReport implements HttpHandler {
         String projekt = ex.getRequestHeaders().get("project").getFirst();
         String testerzy = ex.getRequestHeaders().get("testerzy").getFirst();
 
-        Type typeOfHashMap = new TypeToken<Map<String, Integer>>() { }.getType();
+        Type typeOfHashMap = new TypeToken<Map<String, Integer>>() {
+        }.getType();
         HashMap<String, Integer> map = new Gson().fromJson(header, typeOfHashMap);
         HashMap<String, Integer> testerzyMap = new Gson().fromJson(testerzy, typeOfHashMap);
         TextChannel txt = api.getTextChannelById("738122215878295572");

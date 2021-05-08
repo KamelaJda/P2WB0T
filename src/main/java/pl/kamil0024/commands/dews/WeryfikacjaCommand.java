@@ -21,12 +21,15 @@ package pl.kamil0024.commands.dews;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Role;
 import pl.kamil0024.api.APIModule;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
+import pl.kamil0024.core.command.SubCommand;
 import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.database.config.DiscordInviteConfig;
+import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.util.UsageException;
 import pl.kamil0024.weryfikacja.WeryfikacjaModule;
 
@@ -46,59 +49,72 @@ public class WeryfikacjaCommand extends Command {
 
     @Override
     public boolean execute(CommandContext context) {
-        String arg = context.getArgs().get(0);
-        if (arg == null || arg.isEmpty()) throw new UsageException();
-
-        if (arg.equalsIgnoreCase("kod")) {
-            String kod = context.getArgs().get(1);
-            String user = context.getArgs().get(2);
-            if (kod == null || user == null) {
-                context.send("Kod lub user jest nullem!").queue();
-                return false;
-            }
-            Member member = context.getParsed().getMember(user);
-            if (member == null) {
-                context.send("member nullem!").queue();
-                return false;
-            }
-
-            Message msg = context.send("Próbuje automatycznie zweryfikować...").complete();
-            DiscordInviteConfig conf = apiModule.getNewWery().getIfPresent(member.getId());
-            if (conf != null) {
-                weryfikacjaModule.executeCode(member.getId(), conf, context.getChannel(), context.getGuild(), true);
-                apiModule.getNewWery().invalidate(member.getId());
-                return true;
-            }
-            msg.editMessage("Próbuje zweryfikować przez kod...").complete();
-
-            weryfikacjaModule.executeCode(member, context.getChannel(), kod, context.getGuild(), true);
-            return true;
-        }
-
-        if (arg.equalsIgnoreCase("manual")) {
-            try {
-                Member member = context.getParsed().getMember(context.getArgs().get(1));
-                if (member == null) {
-                    context.send("Nie ma takiego użytkownika!").queue();
-                    return false;
-                }
-                context.getGuild().addRoleToMember(member, context.getGuild().getRoleById(context.getArgs().get(3))).complete();
-                context.getGuild().modifyNickname(member, context.getArgs().get(2)).complete();
-                context.send("Pomyślnie zweryfikowano!").complete();
-            } catch (Exception e) {
-                context.send("O nie, wystąpił błąd: " + e.getLocalizedMessage());
-            }
-        }
-
-        if (arg.equalsIgnoreCase("bypass")) {
-            String user = context.getArgs().get(1);
-            if (user == null) throw new UsageException();
-            weryfikacjaModule.weryfikacjaDao.bypass(user);
-            context.send("Użytkownik <@" + user + "> może już wejść").queue();
-            return true;
-        }
-
         throw new UsageException();
+    }
+
+    @SubCommand(name = "kod", aliases = {"code"})
+    public boolean kod(CommandContext context) {
+        String kod = context.getArgs().get(1);
+        String user = context.getArgs().get(2);
+        if (kod == null || user == null) {
+            context.send("Kod lub user jest nullem!").queue();
+            return false;
+        }
+        Member member = context.getParsed().getMember(user);
+        if (member == null) {
+            context.send("member nullem!").queue();
+            return false;
+        }
+
+        Message msg = context.send("Próbuje automatycznie zweryfikować...").complete();
+        DiscordInviteConfig conf = apiModule.getNewWery().getIfPresent(member.getId());
+        if (conf != null) {
+            weryfikacjaModule.executeCode(member.getId(), conf, context.getChannel(), context.getGuild(), true);
+            apiModule.getNewWery().invalidate(member.getId());
+            return true;
+        }
+        msg.editMessage("Próbuje zweryfikować przez kod...").complete();
+
+        weryfikacjaModule.executeCode(member, context.getChannel(), kod, context.getGuild(), true);
+        return true;
+    }
+
+    @SubCommand(name = "manual")
+    public boolean manual(CommandContext context) {
+        try {
+            Member member = context.getParsed().getMember(context.getArgs().get(1));
+            if (member == null) {
+                context.send("Nie ma takiego użytkownika!").queue();
+                return false;
+            }
+            if (context.getArgs().get(2) == null || context.getArgs().get(3) == null) throw new UsageException();
+
+            Role role = context.getGuild().getRoleById(context.getArgs().get(2));
+            String nick = context.getArgs().get(3);
+
+            if (role == null) {
+                context.send("Nie ma takiej roli!").queue();
+                return false;
+            }
+
+            context.getGuild().addRoleToMember(member, role).complete();
+            context.getGuild().modifyNickname(member, nick).complete();
+            context.send("Pomyślnie zweryfikowano!").complete();
+            return true;
+        } catch (Exception e) {
+            context.send("O nie, wystąpił błąd: " + e.getLocalizedMessage());
+            Log.newError(e, getClass());
+            return false;
+        }
+    }
+
+    @SubCommand(name = "bypass")
+    public boolean bypass(CommandContext context) {
+        String user = context.getArgs().get(1);
+        if (user == null) throw new UsageException();
+        weryfikacjaModule.weryfikacjaDao.bypass(user);
+        context.send("Użytkownik <@" + user + "> może już wejść").queue();
+        return true;
     }
 
 }

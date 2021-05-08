@@ -45,6 +45,7 @@ import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.util.Error;
 import pl.kamil0024.core.util.*;
 
+import java.lang.reflect.Method;
 import java.time.Instant;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -62,7 +63,8 @@ public class CommandExecute extends ListenerAdapter {
     private final Tlumaczenia tlumaczenia;
     private final UserDao userDao;
 
-    @Getter HashMap<String, UserConfig> userConfig;
+    @Getter
+    HashMap<String, UserConfig> userConfig;
 
     private final Map<String, Instant> cooldowns = new HashMap<>();
 
@@ -144,7 +146,8 @@ public class CommandExecute extends ListenerAdapter {
                 Runnable task = () -> {
                     try {
                         e.getMessage().clearReactions().complete();
-                    } catch (Exception ignored) { }
+                    } catch (Exception ignored) {
+                    }
                 };
                 ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
                 ses.schedule(task, 1, TimeUnit.SECONDS);
@@ -184,8 +187,14 @@ public class CommandExecute extends ListenerAdapter {
         }
 
         CommandContext cmdc = new CommandContext(e, prefix, parsedArgs, tlumaczenia, argumentManager, c);
+
         try {
-            if (c.execute(cmdc)) udaloSie = true;
+            String subcommand = parsedArgs.get(0);
+            if (subcommand != null && c.getSubCommands().containsKey(subcommand.toLowerCase())) {
+                Method method = c.getSubCommands().get(subcommand.toLowerCase());
+                Boolean bol = (Boolean) method.invoke(c, cmdc);
+                if (bol) udaloSie = true;
+            } else if (c.execute(cmdc)) udaloSie = true;
         } catch (UsageException u) {
             Error.usageError(cmdc);
         } catch (Exception omegalul) {
@@ -210,7 +219,8 @@ public class CommandExecute extends ListenerAdapter {
 
         try {
             onExecuteEvent(cmdc);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 
     @NotNull
@@ -234,7 +244,8 @@ public class CommandExecute extends ListenerAdapter {
     private static void zareaguj(Message msg, User user, boolean bol) {
         try {
             msg.addReaction(getReaction(user, bol)).complete();
-        } catch (ErrorResponseException ignored) { }
+        } catch (ErrorResponseException ignored) {
+        }
     }
 
     private void setCooldown(User user, Command command) {
@@ -261,7 +272,9 @@ public class CommandExecute extends ListenerAdapter {
         String msg = "`%s` użył komendy %s(%s) na serwerze %s[%s]";
         StringBuilder b = new StringBuilder(" ");
 
-        for (Map.Entry<Integer, String> m : context.getArgs().entrySet()) { b.append(m.getValue()).append(",");}
+        for (Map.Entry<Integer, String> m : context.getArgs().entrySet()) {
+            b.append(m.getValue()).append(",");
+        }
 
         msg = String.format(msg, UserUtil.getLogName(context.getUser()),
                 context.getCommand(), b.toString().replaceAll("@", "@\u200b$1"), context.getGuild(), context.getGuild().getId());

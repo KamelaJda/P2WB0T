@@ -85,7 +85,7 @@ public class TempbanCommand extends Command {
     }
 
     public static String tempban(User user, User adm, String powod, String duration, CaseDao caseDao, ModLog modLog, boolean isPun, Guild guild, String nick) {
-        return tempban(user, adm, powod,duration, caseDao, modLog, isPun, guild, nick, 0, null);
+        return tempban(user, adm, powod, duration, caseDao, modLog, isPun, guild, nick, 0, null);
     }
 
     public static String tempban(User user, User adm, String powod, String duration, CaseDao caseDao, ModLog modLog, boolean isPun, Guild guild, String nick, int delDays, List<Dowod> dowody) {

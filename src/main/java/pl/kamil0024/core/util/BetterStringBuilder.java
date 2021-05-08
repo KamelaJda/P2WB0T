@@ -23,7 +23,8 @@ import lombok.Getter;
 
 public class BetterStringBuilder {
 
-    @Getter StringBuilder stringBuilder;
+    @Getter
+    StringBuilder stringBuilder;
 
     public BetterStringBuilder() {
         this.stringBuilder = new StringBuilder();

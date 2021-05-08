@@ -37,7 +37,8 @@ public class TicketModule implements Modul {
     RedisManager redisManager;
     EventWaiter eventWaiter;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean start = false;
 
     private final TicketRedisManager ticketRedisManager;

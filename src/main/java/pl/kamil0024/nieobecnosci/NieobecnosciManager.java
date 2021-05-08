@@ -114,7 +114,9 @@ public class NieobecnosciManager {
         return eb;
     }
 
-    public void xd() { update(); }
+    public void xd() {
+        update();
+    }
 
     @SuppressWarnings("DuplicatedCode")
     public synchronized void update() {
@@ -131,7 +133,8 @@ public class NieobecnosciManager {
                 Member mem = null;
                 try {
                     mem = Objects.requireNonNull(api.getGuildById(Ustawienia.instance.rekrutacyjny.guildId)).retrieveMemberById(nb.getUserId()).complete();
-                } catch (Exception ignored) { }
+                } catch (Exception ignored) {
+                }
                 if (mem == null) {
                     Log.newError("Jezu " + nb.getUserId() + " wyszedł z serwera i nie mogę zaaktualizować nieobecności", NieobecnosciManager.class);
                     continue;
@@ -153,7 +156,8 @@ public class NieobecnosciManager {
                         Zmiana.endNieobecnosci(nb, mem);
                         PrivateChannel pv = mem.getUser().openPrivateChannel().complete();
                         pv.sendMessage("Twój urlop właśnie się zakończył!").complete();
-                    } catch (Exception ignored) {}
+                    } catch (Exception ignored) {
+                    }
                     continue;
                 }
                 msg.editMessage(getEmbed(nb, mem).build()).queue();

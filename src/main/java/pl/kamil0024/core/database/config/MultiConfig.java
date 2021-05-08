@@ -33,7 +33,8 @@ import java.util.ArrayList;
 @Data
 @AllArgsConstructor
 public class MultiConfig {
-    public MultiConfig() {}
+    public MultiConfig() {
+    }
 
     public MultiConfig(String id) {
         this.id = id;

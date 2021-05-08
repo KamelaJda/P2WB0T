@@ -42,7 +42,8 @@ import java.util.function.Function;
 public class RedisManager {
 
     private final String PREFIX;
-    @Getter(AccessLevel.PACKAGE) private final JedisPool jedisPool;
+    @Getter(AccessLevel.PACKAGE)
+    private final JedisPool jedisPool;
     private final ExecutorService executor = Executors.newFixedThreadPool(4, new RedisThreadFactory());
 
     public RedisManager(long id) {
@@ -225,8 +226,10 @@ public class RedisManager {
         public RedisCache<T> getCache() {
             return getCache(300);
         }
+
         public RedisCache<T> getCache(int expiry) {
-            return new RedisCache<>(RedisManager.this, new TypeToken<T>(getClass()) {}, expiry);
+            return new RedisCache<>(RedisManager.this, new TypeToken<T>(getClass()) {
+            }, expiry);
         }
     }
 
@@ -234,11 +237,12 @@ public class RedisManager {
         private final ThreadGroup group;
         private final AtomicInteger threadNumber = new AtomicInteger(1);
         private final String namePrefix;
+
         public RedisThreadFactory() {
             SecurityManager s = System.getSecurityManager();
             group = (s != null) ? s.getThreadGroup() :
                     Thread.currentThread().getThreadGroup();
-            namePrefix = "RedisCacheManager-AsyncThread-" ;
+            namePrefix = "RedisCacheManager-AsyncThread-";
         }
 
         @Override

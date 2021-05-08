@@ -31,7 +31,8 @@ import java.util.Map;
 
 public class Slot {
 
-    @Getter public HashMap<Integer, String> sloty;
+    @Getter
+    public HashMap<Integer, String> sloty;
 
     public Slot() {
         this.sloty = new HashMap<>();
@@ -119,7 +120,8 @@ public class Slot {
         for (Integer s : id) {
             try {
                 if (getSloty().get(s).equals(equals)) tak.add(true);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
         return tak.size() == 3;
     }

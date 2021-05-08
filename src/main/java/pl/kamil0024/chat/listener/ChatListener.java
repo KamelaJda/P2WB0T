@@ -100,7 +100,9 @@ public class ChatListener extends ListenerAdapter {
         List<String> words = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(res, UTF_8))) {
             String line;
-            while ((line = br.readLine()) != null) { words.add(line); }
+            while ((line = br.readLine()) != null) {
+                words.add(line);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -111,7 +113,8 @@ public class ChatListener extends ListenerAdapter {
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
         if (!e.getGuild().getId().equals(Ustawienia.instance.bot.guildId) || e.getAuthor().isBot()) return;
-        if (e.getChannel().getParent() != null && e.getChannel().getParent().getId().equals("539819570358386698")) return;
+        if (e.getChannel().getParent() != null && e.getChannel().getParent().getId().equals("539819570358386698"))
+            return;
         if (UserUtil.getPermLevel(e.getAuthor()).getNumer() >= PermLevel.CHATMOD.getNumer()) return;
         if (e.getAuthor().isBot()) return;
         if (e.getChannel().getId().equals("426809411378479105") ||
@@ -122,7 +125,8 @@ public class ChatListener extends ListenerAdapter {
         char kurwa = 'a';
         try {
             kurwa = e.getMessage().getContentRaw().toCharArray()[1];
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
 
         if (e.getChannel().getId().equals("426864003562864641") && !e.getAuthor().isBot() &&
                 !e.getMessage().getContentRaw().isEmpty() && kurwa == 'p') {
@@ -136,7 +140,8 @@ public class ChatListener extends ListenerAdapter {
         if (!e.getGuild().getId().equals(Ustawienia.instance.bot.guildId)) return;
         if (UserUtil.getPermLevel(e.getAuthor()).getNumer() >= PermLevel.CHATMOD.getNumer()) return;
         if (e.getAuthor().isBot() || e.getMessage().getContentRaw().isEmpty()) return;
-        if (e.getChannel().getId().equals("426809411378479105") || e.getChannel().getId().equals("503294063064121374") || e.getChannel().getId().equals("573873102757429256")) return;
+        if (e.getChannel().getId().equals("426809411378479105") || e.getChannel().getId().equals("503294063064121374") || e.getChannel().getId().equals("573873102757429256"))
+            return;
         checkMessage(e.getMember(), e.getMessage(), karyJSON, caseDao, modLog);
     }
 
@@ -152,7 +157,8 @@ public class ChatListener extends ListenerAdapter {
             if (czystaWiadomosc.startsWith("> ") && split.length >= 1) {
                 try {
                     czystaWiadomosc = czystaWiadomosc.replaceAll(split[0], "");
-                } catch (Exception ignored) { }
+                } catch (Exception ignored) {
+                }
             }
 
             String msgRaw = czystaWiadomosc.replaceAll("<@!?([0-9])*>", "")
@@ -164,7 +170,7 @@ public class ChatListener extends ListenerAdapter {
 
             String przeklenstwa = msgRaw;
 
-            String[] tak = new String[] {"a;ą", "c;ć","e;ę", "l;ł", "n;ń", "o;ó", "s;ś", "z;ź", "z;ż"};
+            String[] tak = new String[]{"a;ą", "c;ć", "e;ę", "l;ł", "n;ń", "o;ó", "s;ś", "z;ź", "z;ż"};
             for (String s : tak) {
                 String[] kurwa = s.split(";");
                 przeklenstwa = przeklenstwa.replaceAll(kurwa[1], kurwa[0]);
@@ -306,7 +312,8 @@ public class ChatListener extends ListenerAdapter {
 
     public static boolean containsLink(String[] list) {
         for (String s : list) {
-            if (s.contains("derpmc") || s.contains("roizy") || s.contains("p2w") || s.contains("hypixel") || s.contains("discord") || s.contains("tenor")) continue;
+            if (s.contains("derpmc") || s.contains("roizy") || s.contains("p2w") || s.contains("hypixel") || s.contains("discord") || s.contains("tenor"))
+                continue;
             try {
                 new URL(s);
                 return true;
@@ -326,7 +333,7 @@ public class ChatListener extends ListenerAdapter {
     }
 
     public static int containsFlood(String msg) {
-        if (msg.length() < 3 || containsLink(new String[] {msg})) return 0;
+        if (msg.length() < 3 || containsLink(new String[]{msg})) return 0;
 
         int tak = 0;
         int flood = 0;
@@ -346,7 +353,8 @@ public class ChatListener extends ListenerAdapter {
                     if (flood < 10) flood = 0;
                 }
                 tak++;
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
         return flood;
     }

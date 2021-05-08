@@ -59,7 +59,7 @@ public class LiczydloListener extends ListenerAdapter {
         List<Message> messages = getHistoryList(event.getChannel());
         int kiedysMessage = Integer.parseInt(messages.get(1).getContentRaw());
 
-        if (messages.size() < 2 || liczba != kiedysMessage+1 || messages.get(1).getAuthor().getId().equals(event.getAuthor().getId())) {
+        if (messages.size() < 2 || liczba != kiedysMessage + 1 || messages.get(1).getAuthor().getId().equals(event.getAuthor().getId())) {
             event.getMessage().delete().queue();
         }
     }

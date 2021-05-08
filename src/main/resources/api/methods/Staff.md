@@ -1,6 +1,7 @@
 # CheckToken
 
 ## Path
+
 `/api/util/staff`
 
 ## Opis
@@ -8,6 +9,7 @@
 Zwraca liste administracji
 
 ## Headers
+
 | Key           | Value   |
 |---------------|---------|
 | Authorization | API Key |
@@ -43,6 +45,7 @@ Zwraca liste administracji
 ```
 
 #### Osoba
+
 ```json
 {
   "nick": "username na Discordzie",

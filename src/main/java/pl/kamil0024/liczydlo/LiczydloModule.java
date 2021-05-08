@@ -28,7 +28,8 @@ public class LiczydloModule implements Modul {
 
     private final ShardManager api;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean start = false;
     private LiczydloListener liczydloListener;
 

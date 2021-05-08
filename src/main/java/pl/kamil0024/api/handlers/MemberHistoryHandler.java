@@ -81,18 +81,18 @@ public class MemberHistoryHandler implements HttpHandler {
 
         public static ApiCaseConfig convert(Kara kara, ShardManager api) {
             return new ApiCaseConfig(kara.getKaraId(),
-                            getWhateverConfig(kara.getKaranyId(), api),
-                            kara.getMcNick(),
-                            getWhateverConfig(kara.getAdmId(), api),
-                            kara.getPowod(),
-                            kara.getTimestamp(),
-                            kara.getTypKary(),
-                            kara.getAktywna(),
-                            kara.getMessageUrl(),
-                            kara.getEnd(),
-                            kara.getDuration(),
-                            kara.getPunAktywna(),
-                            kara.getDowody());
+                    getWhateverConfig(kara.getKaranyId(), api),
+                    kara.getMcNick(),
+                    getWhateverConfig(kara.getAdmId(), api),
+                    kara.getPowod(),
+                    kara.getTimestamp(),
+                    kara.getTypKary(),
+                    kara.getAktywna(),
+                    kara.getMessageUrl(),
+                    kara.getEnd(),
+                    kara.getDuration(),
+                    kara.getPunAktywna(),
+                    kara.getDowody());
         }
 
     }

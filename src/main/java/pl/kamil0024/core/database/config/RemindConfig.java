@@ -30,7 +30,8 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class RemindConfig {
-    public RemindConfig() {}
+    public RemindConfig() {
+    }
 
     public RemindConfig(String id) {
         this.id = id;

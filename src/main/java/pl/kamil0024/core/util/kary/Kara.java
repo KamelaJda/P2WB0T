@@ -39,7 +39,8 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class Kara {
-    public Kara() {}
+    public Kara() {
+    }
 
     private int karaId;
     private String karanyId;

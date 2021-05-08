@@ -22,7 +22,6 @@ package pl.kamil0024.core.database;
 import gg.amy.pgorm.PgMapper;
 import pl.kamil0024.core.database.config.Dao;
 import pl.kamil0024.core.database.config.MultiConfig;
-import pl.kamil0024.core.util.Nick;
 
 import java.util.List;
 

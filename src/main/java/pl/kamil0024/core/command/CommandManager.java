@@ -23,16 +23,21 @@ import lombok.Getter;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.kamil0024.core.logger.Log;
 
+import java.lang.reflect.Method;
 import java.util.*;
 
 public class CommandManager extends ListenerAdapter {
 
     private static final Logger logger = LoggerFactory.getLogger(CommandManager.class);
 
-    @Getter public Set<Command> registered;
-    @Getter public Map<String, Command> commands;
-    @Getter public Map<String, Command> aliases;
+    @Getter
+    public Set<Command> registered;
+    @Getter
+    public Map<String, Command> commands;
+    @Getter
+    public Map<String, Command> aliases;
 
     public CommandManager() {
         this.commands = new HashMap<>();
@@ -42,8 +47,29 @@ public class CommandManager extends ListenerAdapter {
 
     public void registerCommand(Command command) {
         if (command == null) return;
-        if (commands.containsKey(command.toString())) throw new IllegalArgumentException(String.format("Komenda o nazwie %s jest juz zarejestrowana (%s)", command.toString(), command.getClass().getName()));
-        if (command.getName() == null || command.getName().isEmpty()) throw new NullPointerException("Nazwa jest pusta! " + command.getClass().getName());
+        if (commands.containsKey(command.toString()))
+            throw new IllegalArgumentException(String.format("Komenda o nazwie %s jest juz zarejestrowana (%s)", command.toString(), command.getClass().getName()));
+        if (command.getName() == null || command.getName().isEmpty())
+            throw new NullPointerException("Nazwa jest pusta! " + command.getClass().getName());
+
+        for (Method method : command.getClass().getMethods()) {
+            try {
+                if (method.isAnnotationPresent(SubCommand.class) && method.getParameterCount() == 1) {
+                    SubCommand subCommand = method.getAnnotation(SubCommand.class);
+                    String name = subCommand.name().isEmpty() ? method.getName() : subCommand.name();
+                    command.getSubCommands().put(name.toLowerCase(), method);
+                    logger.debug("Zarejestrowano subkomendę: {} -> {}", name, method);
+                    for (String alias : subCommand.aliases()) {
+                        command.getSubCommands().put(alias.toLowerCase(), method);
+                        logger.debug("Zarejestrowano alias: {} -> {} -> {}", alias, name, method);
+                    }
+                }
+            } catch (Exception e) {
+                logger.error("Nie udało się zarejestrować subkomendy!", e);
+                Log.newError(e, getClass());
+            }
+        }
+
         registered.add(command);
         commands.put(command.toString(), command);
         logger.debug("Rejestruje komende {}", command.getName());

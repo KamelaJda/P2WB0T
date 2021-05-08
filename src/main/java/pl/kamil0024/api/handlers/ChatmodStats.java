@@ -47,40 +47,43 @@ public class ChatmodStats implements HttpHandler {
 
     @Override
     public void handleRequest(HttpServerExchange ex) {
-        if (!Response.checkIp(ex)) { return; }
+        if (!Response.checkIp(ex)) {
+            return;
+        }
 
-       try {
-           List<StatsConfig> staty = statsDao.getAll();
-           HashMap<String, TopCommand.Suma> mapa = new HashMap<>();
-           HashMap<String, Integer> top = new HashMap<>();
+        try {
+            List<StatsConfig> staty = statsDao.getAll();
+            HashMap<String, TopCommand.Suma> mapa = new HashMap<>();
+            HashMap<String, Integer> top = new HashMap<>();
 
-           for (StatsConfig statsConfig : staty) {
-               int suma = 0;
-               Statystyka statyZParuDni = ChatmodStatsCommand.getStatsOfDayMinus(statsConfig.getStats(), Integer.parseInt(ex.getQueryParameters().get("dni").getFirst()));
-               suma += (statyZParuDni.getWyrzuconych() +
-                       statyZParuDni.getZbanowanych() +
-                       statyZParuDni.getZmutowanych());
+            for (StatsConfig statsConfig : staty) {
+                int suma = 0;
+                Statystyka statyZParuDni = ChatmodStatsCommand.getStatsOfDayMinus(statsConfig.getStats(), Integer.parseInt(ex.getQueryParameters().get("dni").getFirst()));
+                suma += (statyZParuDni.getWyrzuconych() +
+                        statyZParuDni.getZbanowanych() +
+                        statyZParuDni.getZmutowanych());
 
-               mapa.put(statsConfig.getId(), new TopCommand.Suma(suma, statyZParuDni));
-           }
+                mapa.put(statsConfig.getId(), new TopCommand.Suma(suma, statyZParuDni));
+            }
 
-           for (Map.Entry<String, TopCommand.Suma> entry : mapa.entrySet()) {
-               top.put(entry.getKey(), entry.getValue().getNadaneKary());
-           }
+            for (Map.Entry<String, TopCommand.Suma> entry : mapa.entrySet()) {
+                top.put(entry.getKey(), entry.getValue().getNadaneKary());
+            }
 
-           Map<String, TopCommand.Suma> finalStats = new HashMap<>();
-           Guild g = api.getGuildById(Ustawienia.instance.bot.guildId);
-           for (Map.Entry<String, Integer> entry : sortByValue(top).entrySet()) {
-               try {
-                   finalStats.put(UserUtil.getMcNick(g.getMemberById(entry.getKey())), mapa.get(entry.getKey()));
-               } catch (Exception ignored) { }
-           }
-           Response.sendObjectResponse(ex, finalStats);
+            Map<String, TopCommand.Suma> finalStats = new HashMap<>();
+            Guild g = api.getGuildById(Ustawienia.instance.bot.guildId);
+            for (Map.Entry<String, Integer> entry : sortByValue(top).entrySet()) {
+                try {
+                    finalStats.put(UserUtil.getMcNick(g.getMemberById(entry.getKey())), mapa.get(entry.getKey()));
+                } catch (Exception ignored) {
+                }
+            }
+            Response.sendObjectResponse(ex, finalStats);
 
-       } catch (Exception e) {
-           Response.sendErrorResponse(ex, "Błąd!", "Nie udało się wysłać zapyania: " + e.getLocalizedMessage());
-           e.printStackTrace();
-       }
+        } catch (Exception e) {
+            Response.sendErrorResponse(ex, "Błąd!", "Nie udało się wysłać zapyania: " + e.getLocalizedMessage());
+            e.printStackTrace();
+        }
 
     }
 
