@@ -191,7 +191,7 @@ public class CommandExecute extends ListenerAdapter {
             String subcommand = parsedArgs.get(0);
             if (subcommand != null && c.getSubCommands().containsKey(subcommand.toLowerCase())) {
                 Method method = c.getSubCommands().get(subcommand.toLowerCase());
-                Boolean bol = (Boolean) method.invoke(this, cmdc);
+                Boolean bol = (Boolean) method.invoke(c, cmdc);
                 if (bol) udaloSie = true;
             } else if (c.execute(cmdc)) udaloSie = true;
         } catch (UsageException u) {
