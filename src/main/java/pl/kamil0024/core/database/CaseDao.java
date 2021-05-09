@@ -20,6 +20,7 @@
 package pl.kamil0024.core.database;
 
 import gg.amy.pgorm.PgMapper;
+import lombok.Getter;
 import pl.kamil0024.core.database.config.CaseConfig;
 import pl.kamil0024.core.database.config.Dao;
 import pl.kamil0024.core.util.kary.KaryEnum;
@@ -29,6 +30,7 @@ import java.util.List;
 
 public class CaseDao implements Dao<CaseConfig> {
 
+    @Getter
     private final PgMapper<CaseConfig> mapper;
 
     public CaseDao(DatabaseManager databaseManager) {
@@ -43,16 +45,6 @@ public class CaseDao implements Dao<CaseConfig> {
 
     public CaseConfig get(int id) {
         return mapper.load(String.valueOf(id)).orElseGet(() -> new CaseConfig(String.valueOf(id)));
-    }
-
-    @Override
-    public synchronized void save(CaseConfig kara) {
-        mapper.save(kara);
-    }
-
-    @Override
-    public List<CaseConfig> getAll() {
-        return mapper.loadAll();
     }
 
     public List<CaseConfig> getAktywe(String id) {

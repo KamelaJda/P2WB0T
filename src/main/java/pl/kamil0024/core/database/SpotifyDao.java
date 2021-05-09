@@ -22,35 +22,21 @@ package pl.kamil0024.core.database;
 import gg.amy.pgorm.PgMapper;
 import lombok.Getter;
 import pl.kamil0024.core.database.config.Dao;
-import pl.kamil0024.core.database.config.RemindConfig;
+import pl.kamil0024.core.database.config.SpotifyConfig;
 
-import java.util.List;
-
-public class RemindDao implements Dao<RemindConfig> {
+public class SpotifyDao implements Dao<SpotifyConfig> {
 
     @Getter
-    private final PgMapper<RemindConfig> mapper;
+    private final PgMapper<SpotifyConfig> mapper;
 
-    public RemindDao(DatabaseManager databaseManager) {
+    public SpotifyDao(DatabaseManager databaseManager) {
         if (databaseManager == null) throw new IllegalStateException("databaseManager == null");
-        mapper = databaseManager.getPgStore().mapSync(RemindConfig.class);
+        mapper = databaseManager.getPgStore().mapSync(SpotifyConfig.class);
     }
 
     @Override
-    public RemindConfig get(String id) {
-        return mapper.load(id).orElseGet(() -> new RemindConfig(id));
-    }
-
-    public void remove(RemindConfig toCos) {
-        mapper.delete(Integer.parseInt(toCos.getId()));
-    }
-
-    public synchronized String getNextId() {
-        int lastId = 0;
-        for (RemindConfig entry : getAll()) {
-            lastId = Math.max(Integer.parseInt(entry.getId()), lastId);
-        }
-        return String.valueOf(lastId + 1);
+    public SpotifyConfig get(String id) {
+        return mapper.load(id).orElse(null);
     }
 
 }

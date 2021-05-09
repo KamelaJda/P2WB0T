@@ -20,6 +20,7 @@
 package pl.kamil0024.core.database;
 
 import gg.amy.pgorm.PgMapper;
+import lombok.Getter;
 import net.dv8tion.jda.api.entities.Member;
 import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.core.database.config.Dao;
@@ -34,6 +35,7 @@ import java.util.List;
 
 public class TicketDao implements Dao<TicketConfig> {
 
+    @Getter
     private final PgMapper<TicketConfig> mapper;
 
     public TicketDao(DatabaseManager databaseManager) {
@@ -51,19 +53,9 @@ public class TicketDao implements Dao<TicketConfig> {
         return mapper.getTicketBySpam(userId);
     }
 
-    @Override
-    public void save(TicketConfig toCos) {
-        mapper.save(toCos);
-    }
-
     private List<TicketConfig> reverse(List<TicketConfig> list) {
         Collections.reverse(list);
         return list;
-    }
-
-    @Override
-    public List<TicketConfig> getAll() {
-        return reverse(mapper.loadAll());
     }
 
     public List<TicketConfig> getById(String id, int offset) {

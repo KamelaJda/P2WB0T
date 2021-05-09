@@ -20,6 +20,7 @@
 package pl.kamil0024.core.database;
 
 import gg.amy.pgorm.PgMapper;
+import lombok.Getter;
 import org.joda.time.DateTime;
 import pl.kamil0024.core.database.config.Dao;
 import pl.kamil0024.core.database.config.UserstatsConfig;
@@ -30,6 +31,7 @@ import java.util.List;
 
 public class UserstatsDao implements Dao<UserstatsConfig> {
 
+    @Getter
     public final PgMapper<UserstatsConfig> mapper;
 
     public UserstatsDao(DatabaseManager databaseManager) {
@@ -49,16 +51,6 @@ public class UserstatsDao implements Dao<UserstatsConfig> {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         return mapper.loadRaw("SELECT * FROM %s WHERE data->'memberslist' ??| ARRAY[?] AND id::numeric >= ?::numeric", id, String.valueOf(cal.getTimeInMillis()));
-    }
-
-    @Override
-    public void save(UserstatsConfig toCos) {
-        mapper.save(toCos);
-    }
-
-    @Override
-    public List<UserstatsConfig> getAll() {
-        return mapper.loadAll();
     }
 
 }

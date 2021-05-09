@@ -126,8 +126,7 @@ public class EvalCommand extends Command {
         if (context.getArgs().get(0) == null || kod.isEmpty()) throw new UsageException();
 
         kod = kod.replaceAll("```", "");
-        Binding binding = new Binding();
-        GroovyShell shell = new GroovyShell(binding);
+        GroovyShell shell = new GroovyShell(new Binding());
 
         shell.setVariable("eventWaiter", eventWaiter);
         shell.setVariable("commandManager", commandManager);

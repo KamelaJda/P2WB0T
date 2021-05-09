@@ -20,6 +20,7 @@
 package pl.kamil0024.core.database;
 
 import gg.amy.pgorm.PgMapper;
+import lombok.Getter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReaction;
@@ -49,7 +50,9 @@ import java.util.concurrent.TimeUnit;
 
 public class AnkietaDao extends ListenerAdapter implements Dao<AnkietaConfig> {
 
+    @Getter
     private final PgMapper<AnkietaConfig> mapper;
+
     private final ShardManager api;
 
     public AnkietaDao(DatabaseManager databaseManager, ShardManager api) {
@@ -65,16 +68,6 @@ public class AnkietaDao extends ListenerAdapter implements Dao<AnkietaConfig> {
     @Override
     public AnkietaConfig get(String id) {
         return mapper.load(id).orElse(null);
-    }
-
-    @Override
-    public void save(AnkietaConfig toCos) {
-        mapper.save(toCos);
-    }
-
-    @Override
-    public List<AnkietaConfig> getAll() {
-        return mapper.loadAll();
     }
 
     public List<AnkietaConfig> getAllAktywne() {

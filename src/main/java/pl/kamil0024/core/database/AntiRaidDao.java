@@ -18,6 +18,7 @@
 package pl.kamil0024.core.database;
 
 import gg.amy.pgorm.PgMapper;
+import lombok.Getter;
 import pl.kamil0024.core.database.config.AntiRaidConfig;
 import pl.kamil0024.core.database.config.Dao;
 
@@ -25,6 +26,7 @@ import java.util.List;
 
 public class AntiRaidDao implements Dao<AntiRaidConfig> {
 
+    @Getter
     private final PgMapper<AntiRaidConfig> mapper;
 
     public AntiRaidDao(DatabaseManager databaseManager) {
@@ -35,16 +37,6 @@ public class AntiRaidDao implements Dao<AntiRaidConfig> {
     @Override
     public AntiRaidConfig get(String id) {
         return mapper.load(id).orElse(null);
-    }
-
-    @Override
-    public void save(AntiRaidConfig toCos) {
-        mapper.save(toCos);
-    }
-
-    @Override
-    public List<AntiRaidConfig> getAll() {
-        return mapper.loadAll();
     }
 
     public void delete(String id) {

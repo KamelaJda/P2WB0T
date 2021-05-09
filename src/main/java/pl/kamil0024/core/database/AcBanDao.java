@@ -20,6 +20,7 @@
 package pl.kamil0024.core.database;
 
 import gg.amy.pgorm.PgMapper;
+import lombok.Getter;
 import pl.kamil0024.core.database.config.AcBanConfig;
 import pl.kamil0024.core.database.config.Dao;
 
@@ -27,6 +28,7 @@ import java.util.List;
 
 public class AcBanDao implements Dao<AcBanConfig> {
 
+    @Getter
     private final PgMapper<AcBanConfig> mapper;
 
     public AcBanDao(DatabaseManager databaseManager) {
@@ -37,16 +39,6 @@ public class AcBanDao implements Dao<AcBanConfig> {
     @Override
     public AcBanConfig get(String id) {
         return mapper.load(id).orElse(null);
-    }
-
-    @Override
-    public void save(AcBanConfig toCos) {
-        mapper.save(toCos);
-    }
-
-    @Override
-    public List<AcBanConfig> getAll() {
-        return mapper.loadAll();
     }
 
     public List<AcBanConfig> getAll(int offset, boolean seeReaded) {
