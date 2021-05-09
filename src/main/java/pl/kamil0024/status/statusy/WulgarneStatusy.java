@@ -43,8 +43,8 @@ public class WulgarneStatusy extends ListenerAdapter {
         List<String> list = new ArrayList<>();
         try {
             List<Activity> activities = mem.getActivities();
-            activities.removeIf(a -> a.getType() == Activity.ActivityType.LISTENING);
             for (Activity act : activities) {
+                if (act.getType() == Activity.ActivityType.LISTENING) continue;
                 list.add(act.getName());
                 if (act.isRich()) {
                     RichPresence rp = act.asRichPresence();

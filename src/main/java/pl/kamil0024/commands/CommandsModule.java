@@ -35,10 +35,7 @@ import pl.kamil0024.commands.kolkoikrzyzyk.KolkoIKrzyzykManager;
 import pl.kamil0024.commands.listener.GiveawayListener;
 import pl.kamil0024.commands.listener.GuildListener;
 import pl.kamil0024.commands.system.*;
-import pl.kamil0024.commands.zabawa.KolkoIKrzyzykCommand;
-import pl.kamil0024.commands.zabawa.PogodaCommand;
-import pl.kamil0024.commands.zabawa.SasinCommand;
-import pl.kamil0024.commands.zabawa.StatsCommand;
+import pl.kamil0024.commands.zabawa.*;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandExecute;
@@ -186,6 +183,7 @@ public class CommandsModule implements Modul {
         cmd.add(new SasinCommand());
         cmd.add(new StatsCommand(userstatsManager.userstatsDao));
         cmd.add(new WeryfikacjaCommand(apiModule, weryfikacjaModule));
+        cmd.add(new SpotifyStatsCommand(spotifyUtil, eventWaiter));
 
         cmd.forEach(commandManager::registerCommand);
         setStart(true);
