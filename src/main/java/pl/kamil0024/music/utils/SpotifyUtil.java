@@ -133,6 +133,7 @@ public class SpotifyUtil {
 
     public void addUser(String user, String code) {
         try {
+            Log.debug("Aktualizuje główny token!");
             AuthorizationCodeCredentials c = getApi().authorizationCode(
                     getApi().getClientId(),
                     getApi().getClientSecret(),

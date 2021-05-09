@@ -19,23 +19,19 @@
 
 package pl.kamil0024.commands.zabawa;
 
-import com.wrapper.spotify.model_objects.specification.Artist;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
+import pl.kamil0024.commands.utils.SpotifyWaiter;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
 import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.command.enums.PermLevel;
-import pl.kamil0024.core.util.DynamicEmbedPageinator;
 import pl.kamil0024.core.util.EventWaiter;
 import pl.kamil0024.core.util.UserUtil;
 import pl.kamil0024.music.utils.SpotifyUtil;
 import pl.kamil0024.music.utils.UserCredentials;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.FutureTask;
 
 public class SpotifyStatsCommand extends Command {
 
@@ -76,26 +72,8 @@ public class SpotifyStatsCommand extends Command {
             return false;
         }
 
-        int nr = 1;
-
-        try {
-            List<FutureTask<EmbedBuilder>> futurePages = new ArrayList<>();
-            for (Artist artist : user.getApi().getUsersTopArtists().limit(10).build().execute().getItems()) {
-                EmbedBuilder eb = new EmbedBuilder();
-                eb.setColor(UserUtil.getColor(context.getMember()));
-                eb.setTitle(String.format("%s. %s", nr, artist.getName()), "https://open.spotify.com/artist/" + artist.getId());
-                eb.setTimestamp(Instant.now());
-                if (artist.getImages().length >= 1) {
-                    eb.setImage(artist.getImages()[0].getUrl());
-                }
-                futurePages.add(new FutureTask<>(() -> eb));
-            }
-            new DynamicEmbedPageinator(futurePages, context.getUser(), eventWaiter, context.getJDA(), 240).create(msg);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
+        new SpotifyWaiter(context.getUser(), context.getChannel(), eventWaiter, context.getJDA(), user).create();
+        return true;
     }
 
 }

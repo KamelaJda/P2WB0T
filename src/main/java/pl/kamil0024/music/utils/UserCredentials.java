@@ -25,6 +25,7 @@ import com.wrapper.spotify.model_objects.credentials.ClientCredentials;
 import lombok.Getter;
 import pl.kamil0024.core.database.SpotifyDao;
 import pl.kamil0024.core.database.config.SpotifyConfig;
+import pl.kamil0024.core.logger.Log;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -51,6 +52,7 @@ public class UserCredentials {
 
     public void refreshAccessToken() {
         try {
+            Log.debug("Aktyalizuje token dla usera!");
             ClientCredentials cr = api.clientCredentials().build().execute();
             api.setAccessToken(cr.getAccessToken());
             ses.schedule(this::refreshAccessToken, cr.getExpiresIn() - 120, TimeUnit.SECONDS);
