@@ -71,6 +71,7 @@ public class SpotifyWaiter {
                 "\n:two: Najczęściej słuchane tracki", user.getAsMention())).complete();
         botMsg.addReaction(ONE).complete();
         botMsg.addReaction(TWO).complete();
+        waitForReaction();
     }
 
     private void waitForReaction() {
