@@ -20,8 +20,11 @@
 package pl.kamil0024.music.utils;
 
 import com.wrapper.spotify.SpotifyApi;
+import com.wrapper.spotify.model_objects.credentials.AuthorizationCodeCredentials;
 import lombok.Getter;
+import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.database.SpotifyDao;
+import pl.kamil0024.core.database.config.SpotifyConfig;
 import pl.kamil0024.core.logger.Log;
 
 import java.util.concurrent.Executors;
@@ -50,18 +53,19 @@ public class UserCredentials {
     public void refreshAccessToken() {
         try {
             Log.debug("Aktyalizuje token dla usera!");
-//            ClientCredentials cr = api.clientCredentials().build().execute();
-//            api.setAccessToken(cr.getAccessToken());
-//            ses.schedule(this::refreshAccessToken, cr.getExpiresIn() - 120, TimeUnit.SECONDS);
-//
-//            SpotifyConfig config = dao.get(discordId);
-//            if (config != null) { // trudno, nie będziemy zapisywać
-//                config.setAccessToken(cr.getAccessToken());
-//                dao.save(config);
-//            }
+            AuthorizationCodeCredentials cr = api.authorizationCodeRefresh(Ustawienia.instance.spotify.id, Ustawienia.instance.spotify.secret, api.getRefreshToken()).build().execute();
+            api.setAccessToken(cr.getAccessToken());
+            ses.schedule(this::refreshAccessToken, cr.getExpiresIn() - 120, TimeUnit.SECONDS);
+
+            SpotifyConfig config = dao.get(discordId);
+            if (config != null) { // trudno, nie będziemy zapisywać
+                config.setAccessToken(cr.getAccessToken());
+                dao.save(config);
+            }
 
         } catch (Exception e) {
             ses.schedule(this::refreshAccessToken, 60, TimeUnit.SECONDS);
+            e.printStackTrace();
         }
     }
 

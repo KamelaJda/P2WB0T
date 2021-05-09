@@ -28,9 +28,8 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.exceptions.PermissionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.kamil0024.core.logger.Log;
+import pl.kamil0024.core.util.BetterStringBuilder;
 import pl.kamil0024.core.util.DynamicEmbedPageinator;
 import pl.kamil0024.core.util.EventWaiter;
 import pl.kamil0024.music.utils.UserCredentials;
@@ -43,8 +42,6 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
 public class SpotifyWaiter {
-
-    private static final Logger logger = LoggerFactory.getLogger(SpotifyWaiter.class);
 
     private static final String ONE = "\u0031\u20E3";
     private static final String TWO = "\u0032\u20E3";
@@ -84,29 +81,20 @@ public class SpotifyWaiter {
     }
 
     private void onMessageReactionAdd(MessageReactionAddEvent event) {
-        logger.debug("messageReactionAdd");
         if (!event.getMessageId().equals(botMsg.getId()) || !event.getUser().getId().equals(user.getId())) return;
         if (!event.getReactionEmote().isEmote()) {
-            logger.debug("wszystkie ify przeszły");
-            logger.debug("emotka: " + event.getReactionEmote().getName());
             switch (event.getReactionEmote().getName()) {
                 case ONE:
-                    logger.debug("one");
                     if (a1 == null) a1 = Choose.ARTISTS;
                     else if (b2 == null) b2 = Choose.SHORT;
                     break;
                 case TWO:
-                    logger.debug("two");
                     if (a1 == null) a1 = Choose.TRACK;
                     else if (b2 == null) b2 = Choose.LONG;
                     break;
                 case THREE:
-                    logger.debug("three");
                     b2 = Choose.ALL;
-                default:
-                    logger.debug("nic");
-                    b2 = Choose.ALL;
-                    return;
+                    break;
             }
         }
         try {
@@ -116,6 +104,7 @@ public class SpotifyWaiter {
         if (a1 != null && b2 != null) {
             List<FutureTask<EmbedBuilder>> futurePages = new ArrayList<>();
 
+            BetterStringBuilder sb = new BetterStringBuilder();
             int nr = 1;
             try {
                 switch (a1) {
@@ -129,6 +118,7 @@ public class SpotifyWaiter {
                             if (artist.getImages().length >= 1) {
                                 eb.setImage(artist.getImages()[0].getUrl());
                             }
+                            sb.appendLine(String.format("%s. [%s](%s)", nr, artist.getName(), "https://open.spotify.com/artist/" + artist.getId()));
                             nr++;
                             futurePages.add(new FutureTask<>(() -> eb));
                         }
@@ -143,6 +133,7 @@ public class SpotifyWaiter {
                             if (item.getAlbum().getImages().length >= 1) {
                                 eb.setImage(item.getAlbum().getImages()[0].getUrl());
                             }
+                            sb.appendLine(String.format("%s. [%s](%s)", nr, item.getName(), "https://open.spotify.com/track/" + item.getId()));
                             nr++;
                             futurePages.add(new FutureTask<>(() -> eb));
                         }
@@ -153,6 +144,13 @@ public class SpotifyWaiter {
                 return;
             }
             clearReactions();
+
+            EmbedBuilder eb = new EmbedBuilder();
+            eb.setColor(Color.blue);
+            eb.setTimestamp(Instant.now());
+            eb.setDescription(sb.build());
+            futurePages.add(new FutureTask<>(() -> eb));
+
             new DynamicEmbedPageinator(futurePages, user, eventWaiter, jda, 120).create(botMsg);
         } else {
             botMsg.addReaction(THREE).complete();
@@ -166,20 +164,16 @@ public class SpotifyWaiter {
 
 
     private boolean checkReaction(MessageReactionAddEvent event) {
-        logger.debug("checkReaction");
         if (event.getMessageIdLong() == botMsg.getIdLong() && !event.getReactionEmote().isEmote() && !event.getUser().isBot()) {
             switch (event.getReactionEmote().getName()) {
                 case ONE:
                 case TWO:
                 case THREE:
-                    logger.debug("checkReaction zwraca " + event.getUser().getId().equals(user.getId()));
                     return event.getUser().getId().equals(user.getId());
                 default:
-                    logger.debug("checkReaction zwraca false");
                     return false;
             }
         }
-        logger.debug("checkReaction zwraca false");
         return false;
     }
 

@@ -42,8 +42,9 @@ public class SpotifyStatsCommand extends Command {
         name = "spotifystats";
         aliases.add("spotify");
         category = CommandCategory.ZABAWA;
-        permLevel = PermLevel.DEVELOPER;
+        permLevel = PermLevel.MEMBER;
         enabledInRekru = true;
+        cooldown = 60;
 
         this.spotifyUtil = spotifyUtil;
         this.eventWaiter = eventWaiter;
