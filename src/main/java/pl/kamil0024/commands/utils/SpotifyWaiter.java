@@ -42,9 +42,9 @@ import java.util.concurrent.TimeUnit;
 
 public class SpotifyWaiter {
 
-    private static final String ONE = "\u0031";
-    private static final String TWO = "\u0032";
-    private static final String THREE = "\u0033";
+    private static final String ONE = "\u0031\u20E3";
+    private static final String TWO = "\u0032\u20E3";
+    private static final String THREE = "\u0033\u20E3";
 
     private final User user;
     private final TextChannel channel;
