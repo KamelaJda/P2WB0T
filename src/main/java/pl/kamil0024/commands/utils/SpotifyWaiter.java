@@ -77,7 +77,7 @@ public class SpotifyWaiter {
 
     private void waitForReaction() {
         eventWaiter.waitForEvent(MessageReactionAddEvent.class, this::checkReaction,
-                this::onMessageReactionAdd, 30, TimeUnit.SECONDS, this::clearReactions);
+                this::onMessageReactionAdd, 60, TimeUnit.SECONDS, this::clearReactions);
     }
 
     private void onMessageReactionAdd(MessageReactionAddEvent event) {
@@ -94,7 +94,6 @@ public class SpotifyWaiter {
                     break;
                 case THREE:
                     b2 = Choose.ALL;
-                    break;
             }
         }
         try {
@@ -107,17 +106,16 @@ public class SpotifyWaiter {
             BetterStringBuilder sb = new BetterStringBuilder();
             int nr = 1;
             try {
+                EmbedBuilder eb = new EmbedBuilder();
+                eb.setColor(Color.green);
+                eb.setTimestamp(Instant.now());
                 switch (a1) {
                     case ARTISTS:
                         for (Artist artist : userCredentials.getApi().getUsersTopArtists().time_range(b2.s).limit(10).build().execute().getItems()) {
-                            EmbedBuilder eb = new EmbedBuilder();
-                            eb.setColor(Color.green);
                             eb.setTitle(String.format("%s. %s", nr, artist.getName()), "https://open.spotify.com/artist/" + artist.getId());
-                            eb.setTimestamp(Instant.now());
                             eb.setDescription("Twoi topowi artyści z okresu: " + b2.s2);
-                            if (artist.getImages().length >= 1) {
-                                eb.setImage(artist.getImages()[0].getUrl());
-                            }
+                            if (artist.getImages().length >= 1) eb.setImage(artist.getImages()[0].getUrl());
+                            if (sb.toString().isEmpty()) sb.appendLine("Twoi topowi artyści z okresu: " + b2.s2 + "\n");
                             sb.appendLine(String.format("%s. [%s](%s)", nr, artist.getName(), "https://open.spotify.com/artist/" + artist.getId()));
                             nr++;
                             futurePages.add(new FutureTask<>(() -> eb));
@@ -125,14 +123,10 @@ public class SpotifyWaiter {
                         break;
                     case TRACK:
                         for (Track item : userCredentials.getApi().getUsersTopTracks().time_range(b2.s).limit(10).build().execute().getItems()) {
-                            EmbedBuilder eb = new EmbedBuilder();
-                            eb.setColor(Color.green);
                             eb.setTitle(String.format("%s. %s", nr, item.getName()), "https://open.spotify.com/track/" + item.getId());
-                            eb.setTimestamp(Instant.now());
                             eb.setDescription("Twoje topowe piosenki z okresu: " + b2.s2);
-                            if (item.getAlbum().getImages().length >= 1) {
-                                eb.setImage(item.getAlbum().getImages()[0].getUrl());
-                            }
+                            if (item.getAlbum().getImages().length >= 1) eb.setImage(item.getAlbum().getImages()[0].getUrl());
+                            if (sb.toString().isEmpty()) sb.appendLine("Twoje topowe piosenki z okresu: " + b2.s2 + "\n");
                             sb.appendLine(String.format("%s. [%s](%s)", nr, item.getName(), "https://open.spotify.com/track/" + item.getId()));
                             nr++;
                             futurePages.add(new FutureTask<>(() -> eb));
@@ -162,7 +156,6 @@ public class SpotifyWaiter {
         }
     }
 
-
     private boolean checkReaction(MessageReactionAddEvent event) {
         if (event.getMessageIdLong() == botMsg.getIdLong() && !event.getReactionEmote().isEmote() && !event.getUser().isBot()) {
             switch (event.getReactionEmote().getName()) {
@@ -173,8 +166,7 @@ public class SpotifyWaiter {
                 default:
                     return false;
             }
-        }
-        return false;
+        } else return false;
     }
 
     private void clearReactions() {
