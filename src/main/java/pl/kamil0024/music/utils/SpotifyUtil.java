@@ -22,6 +22,7 @@ package pl.kamil0024.music.utils;
 import com.neovisionaries.i18n.CountryCode;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
+import com.wrapper.spotify.model_objects.credentials.AuthorizationCodeCredentials;
 import com.wrapper.spotify.model_objects.credentials.ClientCredentials;
 import com.wrapper.spotify.model_objects.specification.Album;
 import com.wrapper.spotify.model_objects.specification.Paging;
@@ -30,8 +31,15 @@ import com.wrapper.spotify.model_objects.specification.Track;
 import com.wrapper.spotify.requests.data.AbstractDataRequest;
 import lombok.Getter;
 import org.apache.hc.core5.http.ParseException;
+import org.jetbrains.annotations.Nullable;
+import pl.kamil0024.core.database.SpotifyDao;
+import pl.kamil0024.core.database.config.SpotifyConfig;
+import pl.kamil0024.core.logger.Log;
 
 import java.io.IOException;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -45,13 +53,20 @@ public class SpotifyUtil {
     private static final Pattern ALBUM_REGEX = Pattern.compile("^(https://open.spotify.com/album/)([a-zA-Z0-9]+)(.*)$");
     private static final Pattern ARTISTS_REGEX = Pattern.compile("^(https://open.spotify.com/artist/)([a-zA-Z0-9]+)(.*)$");
 
-    private final ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+    ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
 
     @Getter
     private final SpotifyApi api;
 
-    public SpotifyUtil(SpotifyApi api) {
+    @Getter
+    private final SpotifyDao dao;
+
+    @Getter
+    private final Map<String, UserCredentials> userCredentials = new HashMap<>();
+
+    public SpotifyUtil(SpotifyApi api, SpotifyDao dao) {
         this.api = api;
+        this.dao = dao;
         refreshAccessToken();
     }
 
@@ -104,15 +119,47 @@ public class SpotifyUtil {
         }
     }
 
-    private void refreshAccessToken() {
+    @Nullable
+    public UserCredentials getUser(String user) {
+        if (getUserCredentials().containsKey(user)) return getUserCredentials().get(user);
+
+        SpotifyConfig conf = dao.get(user);
+        if (conf == null) return null;
+
+        UserCredentials cr = new UserCredentials(user, conf.getAccessToken(), conf.getRefreshToken(), dao);
+        getUserCredentials().put(user, cr);
+        return cr;
+    }
+
+    public void addUser(String user, String code) {
+        try {
+            Log.debug("Aktualizuje główny token!");
+            AuthorizationCodeCredentials c = getApi().authorizationCode(
+                    getApi().getClientId(),
+                    getApi().getClientSecret(),
+                    code,
+                    new URI("https://discord.p2w.pl/api/spotify/callback")
+            ).build().execute();
+            UserCredentials userCredentials = new UserCredentials(user, c.getAccessToken(), c.getRefreshToken(), dao);
+            getUserCredentials().put(user, userCredentials);
+
+            SpotifyConfig config = new SpotifyConfig(user);
+            config.setAccessToken(c.getAccessToken());
+            config.setRefreshToken(c.getRefreshToken());
+            dao.save(config);
+        } catch (Exception e) {
+            Log.newError(e, getClass());
+        }
+    }
+
+    public void refreshAccessToken() {
         try {
             ClientCredentials cr = api.clientCredentials().build().execute();
             api.setAccessToken(cr.getAccessToken());
-            ses.schedule(this::refreshAccessToken, cr.getExpiresIn(), TimeUnit.SECONDS);
+            ses.schedule(this::refreshAccessToken, cr.getExpiresIn() - 120, TimeUnit.SECONDS);
         } catch (Exception e) {
             ses.schedule(this::refreshAccessToken, 60, TimeUnit.SECONDS);
         }
-
     }
 
 }

@@ -20,6 +20,7 @@
 package pl.kamil0024.core.database;
 
 import gg.amy.pgorm.PgMapper;
+import lombok.Getter;
 import pl.kamil0024.core.database.config.Dao;
 import pl.kamil0024.core.database.config.StatsConfig;
 
@@ -27,6 +28,7 @@ import java.util.List;
 
 public class StatsDao implements Dao<StatsConfig> {
 
+    @Getter
     private final PgMapper<StatsConfig> mapper;
 
     public StatsDao(DatabaseManager databaseManager) {
@@ -39,13 +41,4 @@ public class StatsDao implements Dao<StatsConfig> {
         return mapper.load(id).orElseGet(() -> new StatsConfig(id));
     }
 
-    @Override
-    public void save(StatsConfig toCos) {
-        mapper.save(toCos);
-    }
-
-    @Override
-    public List<StatsConfig> getAll() {
-        return mapper.loadAll();
-    }
 }

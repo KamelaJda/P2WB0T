@@ -25,14 +25,13 @@ import net.dv8tion.jda.api.entities.RichPresence;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.chat.listener.ChatListener;
+import pl.kamil0024.core.logger.Log;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
+import java.util.Objects;
 
 public class WulgarneStatusy extends ListenerAdapter {
-
-    private static final Pattern HTTP = Pattern.compile("([0-9a-z_-]+\\.)+(com|infonet|net|org|pro|de|ggmc|md|me|tt|tv|uk|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt)");
 
     private final List<String> przeklenstwa;
 
@@ -43,7 +42,9 @@ public class WulgarneStatusy extends ListenerAdapter {
     public List<String> getAvtivity(Member mem) {
         List<String> list = new ArrayList<>();
         try {
-            for (Activity act : mem.getActivities()) {
+            List<Activity> activities = mem.getActivities();
+            for (Activity act : activities) {
+                if (act.getType() == Activity.ActivityType.LISTENING) continue;
                 list.add(act.getName());
                 if (act.isRich()) {
                     RichPresence rp = act.asRichPresence();
@@ -51,16 +52,13 @@ public class WulgarneStatusy extends ListenerAdapter {
                         //noinspection ConstantConditions
                         list.add(rp.getState());
                         list.add(rp.getDetails());
-                    } catch (NullPointerException ignored) {
-                    }
+                    } catch (NullPointerException ignored) { }
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.newError(e, getClass());
         }
-        for (int xd = 0; xd < 5; xd++) {
-            list.remove(null);
-        }
+        list.removeIf(Objects::isNull);
         return list;
     }
 
@@ -76,7 +74,7 @@ public class WulgarneStatusy extends ListenerAdapter {
                         .replaceAll("blazingpack\\.pl", "tak")
                         .replaceAll("\\.by", "tak")
                         .replaceAll("blazingpack\\.pl", "tak");
-                if (HTTP.matcher(s).matches() || ChatListener.DISCORD_INVITE.matcher(s).matches()) return s;
+                if (ChatListener.HTTP.matcher(s).matches() || ChatListener.DISCORD_INVITE.matcher(s).matches()) return s;
             }
         }
         return null;
@@ -84,11 +82,11 @@ public class WulgarneStatusy extends ListenerAdapter {
 
     @Nullable
     public String containsSwear(List<String> list) {
+        list.removeIf(Objects::isNull);
+        list.removeIf(String::isEmpty);
         for (String s : list) {
-            if (s != null && !s.isEmpty()) {
-                for (String split : s.toLowerCase().split(" ")) {
-                    if (przeklenstwa.contains(split)) return split;
-                }
+            for (String split : s.toLowerCase().split(" ")) {
+                if (przeklenstwa.contains(split)) return split;
             }
         }
         return null;

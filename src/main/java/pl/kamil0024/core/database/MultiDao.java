@@ -20,6 +20,7 @@
 package pl.kamil0024.core.database;
 
 import gg.amy.pgorm.PgMapper;
+import lombok.Getter;
 import pl.kamil0024.core.database.config.Dao;
 import pl.kamil0024.core.database.config.MultiConfig;
 
@@ -27,6 +28,7 @@ import java.util.List;
 
 public class MultiDao implements Dao<MultiConfig> {
 
+    @Getter
     private final PgMapper<MultiConfig> mapper;
 
     public MultiDao(DatabaseManager databaseManager) {
@@ -46,16 +48,6 @@ public class MultiDao implements Dao<MultiConfig> {
         }
         return conf;
 
-    }
-
-    @Override
-    public void save(MultiConfig toCos) {
-        mapper.save(toCos);
-    }
-
-    @Override
-    public List<MultiConfig> getAll() {
-        return mapper.loadAll();
     }
 
 }

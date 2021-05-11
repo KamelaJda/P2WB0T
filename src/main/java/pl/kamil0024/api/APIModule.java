@@ -39,6 +39,7 @@ import pl.kamil0024.core.redis.RedisManager;
 import pl.kamil0024.core.util.kary.KaryJSON;
 import pl.kamil0024.embedgenerator.entity.EmbedRedisManager;
 import pl.kamil0024.moderation.listeners.ModLog;
+import pl.kamil0024.music.utils.SpotifyUtil;
 import pl.kamil0024.stats.StatsModule;
 import pl.kamil0024.status.StatusModule;
 
@@ -67,6 +68,7 @@ public class APIModule implements Modul {
     private final KaryJSON karyJSON;
     private final ModLog modLog;
     private final StatsModule statsModule;
+    private final SpotifyUtil spotifyUtil;
 
     private final Cache<DiscordInviteConfig> dcCache;
     private final Cache<DiscordInviteConfig> newWery;
@@ -77,7 +79,7 @@ public class APIModule implements Modul {
     @Setter
     private boolean start = false;
 
-    public APIModule(ShardManager api, CaseDao caseDao, RedisManager redisManager, NieobecnosciDao nieobecnosciDao, StatsDao statsDao, VoiceStateDao voiceStateDao, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, AcBanDao acBanDao, RecordingDao recordingDao, DeletedMessagesDao deletedMessagesDao, KaryJSON karyJSON, ModLog modLog, StatsModule statsModule, StatusModule statusModule) {
+    public APIModule(ShardManager api, CaseDao caseDao, RedisManager redisManager, NieobecnosciDao nieobecnosciDao, StatsDao statsDao, VoiceStateDao voiceStateDao, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, AcBanDao acBanDao, RecordingDao recordingDao, DeletedMessagesDao deletedMessagesDao, KaryJSON karyJSON, ModLog modLog, StatsModule statsModule, StatusModule statusModule, SpotifyUtil spotifyUtil) {
         this.api = api;
         this.redisManager = redisManager;
         this.guild = api.getGuildById(Ustawienia.instance.bot.guildId);
@@ -98,11 +100,10 @@ public class APIModule implements Modul {
         this.recordingDao = recordingDao;
         this.deletedMessagesDao = deletedMessagesDao;
         this.statusModule = statusModule;
+        this.spotifyUtil = spotifyUtil;
 
-        this.dcCache = redisManager.new CacheRetriever<DiscordInviteConfig>() {
-        }.getCache(3600);
-        this.newWery = redisManager.new CacheRetriever<DiscordInviteConfig>() {
-        }.getCache(3600);
+        this.dcCache = redisManager.new CacheRetriever<DiscordInviteConfig>(){}.getCache(3600);
+        this.newWery = redisManager.new CacheRetriever<DiscordInviteConfig>(){}.getCache(3600);
     }
 
     @Override
@@ -142,6 +143,7 @@ public class APIModule implements Modul {
 
         routes.get("api/member/{member}/info", new MemberInfoHandler(api, guild));
         routes.get("api/member/{member}/history", new MemberHistoryHandler(api, caseDao));
+        routes.post("api/member/{member}/spotify", new SpotifyHandler(spotifyUtil));
 
         routes.get("api/history/list", new HistoryListHandler(api, caseDao));
         routes.get("api/history/get", new HistoryByIdHandler(api, caseDao));

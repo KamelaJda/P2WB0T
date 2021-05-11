@@ -19,22 +19,28 @@
 
 package pl.kamil0024.core.database.config;
 
-import gg.amy.pgorm.PgMapper;
+import gg.amy.pgorm.annotations.GIndex;
+import gg.amy.pgorm.annotations.PrimaryKey;
+import gg.amy.pgorm.annotations.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-import java.util.List;
-
-public interface Dao<T> {
-
-    PgMapper<T> getMapper();
-
-    T get(String id);
-
-    default void save(T toCos) {
-        getMapper().save(toCos);
+@Table("spotifyCredentials")
+@GIndex({"id"})
+@Data
+@AllArgsConstructor
+public class SpotifyConfig {
+    public SpotifyConfig() {
     }
 
-    default List<T> getAll() {
-        return getMapper().loadAll();
+    public SpotifyConfig(String id) {
+        this.id = id;
     }
+
+    @PrimaryKey
+    private String id = "";
+
+    private String accessToken = null;
+    private String refreshToken = null;
 
 }

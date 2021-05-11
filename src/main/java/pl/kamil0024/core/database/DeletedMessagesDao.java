@@ -20,6 +20,7 @@
 package pl.kamil0024.core.database;
 
 import gg.amy.pgorm.PgMapper;
+import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.core.database.config.Dao;
 import pl.kamil0024.core.database.config.DeletedMessagesConfig;
@@ -28,6 +29,7 @@ import java.util.List;
 
 public class DeletedMessagesDao implements Dao<DeletedMessagesConfig> {
 
+    @Getter
     public final PgMapper<DeletedMessagesConfig> mapper;
 
     public DeletedMessagesDao(DatabaseManager databaseManager) {
@@ -51,16 +53,6 @@ public class DeletedMessagesDao implements Dao<DeletedMessagesConfig> {
 
     public void delete(String id) {
         mapper.getStore().sql(String.format("DELETE FROM deletedmessage WHERE id='%s'", id));
-    }
-
-    @Override
-    public void save(DeletedMessagesConfig toCos) {
-        mapper.save(toCos);
-    }
-
-    @Override
-    public List<DeletedMessagesConfig> getAll() {
-        return mapper.loadAll();
     }
 
     public List<DeletedMessagesConfig> getAll(int offset) {

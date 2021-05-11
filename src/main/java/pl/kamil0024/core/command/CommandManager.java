@@ -20,6 +20,8 @@
 package pl.kamil0024.core.command;
 
 import lombok.Getter;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,10 +49,11 @@ public class CommandManager extends ListenerAdapter {
 
     public void registerCommand(Command command) {
         if (command == null) return;
-        if (commands.containsKey(command.toString()))
-            throw new IllegalArgumentException(String.format("Komenda o nazwie %s jest juz zarejestrowana (%s)", command.toString(), command.getClass().getName()));
-        if (command.getName() == null || command.getName().isEmpty())
-            throw new NullPointerException("Nazwa jest pusta! " + command.getClass().getName());
+        if (commands.containsKey(command.getName()))
+            logger.error("Komenda o nazwie {} ({}) jest już zarejestrowana!", command.getName(), command.getClass().getName());
+        if (command.getName() == null || command.getName().isEmpty()) {
+            logger.error("Nazwa komendy {} jest pusta!", command.getClass().getName());
+        }
 
         for (Method method : command.getClass().getMethods()) {
             try {
@@ -71,7 +74,7 @@ public class CommandManager extends ListenerAdapter {
         }
 
         registered.add(command);
-        commands.put(command.toString(), command);
+        commands.put(command.getName(), command);
         logger.debug("Rejestruje komende {}", command.getName());
         registerAliases(command);
     }
@@ -83,8 +86,8 @@ public class CommandManager extends ListenerAdapter {
 
     public void unregisterCommands(List<Command> cmds) {
         for (Command command : cmds) {
-            commands.values().removeIf(cmd -> command == cmd || cmd.toString().equals(command.toString()));
-            registered.removeIf(cmd -> command == cmd || cmd.toString().equals(command.toString()));
+            commands.values().removeIf(cmd -> command == cmd || cmd.getName().equals(command.getName()));
+            registered.removeIf(cmd -> command == cmd || cmd.getName().equals(command.getName()));
         }
     }
 

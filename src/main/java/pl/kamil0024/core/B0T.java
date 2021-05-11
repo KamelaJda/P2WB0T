@@ -258,6 +258,7 @@ public class B0T {
         AntiRaidDao antiRaidDao = new AntiRaidDao(databaseManager);
         DeletedMessagesDao deletedMessagesDao = new DeletedMessagesDao(databaseManager);
         UserstatsDao userstatsDao = new UserstatsDao(databaseManager);
+        SpotifyDao spotifyDao = new SpotifyDao(databaseManager);
 
         ArrayList<Object> listeners = new ArrayList<>();
         CommandExecute commandExecute = new CommandExecute(commandManager, tlumaczenia, argumentManager, userDao);
@@ -276,13 +277,13 @@ public class B0T {
                 .setClientId(Ustawienia.instance.spotify.id)
                 .setClientSecret(Ustawienia.instance.spotify.secret)
                 .build();
-        SpotifyUtil spotifyUtil = new SpotifyUtil(spotifyApi);
+        SpotifyUtil spotifyUtil = new SpotifyUtil(spotifyApi, spotifyDao);
 
         this.musicModule = new MusicModule(commandManager, api, eventWaiter, voiceStateDao, socketManager, spotifyUtil);
         this.statsModule = new StatsModule(commandManager, api, eventWaiter, statsDao, musicModule, nieobecnosciDao);
 
         StatusModule statusModule = new StatusModule(api, redisManager);
-        APIModule apiModule = new APIModule(api, caseDao, redisManager, nieobecnosciDao, statsDao, voiceStateDao, ticketDao, apelacjeDao, ankietaDao, embedRedisManager, acBanDao, recordingDao, deletedMessagesDao, karyJSON, modLog, statsModule, statusModule);
+        APIModule apiModule = new APIModule(api, caseDao, redisManager, nieobecnosciDao, statsDao, voiceStateDao, ticketDao, apelacjeDao, ankietaDao, embedRedisManager, acBanDao, recordingDao, deletedMessagesDao, karyJSON, modLog, statsModule, statusModule, spotifyUtil);
         WeryfikacjaModule weryfikacjaModule = new WeryfikacjaModule(apiModule, multiDao, modLog, caseDao, weryfikacjaDao);
 
         modulManager.getModules().add(new LogsModule(api, statsModule, redisManager, deletedMessagesDao));

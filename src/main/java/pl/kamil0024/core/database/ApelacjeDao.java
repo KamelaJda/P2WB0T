@@ -20,6 +20,7 @@
 package pl.kamil0024.core.database;
 
 import gg.amy.pgorm.PgMapper;
+import lombok.Getter;
 import org.joda.time.DateTime;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.database.config.ApelacjeConfig;
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 
 public class ApelacjeDao implements Dao<ApelacjeConfig> {
 
+    @Getter
     private final PgMapper<ApelacjeConfig> mapper;
 
     public ApelacjeDao(DatabaseManager databaseManager) {
@@ -41,16 +43,6 @@ public class ApelacjeDao implements Dao<ApelacjeConfig> {
     @Override
     public ApelacjeConfig get(String id) {
         return mapper.load(id).orElse(null);
-    }
-
-    @Override
-    public void save(ApelacjeConfig toCos) {
-        mapper.save(toCos);
-    }
-
-    @Override
-    public List<ApelacjeConfig> getAll() {
-        return mapper.loadAll();
     }
 
     public List<ApelacjeConfig> getAll(int offset) {

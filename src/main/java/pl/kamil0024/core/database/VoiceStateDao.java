@@ -20,6 +20,7 @@
 package pl.kamil0024.core.database;
 
 import gg.amy.pgorm.PgMapper;
+import lombok.Getter;
 import pl.kamil0024.core.database.config.Dao;
 import pl.kamil0024.core.database.config.VoiceStateConfig;
 
@@ -27,6 +28,7 @@ import java.util.List;
 
 public class VoiceStateDao implements Dao<VoiceStateConfig> {
 
+    @Getter
     private final PgMapper<VoiceStateConfig> mapper;
 
     public VoiceStateDao(DatabaseManager databaseManager) {
@@ -39,17 +41,8 @@ public class VoiceStateDao implements Dao<VoiceStateConfig> {
         return mapper.load(id).orElse(new VoiceStateConfig(id));
     }
 
-    @Override
-    public void save(VoiceStateConfig toCos) {
-        mapper.save(toCos);
-    }
-
     public void delete(String id) {
         mapper.delete(id);
     }
 
-    @Override
-    public List<VoiceStateConfig> getAll() {
-        return mapper.loadAll();
-    }
 }

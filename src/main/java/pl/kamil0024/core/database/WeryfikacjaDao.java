@@ -20,6 +20,7 @@
 package pl.kamil0024.core.database;
 
 import gg.amy.pgorm.PgMapper;
+import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.core.database.config.Dao;
 import pl.kamil0024.core.database.config.WeryfikacjaConfig;
@@ -28,6 +29,7 @@ import java.util.List;
 
 public class WeryfikacjaDao implements Dao<WeryfikacjaConfig> {
 
+    @Getter
     private final PgMapper<WeryfikacjaConfig> mapper;
 
     public WeryfikacjaDao(DatabaseManager databaseManager) {
@@ -45,16 +47,6 @@ public class WeryfikacjaDao implements Dao<WeryfikacjaConfig> {
     public WeryfikacjaConfig getByDiscordId(String userId) {
         List<WeryfikacjaConfig> lista = mapper.loadRaw("SELECT * FROM %s WHERE data::jsonb @> '{\"discordId\": \"" + userId + "\"}'");
         return lista.isEmpty() ? null : lista.get(0);
-    }
-
-    @Override
-    public void save(WeryfikacjaConfig toCos) {
-        mapper.save(toCos);
-    }
-
-    @Override
-    public List<WeryfikacjaConfig> getAll() {
-        return mapper.loadAll();
     }
 
     public void bypass(String user) {

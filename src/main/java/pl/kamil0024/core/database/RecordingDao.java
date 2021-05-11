@@ -20,6 +20,7 @@
 package pl.kamil0024.core.database;
 
 import gg.amy.pgorm.PgMapper;
+import lombok.Getter;
 import pl.kamil0024.core.database.config.Dao;
 import pl.kamil0024.core.database.config.RecordingConfig;
 
@@ -27,6 +28,7 @@ import java.util.List;
 
 public class RecordingDao implements Dao<RecordingConfig> {
 
+    @Getter
     private final PgMapper<RecordingConfig> mapper;
 
     public RecordingDao(DatabaseManager databaseManager) {
@@ -37,16 +39,6 @@ public class RecordingDao implements Dao<RecordingConfig> {
     @Override
     public RecordingConfig get(String id) {
         return mapper.load(id).orElse(null);
-    }
-
-    @Override
-    public synchronized void save(RecordingConfig toCos) {
-        mapper.save(toCos);
-    }
-
-    @Override
-    public List<RecordingConfig> getAll() {
-        return mapper.loadAll();
     }
 
     public List<RecordingConfig> getByUser(String userId) {

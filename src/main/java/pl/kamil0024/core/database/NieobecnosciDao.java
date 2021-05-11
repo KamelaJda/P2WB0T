@@ -20,6 +20,7 @@
 package pl.kamil0024.core.database;
 
 import gg.amy.pgorm.PgMapper;
+import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.core.database.config.Dao;
 import pl.kamil0024.core.database.config.NieobecnosciConfig;
@@ -30,6 +31,7 @@ import java.util.List;
 
 public class NieobecnosciDao implements Dao<NieobecnosciConfig> {
 
+    @Getter
     private final PgMapper<NieobecnosciConfig> mapper;
 
     public NieobecnosciDao(DatabaseManager databaseManager) {
@@ -40,16 +42,6 @@ public class NieobecnosciDao implements Dao<NieobecnosciConfig> {
     @Override
     public NieobecnosciConfig get(String id) {
         return mapper.load(id).orElseGet(() -> newObject(id));
-    }
-
-    @Override
-    public void save(NieobecnosciConfig toCos) {
-        mapper.save(toCos);
-    }
-
-    @Override
-    public List<NieobecnosciConfig> getAll() {
-        return mapper.loadAll();
     }
 
     private NieobecnosciConfig newObject(String id) {
