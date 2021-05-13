@@ -23,30 +23,22 @@ import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import pl.kamil0024.core.database.CaseDao;
-import pl.kamil0024.core.database.config.CaseConfig;
-import pl.kamil0024.core.util.kary.Dowod;
-import pl.kamil0024.moderation.commands.DowodCommand;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 @AllArgsConstructor
-public class DowodWaiter {
+public class DeleteMessageWaiter {
 
     private final String userId;
-    private final CaseConfig cc;
-    private final CaseDao cd;
     private final TextChannel channel;
     private final EventWaiter eventWaiter;
+    private final String bannedUser;
 
     private Message botMsg;
+    private final DowodWaiter dowodWaiter;
 
     public void start() {
-        botMsg = channel.sendMessage(String.format("<@%s>, zapisz dowód... (jeżeli takowego nie ma, napisz `anuluj`)\n**NIE WPISUJ KOLEJNEJ KOMENDY JEŻELI NIE MA DOWODU, WPISZ `ANULUJ`**", userId)).complete();
+        botMsg = channel.sendMessage(String.format("<@%s>, możesz wybrać usunięcie wiadomości użytkownika z okresu do 7 dni! Wpisz odpowiednią liczbę lub napisz **0** jeżeli nie chcesz usuwać wiadomości", userId)).complete();
         waitForMessage();
     }
 
@@ -68,6 +60,7 @@ public class DowodWaiter {
         try {
             botMsg.delete().complete();
         } catch (Exception ignored) { }
+        dowodWaiter.start();
     }
 
     private void event(MessageReceivedEvent e) {
@@ -79,16 +72,14 @@ public class DowodWaiter {
             return;
         }
 
-        List<Dowod> d = DowodCommand.getKaraConfig(msg.getContentRaw(), msg, false);
-        if (d == null || d.isEmpty()) {
-            e.getTextChannel().sendMessage("Dowód jest pusty?").queue();
-            return;
+        try {
+            int i = Math.max(Integer.parseInt(msg.getContentRaw()), 0);
+            if (i > 7) return;
+            channel.getGuild().ban(bannedUser, i).complete();
+        } catch (Exception ex) {
+            e.getChannel().sendMessage("Nie udało się usunąć wiadomośći! Error:" + ex.getLocalizedMessage())
+                    .queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
         }
-        if (cc.getKara().getDowody() == null) cc.getKara().setDowody(new ArrayList<>());
-        for (Dowod dowod : d) {
-            cc.getKara().getDowody().add(dowod);
-        }
-        cd.save(cc);
         clear();
     }
 
