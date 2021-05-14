@@ -74,13 +74,15 @@ public class DeleteMessageWaiter {
 
         try {
             int i = Math.max(Integer.parseInt(msg.getContentRaw()), 0);
-            if (i > 7) return;
-            channel.getGuild().ban(bannedUser, i).complete();
+            if (i <= 7) channel.getGuild().ban(bannedUser, i).complete();
         } catch (Exception ex) {
-            e.getChannel().sendMessage("Nie udało się usunąć wiadomośći! Error:" + ex.getLocalizedMessage())
+            e.getChannel().sendMessage("Nie udało się usunąć wiadomości! Error:" + ex.getLocalizedMessage())
                     .queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
         }
         clear();
+        try {
+            msg.delete().complete();
+        } catch (Exception ignored) { }
     }
 
 }

@@ -45,17 +45,19 @@ public class Action {
     private String imageUrl = null;
     private String description = null;
 
-    public Action() {
-    }
+    public Action() { }
 
     public void send(KaryListener karyListener, Guild api) {
         if (kara == null || msg == null) throw new NullPointerException("kara lub msg jest nullem");
+
+        String content = msg.getContent();
+        if (content.length() >= 1024) content = content.substring(0, 1024);
 
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(Color.red);
 
         eb.addField("Użytkownik", UserUtil.getFullNameMc(Objects.requireNonNull(api.getMemberById(getMsg().getAuthor()))), false);
-        eb.addField("Treść wiadomości", getMsg().getContent(), false);
+        eb.addField("Treść wiadomości", content, false);
         eb.addField("Kanał", String.format("<#%s>", getMsg().getChannel()), false);
         eb.addField("Za co ukarać?", kara.getPowod(), false);
 
