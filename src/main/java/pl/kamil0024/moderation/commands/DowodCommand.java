@@ -118,7 +118,7 @@ public class DowodCommand extends Command {
             context.sendTranslate("dowod.nullreports").queue();
             return false;
         }
-        new DynamicEmbedPageinator(futurePages, context.getUser(), eventWaiter, context.getJDA(), 2137).create(context.getChannel(), context.getMessage());
+        new DynamicEmbedPageinator(futurePages, context.getUser(), eventWaiter, 2137).create(context.getChannel(), context.getMessage());
         return true;
     }
 

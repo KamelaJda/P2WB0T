@@ -352,8 +352,7 @@ public class ChatListener extends ListenerAdapter {
                     if (flood < 10) flood = 0;
                 }
                 tak++;
-            } catch (Exception ignored) {
-            }
+            } catch (Exception ignored) { }
         }
         return flood;
     }

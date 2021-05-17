@@ -169,7 +169,7 @@ public class SocketManager {
                         tracks.add(new PrivateQueueCommand.DecodeTrack(a.next().toString(), first).create());
                         first = false;
                     }
-                    new EmbedPageintaor(tracks, Objects.requireNonNull(api.getUserById(response.getAction().getMemberId())), eventWaiter, api.getShards().get(0))
+                    new EmbedPageintaor(tracks, Objects.requireNonNull(api.getUserById(response.getAction().getMemberId())), eventWaiter)
                             .create(txt);
 
                     break;

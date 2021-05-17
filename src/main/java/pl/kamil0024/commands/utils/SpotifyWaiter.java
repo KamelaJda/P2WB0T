@@ -145,7 +145,7 @@ public class SpotifyWaiter {
             eb.setDescription(sb.build());
             futurePages.add(new FutureTask<>(() -> eb));
 
-            new DynamicEmbedPageinator(futurePages, user, eventWaiter, jda, 120).create(botMsg);
+            new DynamicEmbedPageinator(futurePages, user, eventWaiter, 120).create(botMsg);
         } else {
             botMsg.addReaction(THREE).complete();
             botMsg.editMessage(String.format("%s, wybierz z jakiego okresu chcesz uzyskać dane" +

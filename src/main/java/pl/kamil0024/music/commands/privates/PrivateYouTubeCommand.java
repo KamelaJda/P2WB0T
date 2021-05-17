@@ -101,7 +101,7 @@ public class PrivateYouTubeCommand extends Command {
         bsb.appendLine("```");
 
         try {
-            Message msg = context.send(bsb.toString()).complete();
+            Message msg = context.send(bsb.toString(), false).complete();
             eventWaiter.waitForEvent(GuildMessageReceivedEvent.class,
                     (event) -> event.getAuthor().getId().equals(context.getUser().getId()) && event.getChannel().getId().equals(context.getChannel().getId()),
                     (event) -> {

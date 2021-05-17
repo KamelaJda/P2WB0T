@@ -86,7 +86,7 @@ public class NieobecnoscCommand extends Command {
                 pages.add(eb);
             }
             Collections.reverse(pages);
-            new EmbedPageintaor(pages, context.getUser(), eventWaiter, context.getJDA(), 320)
+            new EmbedPageintaor(pages, context.getUser(), eventWaiter, 320)
                     .create(context.getChannel(), context.getMessage());
             return true;
         }
@@ -113,7 +113,7 @@ public class NieobecnoscCommand extends Command {
                     , false);
             pages.add(eb);
         }
-        new EmbedPageintaor(pages, context.getUser(), eventWaiter, context.getJDA(), 320)
+        new EmbedPageintaor(pages, context.getUser(), eventWaiter, 320)
                 .create(context.getChannel(), context.getMessage());
         return true;
     }

@@ -96,7 +96,7 @@ public class HistoryCommand extends Command {
                 for (EmbedBuilder embedBuilder : historiaKar) {
                     pages.add(new FutureTask<>(() -> embedBuilder));
                 }
-                new DynamicEmbedPageinator(pages, context.getUser(), eventWaiter, context.getJDA(), 360).create(msg);
+                new DynamicEmbedPageinator(pages, context.getUser(), eventWaiter, 360).create(msg);
             } catch (Exception e) {
                 msg.editMessage("Wystąpił błąd: " + e.getMessage()).complete();
                 Log.newError(e, getClass());

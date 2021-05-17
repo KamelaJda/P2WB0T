@@ -27,7 +27,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import java.util.concurrent.TimeUnit;
 
 @AllArgsConstructor
-public class DeleteMessageWaiter {
+public class DeleteMessageWaiter implements Waiter<MessageReceivedEvent> {
 
     private final String userId;
     private final TextChannel channel;
@@ -42,12 +42,14 @@ public class DeleteMessageWaiter {
         waitForMessage();
     }
 
-    private void waitForMessage() {
+    @Override
+    public void waitForMessage() {
         eventWaiter.waitForEvent(MessageReceivedEvent.class, this::checkMessage,
                 this::event, 40, TimeUnit.SECONDS, this::clear);
     }
 
-    private boolean checkMessage(MessageReceivedEvent e) {
+    @Override
+    public boolean checkMessage(MessageReceivedEvent e) {
         if (!e.getAuthor().getId().equals(userId)) return false;
         if (e.getMessage().getContentRaw().equalsIgnoreCase("anuluj")) {
             clear();
@@ -63,7 +65,8 @@ public class DeleteMessageWaiter {
         dowodWaiter.start();
     }
 
-    private void event(MessageReceivedEvent e) {
+    @Override
+    public void event(MessageReceivedEvent e) {
         Message msg;
         try {
             msg = e.getTextChannel().retrieveMessageById(e.getMessageId()).complete();

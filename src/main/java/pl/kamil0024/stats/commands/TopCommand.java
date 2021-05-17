@@ -127,7 +127,7 @@ public class TopCommand extends Command {
             for (EmbedBuilder page : pages) {
                 futurePages.add(new FutureTask<>(() -> page));
             }
-            new DynamicEmbedPageinator(futurePages, context.getUser(), eventWaiter, context.getJDA(), 240).create(msg);
+            new DynamicEmbedPageinator(futurePages, context.getUser(), eventWaiter, 240).create(msg);
         };
         ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
         ses.schedule(task, 1, TimeUnit.NANOSECONDS);

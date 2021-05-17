@@ -78,7 +78,7 @@ public class QueueCommand extends Command {
             return false;
         }
 
-        new EmbedPageintaor(pages, context.getUser(), eventWaiter, context.getJDA()).create(context.getChannel(), context.getMessage());
+        new EmbedPageintaor(pages, context.getUser(), eventWaiter).create(context.getChannel(), context.getMessage());
         return true;
     }
 

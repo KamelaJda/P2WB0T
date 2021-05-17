@@ -92,7 +92,7 @@ public class CheckCommand extends Command {
         List<EmbedBuilder> list = new ArrayList<>();
         list.add(eb);
         if (kara != null) list.add(ModLog.getEmbed(kara, context.getShardManager(), false, true));
-        new EmbedPageintaor(list, context.getUser(), eventWaiter, context.getJDA())
+        new EmbedPageintaor(list, context.getUser(), eventWaiter)
                 .create(context.getChannel());
 
         return true;

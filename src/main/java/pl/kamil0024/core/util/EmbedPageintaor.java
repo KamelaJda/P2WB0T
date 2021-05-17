@@ -20,7 +20,6 @@
 package pl.kamil0024.core.util;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -34,11 +33,11 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("DuplicatedCode")
 public class EmbedPageintaor {
 
-    private static final String FIRST_EMOJI = "\u23EE";
-    private static final String LEFT_EMOJI = "\u25C0";
-    private static final String RIGHT_EMOJI = "\u25B6";
-    private static final String LAST_EMOJI = "\u23ED";
-    private static final String STOP_EMOJI = "\u23F9";
+    public static final String FIRST_EMOJI = "\u23EE";
+    public static final String LEFT_EMOJI = "\u25C0";
+    public static final String RIGHT_EMOJI = "\u25B6";
+    public static final String LAST_EMOJI = "\u23ED";
+    public static final String STOP_EMOJI = "\u23F9";
 
     private final EventWaiter eventWaiter;
     private final List<EmbedBuilder> pages;
@@ -51,14 +50,20 @@ public class EmbedPageintaor {
     private final long userId;
     private final int secound;
 
-    public EmbedPageintaor(List<EmbedBuilder> pages, User user, EventWaiter eventWaiter, JDA api, int secound) {
+    public static final String[] values;
+
+    static {
+        values = new String[] {FIRST_EMOJI, LEFT_EMOJI, RIGHT_EMOJI, LAST_EMOJI, STOP_EMOJI};
+    }
+
+    public EmbedPageintaor(List<EmbedBuilder> pages, User user, EventWaiter eventWaiter, int secound) {
         this.eventWaiter = eventWaiter;
         this.pages = pages;
         this.userId = user.getIdLong();
         this.secound = secound;
     }
 
-    public EmbedPageintaor(List<EmbedBuilder> pages, User user, EventWaiter eventWaiter, JDA api) {
+    public EmbedPageintaor(List<EmbedBuilder> pages, User user, EventWaiter eventWaiter) {
         this.eventWaiter = eventWaiter;
         this.pages = pages;
         this.userId = user.getIdLong();
@@ -97,7 +102,9 @@ public class EmbedPageintaor {
     }
 
     private void onMessageReactionAdd(MessageReactionAddEvent event) {
-        if (event.getUserIdLong() != userId || event.getMessageIdLong() != botMsgId) return;
+        if (event.getUser() == null ||
+                event.getUserIdLong() != userId ||
+                event.getMessageIdLong() != botMsgId) return;
 
         if (!event.getReactionEmote().isEmote()) {
             switch (event.getReactionEmote().getName()) {
@@ -114,7 +121,7 @@ public class EmbedPageintaor {
                     thisPage = pages.size();
                     break;
                 case STOP_EMOJI:
-                    botMsg.delete().queue();
+                    if (isPun) botMsg.delete().queue();
                     return;
                 default:
                     return;
@@ -122,18 +129,15 @@ public class EmbedPageintaor {
         }
         try {
             event.getReaction().removeReaction(event.getUser()).queue();
-        } catch (PermissionException ignored) {
-        }
+        } catch (PermissionException ignored) { }
         botMsg.editMessage(render(thisPage)).override(true).complete();
         waitForReaction();
     }
 
     private void addReactions(Message message) {
-        message.addReaction(FIRST_EMOJI).queue();
-        message.addReaction(LEFT_EMOJI).queue();
-        message.addReaction(RIGHT_EMOJI).queue();
-        message.addReaction(LAST_EMOJI).queue();
-        message.addReaction(STOP_EMOJI).queue();
+        for (String s : values) {
+            message.addReaction(s).queue();
+        }
     }
 
     private void clearReactions() {
