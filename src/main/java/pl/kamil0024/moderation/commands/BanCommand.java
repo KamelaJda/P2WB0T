@@ -88,10 +88,14 @@ public class BanCommand extends Command {
         kara.setPowod(powod);
         kara.setTimestamp(new Date().getTime());
         kara.setTypKary(KaryEnum.BAN);
-        Kara.put(caseDao, kara, modLog);
 
-        context.getGuild().ban(mem, 0, powod).complete();
-        statsModule.getStatsCache().addZbanowanych(context.getUser().getId(), 1);
+        try {
+            context.getGuild().ban(mem, 0, powod).complete();
+            statsModule.getStatsCache().addZbanowanych(context.getUser().getId(), 1);
+            Kara.put(caseDao, kara, modLog);
+        } catch (Exception e) {
+            context.send("Nie udało się zbanować użytkownika! Error:" + e.getLocalizedMessage());
+        }
         return true;
     }
 

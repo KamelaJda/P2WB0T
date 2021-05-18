@@ -117,7 +117,11 @@ public class TempbanCommand extends Command {
             Kara.put(caseDao, kara, modLog);
         }
 
-        guild.ban(user, delDays, powod).complete();
+        try {
+            guild.ban(user, delDays, powod).complete();
+        } catch (Exception e) {
+            return e.getLocalizedMessage();
+        }
         return null;
     }
 

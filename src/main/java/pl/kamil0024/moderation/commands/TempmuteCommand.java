@@ -111,8 +111,7 @@ public class TempmuteCommand extends Command {
         }
         try {
             user.getGuild().kickVoiceMember(user).complete();
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) { }
 
         if (!isPun) {
             Kara kara = new Kara();
