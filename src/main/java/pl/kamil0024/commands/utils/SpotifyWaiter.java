@@ -127,7 +127,7 @@ public class SpotifyWaiter {
                             eb.setDescription("Twoje topowe piosenki z okresu: " + b2.s2);
                             if (item.getAlbum().getImages().length >= 1) eb.setImage(item.getAlbum().getImages()[0].getUrl());
                             if (sb.toString().isEmpty()) sb.appendLine("Twoje topowe piosenki z okresu: " + b2.s2 + "\n");
-                            sb.appendLine(String.format("%s. [%s](%s)", nr, item.getName(), "https://open.spotify.com/track/" + item.getId()));
+                            sb.appendLine(String.format("%s. [%s - %s](%s)", nr, item.getArtists()[0].getName(), item.getName(), "https://open.spotify.com/track/" + item.getId()));
                             nr++;
                             futurePages.add(new FutureTask<>(() -> eb));
                         }
@@ -145,7 +145,7 @@ public class SpotifyWaiter {
             eb.setDescription(sb.build());
             futurePages.add(new FutureTask<>(() -> eb));
 
-            new DynamicEmbedPageinator(futurePages, user, eventWaiter, jda, 120).create(botMsg);
+            new DynamicEmbedPageinator(futurePages, user, eventWaiter, 120).create(botMsg);
         } else {
             botMsg.addReaction(THREE).complete();
             botMsg.editMessage(String.format("%s, wybierz z jakiego okresu chcesz uzyskać dane" +

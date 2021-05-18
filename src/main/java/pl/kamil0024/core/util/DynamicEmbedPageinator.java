@@ -21,7 +21,6 @@ package pl.kamil0024.core.util;
 
 import lombok.Getter;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -35,32 +34,27 @@ import java.util.concurrent.*;
 @SuppressWarnings("DuplicatedCode")
 public class DynamicEmbedPageinator {
 
-    private static final String FIRST_EMOJI = "\u23EE";
-    private static final String LEFT_EMOJI = "\u25C0";
-    private static final String RIGHT_EMOJI = "\u25B6";
-    private static final String LAST_EMOJI = "\u23ED";
-    private static final String STOP_EMOJI = "\u23F9";
+    private static final ExecutorService mainExecutor = Executors.newFixedThreadPool(8);
 
     private final EventWaiter eventWaiter;
     private final List<FutureTask<EmbedBuilder>> pages;
+    private final long userId;
+    private final int secound;
+    private final boolean ended = false;
+
     private int thisPage = 1;
     private boolean isPun;
 
     private Message botMsg;
     private long botMsgId;
-    private final long userId;
-    private final int secound;
 
     private boolean loading = true;
-    private final boolean ended = false;
-
-    private static final ExecutorService mainExecutor = Executors.newFixedThreadPool(4);
 
     static {
         Runtime.getRuntime().addShutdownHook(new Thread(mainExecutor::shutdown));
     }
 
-    public DynamicEmbedPageinator(List<FutureTask<EmbedBuilder>> pages, User user, EventWaiter eventWaiter, JDA api, int secound) {
+    public DynamicEmbedPageinator(List<FutureTask<EmbedBuilder>> pages, User user, EventWaiter eventWaiter, int secound) {
         this.eventWaiter = eventWaiter;
         this.pages = pages;
         this.userId = user.getIdLong();
@@ -123,24 +117,25 @@ public class DynamicEmbedPageinator {
     }
 
     private void onMessageReactionAdd(MessageReactionAddEvent event) {
-        if (event.getUser().getIdLong() != userId) return;
-        if (event.getMessageIdLong() != botMsgId) return;
+        if (event.getUser() == null ||
+                event.getUser().getIdLong() != userId ||
+                event.getMessageIdLong() != botMsgId) return;
 
         if (!event.getReactionEmote().isEmote()) {
             switch (event.getReactionEmote().getName()) {
-                case FIRST_EMOJI:
+                case EmbedPageintaor.FIRST_EMOJI:
                     thisPage = 1;
                     break;
-                case LEFT_EMOJI:
+                case EmbedPageintaor.LEFT_EMOJI:
                     if (thisPage > 1) thisPage--;
                     break;
-                case RIGHT_EMOJI:
+                case EmbedPageintaor.RIGHT_EMOJI:
                     if (thisPage < pages.size()) thisPage++;
                     break;
-                case LAST_EMOJI:
+                case EmbedPageintaor.LAST_EMOJI:
                     thisPage = pages.size();
                     break;
-                case STOP_EMOJI:
+                case EmbedPageintaor.STOP_EMOJI:
                     botMsg.delete().queue();
                     return;
                 default:
@@ -149,18 +144,15 @@ public class DynamicEmbedPageinator {
         }
         try {
             event.getReaction().removeReaction(event.getUser()).queue();
-        } catch (PermissionException ignored) {
-        }
+        } catch (PermissionException ignored) { }
         botMsg.editMessage(render(thisPage)).override(true).complete();
         waitForReaction();
     }
 
     private void addReactions(Message message) {
-        message.addReaction(FIRST_EMOJI).queue();
-        message.addReaction(LEFT_EMOJI).queue();
-        message.addReaction(RIGHT_EMOJI).queue();
-        message.addReaction(LAST_EMOJI).queue();
-        message.addReaction(STOP_EMOJI).queue();
+        for (String s : EmbedPageintaor.values) {
+            message.addReaction(s).queue();
+        }
     }
 
     private void clearReactions() {
@@ -174,11 +166,11 @@ public class DynamicEmbedPageinator {
     private boolean checkReaction(MessageReactionAddEvent event) {
         if (event.getMessageIdLong() == botMsgId && !event.getReactionEmote().isEmote() && !event.getUser().isBot()) {
             switch (event.getReactionEmote().getName()) {
-                case FIRST_EMOJI:
-                case LEFT_EMOJI:
-                case RIGHT_EMOJI:
-                case LAST_EMOJI:
-                case STOP_EMOJI:
+                case EmbedPageintaor.FIRST_EMOJI:
+                case EmbedPageintaor.LEFT_EMOJI:
+                case EmbedPageintaor.RIGHT_EMOJI:
+                case EmbedPageintaor.LAST_EMOJI:
+                case EmbedPageintaor.STOP_EMOJI:
                     return event.getUser().getIdLong() == userId;
                 default:
                     return false;
@@ -201,7 +193,7 @@ public class DynamicEmbedPageinator {
                 eb = new EmbedBuilder(pEmbed.build());
             }
         } catch (TimeoutException e) {
-            botMsg.getChannel().sendMessage("Ta strona jest jeszcze wczytywana. Poczekaj chwilę\\!")
+            botMsg.getChannel().sendMessage("Ta strona jest jeszcze wczytywana. Poczekaj chwilę!")
                     .queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
             throw new LoadingException();
         } catch (ExecutionException e) {

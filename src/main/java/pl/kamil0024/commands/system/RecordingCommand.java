@@ -152,7 +152,7 @@ public class RecordingCommand extends Command {
                 return eb;
             }));
         }
-        new DynamicEmbedPageinator(futurePages, context.getUser(), eventWaiter, context.getJDA(), 240).create(context.getChannel(), context.getMessage());
+        new DynamicEmbedPageinator(futurePages, context.getUser(), eventWaiter, 240).create(context.getChannel(), context.getMessage());
         return true;
     }
 

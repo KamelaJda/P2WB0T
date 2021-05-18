@@ -157,8 +157,7 @@ public class ChatListener extends ListenerAdapter {
             if (czystaWiadomosc.startsWith("> ") && split.length >= 1) {
                 try {
                     czystaWiadomosc = czystaWiadomosc.replaceAll(split[0], "");
-                } catch (Exception ignored) {
-                }
+                } catch (Exception ignored) { }
             }
 
             String msgRaw = czystaWiadomosc.replaceAll("<@!?([0-9])*>", "")
@@ -353,8 +352,7 @@ public class ChatListener extends ListenerAdapter {
                     if (flood < 10) flood = 0;
                 }
                 tak++;
-            } catch (Exception ignored) {
-            }
+            } catch (Exception ignored) { }
         }
         return flood;
     }

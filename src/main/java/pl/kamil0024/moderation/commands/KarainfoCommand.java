@@ -69,8 +69,7 @@ public class KarainfoCommand extends Command {
             }
         }
 
-        new EmbedPageintaor(list, context.getUser(), eventWaiter, context.getJDA())
-                .create(context.getChannel());
+        new EmbedPageintaor(list, context.getUser(), eventWaiter).create(context.getChannel());
         return true;
     }
 

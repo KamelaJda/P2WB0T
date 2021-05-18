@@ -80,7 +80,7 @@ public class GiveawayCommand extends Command {
             context.sendTranslate("giveaway.emptygive").queue();
             return false;
         }
-        new EmbedPageintaor(strony, context.getUser(), eventWaiter, context.getJDA()).create(context.getChannel(), context.getMessage());
+        new EmbedPageintaor(strony, context.getUser(), eventWaiter).create(context.getChannel(), context.getMessage());
         return true;
     }
 

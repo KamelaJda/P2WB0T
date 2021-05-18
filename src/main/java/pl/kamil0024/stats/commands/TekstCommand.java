@@ -109,7 +109,7 @@ public class TekstCommand extends Command {
             } else pages.add(tekst);
             if (!sb.toString().isEmpty()) tekst.addField(" ", sb.toString(), false);
 
-            new EmbedPageintaor(pages, context.getUser(), eventWaiter, context.getJDA()).
+            new EmbedPageintaor(pages, context.getUser(), eventWaiter).
                     create(context.getChannel(), context.getMessage());
 
             return true;

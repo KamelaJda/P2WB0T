@@ -90,7 +90,7 @@ public class PunishCommand extends Command {
                 for (EmbedBuilder embedBuilder : getKaraList(karyJSON, context.getMember())) {
                     pages.add(new FutureTask<>(() -> embedBuilder));
                 }
-                new DynamicEmbedPageinator(pages, context.getUser(), eventWaiter, context.getJDA(), 500).create(context.getChannel(), context.getMessage());
+                new DynamicEmbedPageinator(pages, context.getUser(), eventWaiter, 500).create(context.getChannel(), context.getMessage());
             } else {
                 Integer liczba = context.getParsed().getNumber(context.getArgs().get(1));
                 if (liczba == null || liczba > karyJSON.getKary().size() || liczba <= 0) {
@@ -169,7 +169,7 @@ public class PunishCommand extends Command {
             for (EmbedBuilder embedBuilder : getKaraList(karyJSON, context.getMember(), osoby)) {
                 pages.add(new FutureTask<>(() -> embedBuilder));
             }
-            new DynamicEmbedPageinator(pages, context.getUser(), eventWaiter, context.getJDA(), 120)
+            new DynamicEmbedPageinator(pages, context.getUser(), eventWaiter, 120)
                     .setPun(true)
                     .create(msg);
             initWaiter(context, msg, osoby, context.getMessage(), eventWaiter, karyJSON, caseDao, modLog, statsModule);
@@ -301,7 +301,7 @@ public class PunishCommand extends Command {
                     Log.newError("Typ " + jegoTier.getType().name() + " nie jest wpisany!", PunishCommand.class);
             }
             if (osoby.size() == 1 && eventWaiter != null && txt != null) {
-                Kara.put(caseDao, karaBuilder, modLog, eventWaiter, member.getId(), txt, caseDao);
+                Kara.put(caseDao, karaBuilder, modLog, eventWaiter, member.getId(), txt, caseDao, jegoTier.getType() == KaryEnum.TEMPBAN || jegoTier.getType() == KaryEnum.BAN);
             } else Kara.put(caseDao, karaBuilder, modLog);
         }
     }
