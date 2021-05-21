@@ -112,8 +112,14 @@ class Version {
         return b
     }
 
+    static String getHash() {
+        def proc = 'git rev-parse --short HEAD'.execute()
+        proc.waitFor()
+        return proc.text.trim()
+    }
+
     String toString() {
-        "$major." + getBuild() + "_" + getCommit()
+        "$major." + getBuild() + "_" + getCHash()
     }
 }
 
