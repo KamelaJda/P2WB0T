@@ -119,7 +119,7 @@ class Version {
     }
 
     String toString() {
-        "$major." + getBuild() + "_" + getCHash()
+        "$major." + getBuild() + "_" + getHash()
     }
 }
 
