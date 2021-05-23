@@ -50,6 +50,7 @@ import java.time.Instant;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -62,6 +63,7 @@ public class CommandExecute extends ListenerAdapter {
     private final CommandManager commandManager;
     private final Tlumaczenia tlumaczenia;
     private final UserDao userDao;
+    private final ExecutorService executor = Executors.newFixedThreadPool(8);
 
     @Getter
     HashMap<String, UserConfig> userConfig;
@@ -176,51 +178,55 @@ public class CommandExecute extends ListenerAdapter {
             return;
         }
 
-        boolean udaloSie = false;
-        HashMap<Integer, String> parsedArgs = new HashMap<>();
-        int jest = 0;
-        for (int i = 1; i < args.length; i++) {
-            if (!args[i].isEmpty()) {
-                parsedArgs.put(jest, args[i]);
-                jest++;
+        final String finalPrefix = prefix;
+        final Command finalC = c;
+        Runnable runnable = () -> {
+            boolean udaloSie = false;
+            HashMap<Integer, String> parsedArgs = new HashMap<>();
+            int jest = 0;
+            for (int i = 1; i < args.length; i++) {
+                if (!args[i].isEmpty()) {
+                    parsedArgs.put(jest, args[i]);
+                    jest++;
+                }
             }
-        }
 
-        CommandContext cmdc = new CommandContext(e, prefix, parsedArgs, tlumaczenia, argumentManager, c);
+            CommandContext cmdc = new CommandContext(e, finalPrefix, parsedArgs, tlumaczenia, argumentManager, finalC);
 
-        try {
-            String subcommand = parsedArgs.get(0);
-            if (subcommand != null && c.getSubCommands().containsKey(subcommand.toLowerCase())) {
-                Method method = c.getSubCommands().get(subcommand.toLowerCase());
-                Boolean bol = (Boolean) method.invoke(c, cmdc);
-                if (bol) udaloSie = true;
-            } else if (c.execute(cmdc)) udaloSie = true;
-        } catch (UsageException u) {
-            Error.usageError(cmdc);
-        } catch (Exception omegalul) {
-            omegalul.printStackTrace();
-            Log.newError("`%s` uzyl komendy %s (%s) ale wystapil blad: %s", CommandExecute.class, e.getAuthor().getName(), c.getName(), c.getClass().getName(), omegalul);
-            Log.newError(omegalul, CommandExecute.class);
+            try {
+                String subcommand = parsedArgs.get(0);
+                if (subcommand != null && finalC.getSubCommands().containsKey(subcommand.toLowerCase())) {
+                    Method method = finalC.getSubCommands().get(subcommand.toLowerCase());
+                    Boolean bol = (Boolean) method.invoke(finalC, cmdc);
+                    if (bol) udaloSie = true;
+                } else if (finalC.execute(cmdc)) udaloSie = true;
+            } catch (UsageException u) {
+                Error.usageError(cmdc);
+            } catch (Exception omegalul) {
+                omegalul.printStackTrace();
+                Log.newError("`%s` uzyl komendy %s (%s) ale wystapil blad: %s", CommandExecute.class, e.getAuthor().getName(), finalC.getName(), finalC.getClass().getName(), omegalul);
+                Log.newError(omegalul, CommandExecute.class);
 
-            SentryEvent event = new SentryEvent();
-            io.sentry.protocol.User user = new io.sentry.protocol.User();
-            user.setId(e.getAuthor().getId());
-            user.setUsername(UserUtil.getName(e.getAuthor()));
-            event.setUser(user);
-            event.setLevel(SentryLevel.ERROR);
-            event.setLogger(getClass().getName());
-            event.setThrowable(omegalul);
-            Sentry.captureEvent(event);
+                SentryEvent event = new SentryEvent();
+                io.sentry.protocol.User user = new io.sentry.protocol.User();
+                user.setId(e.getAuthor().getId());
+                user.setUsername(UserUtil.getName(e.getAuthor()));
+                event.setUser(user);
+                event.setLevel(SentryLevel.ERROR);
+                event.setLogger(getClass().getName());
+                event.setThrowable(omegalul);
+                Sentry.captureEvent(event);
 
-            e.getChannel().sendMessage(String.format("Wystąpił błąd! `%s`.", omegalul)).queue();
-        }
-        if (udaloSie && jegoPerm.getNumer() < PermLevel.DEVELOPER.getNumer()) setCooldown(e.getAuthor(), c);
-        zareaguj(e.getMessage(), e.getAuthor(), udaloSie);
+                e.getChannel().sendMessage(String.format("Wystąpił błąd! `%s`.", omegalul)).queue();
+            }
+            if (udaloSie && jegoPerm.getNumer() < PermLevel.DEVELOPER.getNumer()) setCooldown(e.getAuthor(), finalC);
+            zareaguj(e.getMessage(), e.getAuthor(), udaloSie);
 
-        try {
-            onExecuteEvent(cmdc);
-        } catch (Exception ignored) {
-        }
+            try {
+                onExecuteEvent(cmdc);
+            } catch (Exception ignored) { }
+        };
+        executor.execute(runnable);
     }
 
     @NotNull
