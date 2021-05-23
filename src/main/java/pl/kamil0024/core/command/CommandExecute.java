@@ -181,6 +181,7 @@ public class CommandExecute extends ListenerAdapter {
         final String finalPrefix = prefix;
         final Command finalC = c;
         Runnable runnable = () -> {
+            final String name = Thread.currentThread().getName();
             boolean udaloSie = false;
             HashMap<Integer, String> parsedArgs = new HashMap<>();
             int jest = 0;
@@ -192,6 +193,8 @@ public class CommandExecute extends ListenerAdapter {
             }
 
             CommandContext cmdc = new CommandContext(e, finalPrefix, parsedArgs, tlumaczenia, argumentManager, finalC);
+
+            Thread.currentThread().setName(cmdc.getUser().getId() + "-" + cmdc.getCommand().getName() + "-" + cmdc.getGuild().getId());
 
             try {
                 String subcommand = parsedArgs.get(0);
@@ -225,6 +228,7 @@ public class CommandExecute extends ListenerAdapter {
             try {
                 onExecuteEvent(cmdc);
             } catch (Exception ignored) { }
+            Thread.currentThread().setName(name);
         };
         executor.execute(runnable);
     }
