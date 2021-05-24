@@ -104,7 +104,7 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
     public void executeCode(String userId, DiscordInviteConfig config, MessageChannel channel, Guild g, boolean bypass) {
 
         Member member = g.getMemberById(userId);
-        if (member == null) return;
+        if (member == null || config == null) return;
 
         if (!bypass) {
             WeryfikacjaConfig wc = weryfikacjaDao.get(config.getNick());
