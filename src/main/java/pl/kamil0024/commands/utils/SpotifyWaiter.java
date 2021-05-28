@@ -21,8 +21,8 @@ package pl.kamil0024.commands.utils;
 
 import com.wrapper.spotify.model_objects.specification.Artist;
 import com.wrapper.spotify.model_objects.specification.Track;
+import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
@@ -50,7 +50,6 @@ public class SpotifyWaiter {
     private final User user;
     private final TextChannel channel;
     private final EventWaiter eventWaiter;
-    private final JDA jda;
     private final UserCredentials userCredentials;
 
     private Message botMsg = null;
@@ -58,11 +57,10 @@ public class SpotifyWaiter {
     private Choose a1 = null;
     private Choose b2 = null;
 
-    public SpotifyWaiter(User user, TextChannel channel, EventWaiter eventWaiter, JDA jda, UserCredentials userCredentials) {
+    public SpotifyWaiter(User user, TextChannel channel, EventWaiter eventWaiter, UserCredentials userCredentials) {
         this.user = user;
         this.channel = channel;
         this.eventWaiter = eventWaiter;
-        this.jda = jda;
         this.userCredentials = userCredentials;
     }
 
@@ -175,17 +173,16 @@ public class SpotifyWaiter {
         } catch (Exception ignored) {/*lul*/}
     }
 
-    private enum Choose {
+    @AllArgsConstructor
+    public enum Choose {
         TRACK(null, null), ARTISTS(null, null),
-        SHORT("short_term", "**4 tygodni**"), LONG("medium_term", "**6 miesięcy**"), ALL("long_term", "**kilku lat**"),; // przedział czasowy
 
-        String s;
-        String s2;
+        SHORT("short_term", "**4 tygodni**"),
+        LONG("medium_term", "**6 miesięcy**"),
+        ALL("long_term", "**kilku lat**");
 
-        Choose(String s, String s2) {
-            this.s = s;
-            this.s2 = s2;
-        }
+        public String s;
+        public String s2;
 
     }
 

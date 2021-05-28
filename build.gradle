@@ -97,15 +97,14 @@ class Version {
     String major
 
     static String getCommit() {
-        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-           return "???"
-        }
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) return "???"
         def proc = 'git rev-list --count HEAD'.execute()
         proc.waitFor()
         return proc.text.trim()
     }
 
     static String getBuild() {
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) return "???"
         String b = System.getenv("BUILD_NUMBER")
         if (b == null || b.isEmpty()) b = System.getProperty("BUILD_NUMBER")
         if (b == null || b.isEmpty()) return "????"
@@ -113,6 +112,7 @@ class Version {
     }
 
     static String getHash() {
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) return "???"
         def proc = 'git rev-parse --short HEAD'.execute()
         proc.waitFor()
         return proc.text.trim()

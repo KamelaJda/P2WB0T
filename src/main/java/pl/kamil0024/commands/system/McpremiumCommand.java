@@ -47,6 +47,7 @@ public class McpremiumCommand extends Command {
     public boolean execute(@NotNull CommandContext context) {
         String name = null, uuid = null;
         String arg = context.getArgs().get(0);
+        byte[] avatar = null, body = null;
         List<String> listaNazw = new ArrayList<>();
         if (arg == null) throw new UsageException();
         try {
@@ -79,7 +80,9 @@ public class McpremiumCommand extends Command {
                     if (i + 1 < xd.split(" ").length) tekstDalej.append(" ");
                 }
             }
-            listaNazw.add(0, "**" + tekstPierw.toString() + "** " + tekstDalej.toString());
+            listaNazw.add(0, "**" + tekstPierw + "** " + tekstDalej);
+            avatar = NetworkUtil.download("https://crafatar.com/avatars/" + formatUuid(uuid));
+            body = NetworkUtil.download(String.format("https://crafatar.com/renders/body/%s?overlay=true&scale=10&size=512", formatUuid(uuid)));
         } catch (JSONException | IOException ignored) {
         }
 
@@ -98,9 +101,15 @@ public class McpremiumCommand extends Command {
             eb.addField(context.getTranslate("mcpremium.nick"), String.join("\n", listaNazw),
                     false);
         }
-        eb.setThumbnail("https://minotar.net/avatar/" + name + "/2048.png");
-        eb.setImage("https://minotar.net/body/" + name + "/124.png");
-        context.send(eb.build()).queue();
+        if (avatar != null && body != null) {
+            eb.setThumbnail("attachment://avatar.png");
+            eb.setImage("attachment://body.png");
+            context.getChannel()
+                    .sendFile(avatar, "avatar.png")
+                    .addFile(body, "body.png")
+                    .embed(eb.build())
+                    .queue();
+        } else context.send(eb.build());
         return true;
     }
 

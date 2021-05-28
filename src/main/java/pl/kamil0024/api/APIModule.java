@@ -144,6 +144,7 @@ public class APIModule implements Modul {
         routes.get("api/member/{member}/info", new MemberInfoHandler(api, guild));
         routes.get("api/member/{member}/history", new MemberHistoryHandler(api, caseDao));
         routes.post("api/member/{member}/spotify", new SpotifyHandler(spotifyUtil));
+        routes.get("api/member/{member}/spotify/stats", new SpotifyStatsHandler(spotifyUtil));
 
         routes.get("api/history/list", new HistoryListHandler(api, caseDao));
         routes.get("api/history/get", new HistoryByIdHandler(api, caseDao));

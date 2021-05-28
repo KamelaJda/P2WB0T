@@ -73,7 +73,7 @@ public class SpotifyStatsCommand extends Command {
             return false;
         }
 
-        new SpotifyWaiter(context.getUser(), context.getChannel(), eventWaiter, context.getJDA(), user).create();
+        new SpotifyWaiter(context.getUser(), context.getChannel(), eventWaiter, user).create();
         msg.delete().queue();
         return true;
     }
