@@ -183,7 +183,6 @@ public class SpotifyWaiter {
 
         public String s;
         public String s2;
-
     }
 
 }
