@@ -83,7 +83,11 @@ public class McpremiumCommand extends Command {
             listaNazw.add(0, "**" + tekstPierw + "** " + tekstDalej);
             avatar = NetworkUtil.download("https://crafatar.com/avatars/" + formatUuid(uuid));
             body = NetworkUtil.download(String.format("https://crafatar.com/renders/body/%s?overlay=true&scale=10&size=512", formatUuid(uuid)));
-        } catch (JSONException | IOException ignored) { }
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+            context.send(context.getTranslate("mcpremium.error", context.getMember().getAsMention())).queue();
+            return false;
+        }
 
         if (name == null || uuid == null) {
             context.send(context.getTranslate("mcpremium.alex", context.getMember().getAsMention())).queue();
