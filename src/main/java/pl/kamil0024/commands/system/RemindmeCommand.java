@@ -151,7 +151,6 @@ public class RemindmeCommand extends Command {
                 remindDao.remove(remind);
             }
         }
-
     }
 
 }

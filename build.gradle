@@ -39,11 +39,13 @@ repositories {
     maven { url = 'https://plugins.gradle.org/m2/' }
     maven { url = 'https://jitpack.io' }
     maven { url = 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    maven { url = 'https://m2.dv8tion.net/releases' }
 }
 
 dependencies {
 
-    compile 'net.dv8tion:JDA:' + jdaVersion
+//    compile 'net.dv8tion:JDA:' + jdaVersion
+    compile 'com.github.dv8fromtheworld:jda:0feb089'
     compile 'com.intellij:annotations:+@jar'
     compile 'com.github.queer:async-postgres-jsonb-orm:e348e109f8'
     compile 'org.json:json:20090211'
