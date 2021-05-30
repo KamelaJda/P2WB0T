@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.concurrent.*;
 
 @SuppressWarnings("DuplicatedCode")
-public class DynamicEmbedPageinator {
+public class DynamicEmbedPaginator {
 
     private static final ExecutorService mainExecutor = Executors.newFixedThreadPool(8);
 
@@ -54,32 +54,29 @@ public class DynamicEmbedPageinator {
         Runtime.getRuntime().addShutdownHook(new Thread(mainExecutor::shutdown));
     }
 
-    public DynamicEmbedPageinator(List<FutureTask<EmbedBuilder>> pages, User user, EventWaiter eventWaiter, int secound) {
+    public DynamicEmbedPaginator(List<FutureTask<EmbedBuilder>> pages, User user, EventWaiter eventWaiter, int secound) {
         this.eventWaiter = eventWaiter;
         this.pages = pages;
         this.userId = user.getIdLong();
         this.secound = secound;
-        boolean preload = true;
-        if (preload) {
-            mainExecutor.submit(() -> {
-                ExecutorService executor = Executors.newFixedThreadPool(2, new NamedThreadFactory("PageLoader-" +
-                        userId + "-" + botMsgId + "-" + pages.size() + "-pages"));
-                pages.forEach(executor::execute);
-                while (!pages.stream().allMatch(FutureTask::isDone)) {
-                    try {
-                        if (ended) {
-                            pages.forEach(f -> f.cancel(true));
-                            break;
-                        }
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
+        mainExecutor.submit(() -> {
+            ExecutorService executor = Executors.newFixedThreadPool(2, new NamedThreadFactory("PageLoader-" +
+                    userId + "-" + botMsgId + "-" + pages.size() + "-pages"));
+            pages.forEach(executor::execute);
+            while (!pages.stream().allMatch(FutureTask::isDone)) {
+                try {
+                    if (ended) {
+                        pages.forEach(f -> f.cancel(true));
+                        break;
                     }
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 }
-                executor.shutdownNow();
-                setLoading(false);
-            });
-        } else loading = false;
+            }
+            executor.shutdownNow();
+            setLoading(false);
+        });
     }
 
     private void setLoading(boolean loading) {
@@ -87,7 +84,7 @@ public class DynamicEmbedPageinator {
         if (botMsg != null) botMsg.editMessage(render(thisPage)).override(true).queue();
     }
 
-    public DynamicEmbedPageinator create(MessageChannel channel, Message mess) {
+    public DynamicEmbedPaginator create(MessageChannel channel, Message mess) {
         channel.sendMessage(render(1)).reference(mess).override(true).queue(msg -> {
             botMsg = msg;
             botMsgId = msg.getIdLong();
@@ -99,7 +96,7 @@ public class DynamicEmbedPageinator {
         return this;
     }
 
-    public DynamicEmbedPageinator create(Message message) {
+    public DynamicEmbedPaginator create(Message message) {
         message.editMessage(render(1)).override(true).queue(msg -> {
             botMsg = msg;
             botMsgId = msg.getIdLong();
@@ -123,19 +120,19 @@ public class DynamicEmbedPageinator {
 
         if (!event.getReactionEmote().isEmote()) {
             switch (event.getReactionEmote().getName()) {
-                case EmbedPageintaor.FIRST_EMOJI:
+                case EmbedPaginator.FIRST_EMOJI:
                     thisPage = 1;
                     break;
-                case EmbedPageintaor.LEFT_EMOJI:
+                case EmbedPaginator.LEFT_EMOJI:
                     if (thisPage > 1) thisPage--;
                     break;
-                case EmbedPageintaor.RIGHT_EMOJI:
+                case EmbedPaginator.RIGHT_EMOJI:
                     if (thisPage < pages.size()) thisPage++;
                     break;
-                case EmbedPageintaor.LAST_EMOJI:
+                case EmbedPaginator.LAST_EMOJI:
                     thisPage = pages.size();
                     break;
-                case EmbedPageintaor.STOP_EMOJI:
+                case EmbedPaginator.STOP_EMOJI:
                     botMsg.delete().queue();
                     return;
                 default:
@@ -150,7 +147,7 @@ public class DynamicEmbedPageinator {
     }
 
     private void addReactions(Message message) {
-        for (String s : EmbedPageintaor.values) {
+        for (String s : EmbedPaginator.values) {
             message.addReaction(s).queue();
         }
     }
@@ -166,11 +163,11 @@ public class DynamicEmbedPageinator {
     private boolean checkReaction(MessageReactionAddEvent event) {
         if (event.getMessageIdLong() == botMsgId && !event.getReactionEmote().isEmote() && !event.getUser().isBot()) {
             switch (event.getReactionEmote().getName()) {
-                case EmbedPageintaor.FIRST_EMOJI:
-                case EmbedPageintaor.LEFT_EMOJI:
-                case EmbedPageintaor.RIGHT_EMOJI:
-                case EmbedPageintaor.LAST_EMOJI:
-                case EmbedPageintaor.STOP_EMOJI:
+                case EmbedPaginator.FIRST_EMOJI:
+                case EmbedPaginator.LEFT_EMOJI:
+                case EmbedPaginator.RIGHT_EMOJI:
+                case EmbedPaginator.LAST_EMOJI:
+                case EmbedPaginator.STOP_EMOJI:
                     return event.getUser().getIdLong() == userId;
                 default:
                     return false;
@@ -209,7 +206,7 @@ public class DynamicEmbedPageinator {
         return eb.build();
     }
 
-    public DynamicEmbedPageinator setPun(boolean bol) {
+    public DynamicEmbedPaginator setPun(boolean bol) {
         isPun = bol;
         return this;
     }

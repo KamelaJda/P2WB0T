@@ -30,7 +30,7 @@ import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.database.CaseDao;
 import pl.kamil0024.core.database.config.CaseConfig;
 import pl.kamil0024.core.logger.Log;
-import pl.kamil0024.core.util.DynamicEmbedPageinator;
+import pl.kamil0024.core.util.DynamicEmbedPaginator;
 import pl.kamil0024.core.util.EventWaiter;
 import pl.kamil0024.core.util.UserUtil;
 import pl.kamil0024.core.util.kary.KaryEnum;
@@ -96,7 +96,7 @@ public class HistoryCommand extends Command {
                 for (EmbedBuilder embedBuilder : historiaKar) {
                     pages.add(new FutureTask<>(() -> embedBuilder));
                 }
-                new DynamicEmbedPageinator(pages, context.getUser(), eventWaiter, 360).create(msg);
+                new DynamicEmbedPaginator(pages, context.getUser(), eventWaiter, 360).create(msg);
             } catch (Exception e) {
                 msg.editMessage("Wystąpił błąd: " + e.getMessage()).complete();
                 Log.newError(e, getClass());

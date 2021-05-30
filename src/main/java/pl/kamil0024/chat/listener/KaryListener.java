@@ -22,7 +22,7 @@ package pl.kamil0024.chat.listener;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
+import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import pl.kamil0024.chat.Action;
@@ -57,85 +57,77 @@ public class KaryListener extends ListenerAdapter {
         this.caseDao = caseDao;
         this.modLog = modLog;
         this.statsModule = statsModule;
-        this.embedy = redisManager.new CacheRetriever<Action>() {
-        }.getCache(-1);
+        this.embedy = redisManager.new CacheRetriever<Action>() {}.getCache(-1);
     }
 
     @Override
-    public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent event) {
-        if (!event.getGuild().getId().equals(Ustawienia.instance.bot.guildId)
-                || !event.getChannel().getId().equals(Ustawienia.instance.channel.moddc)) return;
-        if (UserUtil.getPermLevel(event.getMember()).getNumer() == PermLevel.MEMBER.getNumer()) return;
-        if (event.getMember().getUser().isBot()) return;
-
+    public void onButtonClick(ButtonClickEvent event) {
+        if (!event.isFromGuild() ||
+                event.getGuild() == null ||
+                !event.getGuild().getId().equals(Ustawienia.instance.bot.guildId) ||
+                !event.getChannel().getId().equals(Ustawienia.instance.channel.moddc) ||
+                event.getUser().isBot() ||
+                UserUtil.getPermLevel(event.getMember()).getNumer() == PermLevel.MEMBER.getNumer()) return;
         check(event);
     }
 
-    @SuppressWarnings("ConstantConditions")
-    private synchronized void check(GuildMessageReactionAddEvent event) {
-        Action action = embedy.getIfPresent(event.getMessageId());
-        if (action == null) return;
+    private synchronized void check(ButtonClickEvent e) {
+        Action action = embedy.getIfPresent(e.getMessageId());
+        if (action == null || e.getButton() == null || e.getButton().getId() == null || e.getGuild() == null) return;
+        e.deferEdit().queue();
 
-        Message msg = null;
-        try {
-            msg = event.getChannel().retrieveMessageById(event.getMessageId()).complete();
-        } catch (Exception ignored) {
-        }
-        if (msg == null || event.getReactionEmote().getId().equals(Ustawienia.instance.emote.red)) {
-            deleteMessage(msg);
-            embedy.invalidate(event.getMessageId());
-            return;
-        }
-        try {
-            deleteMessage(event.getGuild().getTextChannelById(action.getMsg().getChannel()).retrieveMessageById(action.getMsg().getId()).complete());
-        } catch (Exception ignored) {
-        }
-        deleteMessage(msg);
+        switch (e.getButton().getId()) {
+            case "1":
+                Dowod d = new Dowod();
+                d.setId(1);
+                d.setUser(e.getUser().getId());
+                d.setContent("Wystawione automatycznie. Treść wiadomości poniżej.\n\n" + MarkdownSanitizer.escape(action.getMsg().getContent()));
+                d.setImage(null);
 
-        if (event.getReactionEmote().getId().equals("623630774171729931")) {
-            embedy.invalidate(event.getMessageId());
-            return;
-        }
-        Dowod d = new Dowod();
-        d.setId(1);
-        d.setUser(event.getMember().getId());
-        d.setContent("Wystawione automatycznie. Treść wiadomości poniżej.\n\n" + MarkdownSanitizer.escape(action.getMsg().getContent()));
-        d.setImage(null);
+                Member mem = null;
+                try {
+                    mem = e.getGuild().retrieveMemberById(action.getMsg().getAuthor()).complete();
+                } catch (Exception ignored) { }
 
-        Member mem = null;
-        try {
-            mem = event.getGuild().retrieveMemberById(action.getMsg().getAuthor()).complete();
-        } catch (Exception ignored) {
-        }
+                if (mem == null) {
+                    e.getChannel().sendMessage(e.getUser().getAsMention() + ", użytkownik wyszedł z serwera??")
+                            .queue(m -> m.delete().queueAfter(10, TimeUnit.SECONDS));
+                    return;
+                }
+                if (MuteCommand.hasMute(mem)) {
+                    e.getChannel().sendMessage(e.getUser().getAsMention() + ", użytkownik jest wyciszony!")
+                            .queue(m -> m.delete().queueAfter(10, TimeUnit.SECONDS));
+                    return;
+                }
 
-        if (mem == null) {
-            event.getChannel().sendMessage(event.getMember().getAsMention() + ", użytkownik wyszedł z serwera??")
-                    .queue(m -> m.delete().queueAfter(10, TimeUnit.SECONDS));
-            return;
-        }
-        if (MuteCommand.hasMute(mem)) {
-            event.getChannel().sendMessage(event.getMember().getAsMention() + ", użytkownik jest wyciszony!")
-                    .queue(m -> m.delete().queueAfter(10, TimeUnit.SECONDS));
-            return;
-        }
+                KaryJSON.Kara kara = karyJSON.getByName(action.getKara().getPowod());
+                if (kara == null) {
+                    e.getChannel().sendMessage(e.getUser().getAsMention() + ", kara `" + action.getKara().getPowod() + "` jest źle wpisana!").queue();
+                    return;
+                }
 
-        KaryJSON.Kara kara = karyJSON.getByName(action.getKara().getPowod());
-        if (kara == null) {
-            event.getChannel().sendMessage(event.getMember().getAsMention() + ", kara `" + action.getKara().getPowod() + "` jest źle wpisana!").queue();
-            return;
+                PunishCommand.putPun(kara, Collections.singletonList(mem), e.getMember(), e.getTextChannel(), caseDao, modLog, statsModule, d, null);
+                embedy.invalidate(e.getMessageId());
+                deleteMessage(e.getMessage());
+                break;
+            case "2":
+                deleteMessage(e.getMessage());
+                embedy.invalidate(e.getMessageId());
+                break;
+            case "3":
+                try {
+                    deleteMessage(e.getGuild().getTextChannelById(action.getMsg().getChannel()).retrieveMessageById(action.getMsg().getId()).complete());
+                } catch (Exception ignored) { }
+                deleteMessage(e.getMessage());
         }
 
-        PunishCommand.putPun(kara, Collections.singletonList(mem), event.getMember(), event.getChannel(), caseDao, modLog, statsModule, d, null);
-        embedy.invalidate(event.getMessageId());
     }
 
     private void deleteMessage(Message... m) {
         for (Message message : m) {
             try {
-                message.delete().queue(s -> {
-                });
-            } catch (Exception ignored) {
-            }
+                message.delete().complete();
+            } catch (Exception ignored) { }
         }
     }
 

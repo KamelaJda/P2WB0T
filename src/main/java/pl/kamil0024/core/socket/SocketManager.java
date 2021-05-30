@@ -41,7 +41,7 @@ import pl.kamil0024.core.database.VoiceStateDao;
 import pl.kamil0024.core.database.config.VoiceStateConfig;
 import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.socket.actions.*;
-import pl.kamil0024.core.util.EmbedPageintaor;
+import pl.kamil0024.core.util.EmbedPaginator;
 import pl.kamil0024.core.util.EventWaiter;
 import pl.kamil0024.core.util.GsonUtil;
 import pl.kamil0024.music.commands.PlayCommand;
@@ -169,7 +169,7 @@ public class SocketManager {
                         tracks.add(new PrivateQueueCommand.DecodeTrack(a.next().toString(), first).create());
                         first = false;
                     }
-                    new EmbedPageintaor(tracks, Objects.requireNonNull(api.getUserById(response.getAction().getMemberId())), eventWaiter)
+                    new EmbedPaginator(tracks, Objects.requireNonNull(api.getUserById(response.getAction().getMemberId())), eventWaiter)
                             .create(txt);
 
                     break;

@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("DuplicatedCode")
-public class EmbedPageintaor {
+public class EmbedPaginator {
 
     public static final String FIRST_EMOJI = "\u23EE";
     public static final String LEFT_EMOJI = "\u25C0";
@@ -56,21 +56,21 @@ public class EmbedPageintaor {
         values = new String[] {FIRST_EMOJI, LEFT_EMOJI, RIGHT_EMOJI, LAST_EMOJI, STOP_EMOJI};
     }
 
-    public EmbedPageintaor(List<EmbedBuilder> pages, User user, EventWaiter eventWaiter, int secound) {
+    public EmbedPaginator(List<EmbedBuilder> pages, User user, EventWaiter eventWaiter, int secound) {
         this.eventWaiter = eventWaiter;
         this.pages = pages;
         this.userId = user.getIdLong();
         this.secound = secound;
     }
 
-    public EmbedPageintaor(List<EmbedBuilder> pages, User user, EventWaiter eventWaiter) {
+    public EmbedPaginator(List<EmbedBuilder> pages, User user, EventWaiter eventWaiter) {
         this.eventWaiter = eventWaiter;
         this.pages = pages;
         this.userId = user.getIdLong();
         this.secound = 60;
     }
 
-    public EmbedPageintaor create(MessageChannel channel) {
+    public EmbedPaginator create(MessageChannel channel) {
         //noinspection DuplicatedCode
         channel.sendMessage(render(1)).override(true).queue(msg -> {
             botMsg = msg;
@@ -83,7 +83,7 @@ public class EmbedPageintaor {
         return this;
     }
 
-    public EmbedPageintaor create(MessageChannel channel, Message mes) {
+    public EmbedPaginator create(MessageChannel channel, Message mes) {
         //noinspection DuplicatedCode
         channel.sendMessage(render(1)).reference(mes).override(true).queue(msg -> {
             botMsg = msg;
@@ -170,12 +170,12 @@ public class EmbedPageintaor {
         return pageEmbed.build();
     }
 
-    public EmbedPageintaor setPun(boolean bol) {
+    public EmbedPaginator setPun(boolean bol) {
         isPun = bol;
         return this;
     }
 
-    public EmbedPageintaor setCustomFooter(boolean bol) {
+    public EmbedPaginator setCustomFooter(boolean bol) {
         this.customFooter = bol;
         return this;
     }

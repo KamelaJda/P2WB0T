@@ -30,7 +30,7 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.util.BetterStringBuilder;
-import pl.kamil0024.core.util.DynamicEmbedPageinator;
+import pl.kamil0024.core.util.DynamicEmbedPaginator;
 import pl.kamil0024.core.util.EventWaiter;
 import pl.kamil0024.music.utils.UserCredentials;
 
@@ -146,7 +146,7 @@ public class SpotifyWaiter {
             eb.setDescription(sb.build());
             futurePages.add(new FutureTask<>(() -> eb));
 
-            new DynamicEmbedPageinator(futurePages, user, eventWaiter, 120).create(botMsg);
+            new DynamicEmbedPaginator(futurePages, user, eventWaiter, 120).create(botMsg);
         } else {
             botMsg.addReaction(THREE).complete();
             botMsg.editMessage(String.format("%s, wybierz z jakiego okresu chcesz uzyskać dane" +

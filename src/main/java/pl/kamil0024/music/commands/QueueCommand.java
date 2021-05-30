@@ -27,7 +27,7 @@ import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
 import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.command.enums.PermLevel;
-import pl.kamil0024.core.util.EmbedPageintaor;
+import pl.kamil0024.core.util.EmbedPaginator;
 import pl.kamil0024.core.util.EventWaiter;
 import pl.kamil0024.music.MusicModule;
 import pl.kamil0024.musicmanager.entity.TrackScheduler;
@@ -78,7 +78,7 @@ public class QueueCommand extends Command {
             return false;
         }
 
-        new EmbedPageintaor(pages, context.getUser(), eventWaiter).create(context.getChannel(), context.getMessage());
+        new EmbedPaginator(pages, context.getUser(), eventWaiter).create(context.getChannel(), context.getMessage());
         return true;
     }
 

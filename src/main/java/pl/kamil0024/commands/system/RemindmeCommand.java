@@ -95,7 +95,7 @@ public class RemindmeCommand extends Command {
         for (RemindConfig conf : rc) {
             pages.add(new FutureTask<>(() -> getEmbed(conf).setColor(UserUtil.getColor(context.getMember()))));
         }
-        new DynamicEmbedPageinator(pages, context.getUser(), eventWaiter, 120).create(context.getChannel(), context.getMessage());
+        new DynamicEmbedPaginator(pages, context.getUser(), eventWaiter, 120).create(context.getChannel(), context.getMessage());
         return true;
     }
 

@@ -28,7 +28,7 @@ import pl.kamil0024.core.command.SubCommand;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.database.NieobecnosciDao;
 import pl.kamil0024.core.database.config.NieobecnosciConfig;
-import pl.kamil0024.core.util.EmbedPageintaor;
+import pl.kamil0024.core.util.EmbedPaginator;
 import pl.kamil0024.core.util.EventWaiter;
 import pl.kamil0024.core.util.UsageException;
 import pl.kamil0024.nieobecnosci.NieobecnosciManager;
@@ -86,7 +86,7 @@ public class NieobecnoscCommand extends Command {
                 pages.add(eb);
             }
             Collections.reverse(pages);
-            new EmbedPageintaor(pages, context.getUser(), eventWaiter, 320)
+            new EmbedPaginator(pages, context.getUser(), eventWaiter, 320)
                     .create(context.getChannel(), context.getMessage());
             return true;
         }
@@ -113,7 +113,7 @@ public class NieobecnoscCommand extends Command {
                     , false);
             pages.add(eb);
         }
-        new EmbedPageintaor(pages, context.getUser(), eventWaiter, 320)
+        new EmbedPaginator(pages, context.getUser(), eventWaiter, 320)
                 .create(context.getChannel(), context.getMessage());
         return true;
     }

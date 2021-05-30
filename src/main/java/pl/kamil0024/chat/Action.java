@@ -23,7 +23,11 @@ import lombok.Data;
 import lombok.Getter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import pl.kamil0024.chat.listener.KaryListener;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.CommandExecute;
@@ -73,13 +77,14 @@ public class Action {
 
         TextChannel txt = api.getTextChannelById(Ustawienia.instance.channel.moddc);
         if (txt == null) throw new NullPointerException("Kanał do modów dc jest nullem");
-        txt.sendMessage(eb.build()).queue(m -> {
-            m.addReaction(CommandExecute.getReaction(api.getSelfMember().getUser(), true)).queue();
-            m.addReaction(CommandExecute.getReaction(api.getSelfMember().getUser(), false)).queue();
-            m.addReaction(Objects.requireNonNull(api.getEmoteById("623630774171729931"))).queue();
-            setBotMsg(m.getId());
-            karyListener.getEmbedy().put(m.getId(), this);
-        });
+        ActionRow actionRow = ActionRow.of(
+                Button.success("1", "Ukaraj"),
+                Button.danger("2", "Anuluj zgłoszenie"),
+                Button.primary("3", "Usuń wiadomość")
+        );
+        MessageAction action = txt.sendMessage(eb.build());
+        Message msg = action.setActionRows(actionRow).complete();
+        karyListener.getEmbedy().put(msg.getId(), this);
     }
 
     public enum ListaKar {

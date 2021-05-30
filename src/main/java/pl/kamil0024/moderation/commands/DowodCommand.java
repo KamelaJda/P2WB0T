@@ -36,7 +36,7 @@ import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.database.CaseDao;
 import pl.kamil0024.core.database.config.CaseConfig;
 import pl.kamil0024.core.logger.Log;
-import pl.kamil0024.core.util.DynamicEmbedPageinator;
+import pl.kamil0024.core.util.DynamicEmbedPaginator;
 import pl.kamil0024.core.util.EventWaiter;
 import pl.kamil0024.core.util.UsageException;
 import pl.kamil0024.core.util.UserUtil;
@@ -118,7 +118,7 @@ public class DowodCommand extends Command {
             context.sendTranslate("dowod.nullreports").queue();
             return false;
         }
-        new DynamicEmbedPageinator(futurePages, context.getUser(), eventWaiter, 2137).create(context.getChannel(), context.getMessage());
+        new DynamicEmbedPaginator(futurePages, context.getUser(), eventWaiter, 2137).create(context.getChannel(), context.getMessage());
         return true;
     }
 

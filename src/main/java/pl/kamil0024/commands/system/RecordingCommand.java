@@ -34,7 +34,7 @@ import pl.kamil0024.core.command.SubCommand;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.database.RecordingDao;
 import pl.kamil0024.core.database.config.RecordingConfig;
-import pl.kamil0024.core.util.DynamicEmbedPageinator;
+import pl.kamil0024.core.util.DynamicEmbedPaginator;
 import pl.kamil0024.core.util.EventWaiter;
 import pl.kamil0024.core.util.UsageException;
 import pl.kamil0024.core.util.UserUtil;
@@ -152,7 +152,7 @@ public class RecordingCommand extends Command {
                 return eb;
             }));
         }
-        new DynamicEmbedPageinator(futurePages, context.getUser(), eventWaiter, 240).create(context.getChannel(), context.getMessage());
+        new DynamicEmbedPaginator(futurePages, context.getUser(), eventWaiter, 240).create(context.getChannel(), context.getMessage());
         return true;
     }
 
