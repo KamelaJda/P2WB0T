@@ -29,7 +29,9 @@ public class LiczydloModule implements Modul {
     private final ShardManager api;
 
     @Getter
-    @Setter
+    private final String name = "liczydlo";
+
+    @Getter @Setter
     private boolean start = false;
     private LiczydloListener liczydloListener;
 
@@ -50,11 +52,6 @@ public class LiczydloModule implements Modul {
         api.removeEventListener(liczydloListener);
         setStart(false);
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return "liczydlo";
     }
 
 }

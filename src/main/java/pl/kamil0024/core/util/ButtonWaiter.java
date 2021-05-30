@@ -71,38 +71,30 @@ public class ButtonWaiter {
     }
 
     private boolean check(ButtonClickEvent e) {
-        logger.debug("check: " + e.getMessageId().equals(getBotMsg().getId()));
-        return e.getMessageId().equals(getBotMsg().getId());
+        return e.getMessageId().equals(getBotMsg().getId()) && e.getUser().getId().equals(author.getId());
     }
 
     private void handleEvent(ButtonClickEvent e) {
         if (e.getButton() == null || e.getButton().getId() == null) {
-            logger.debug("Jakimś cudem jest nullem");
             return;
         }
         InteractionHook hook = e.getHook();
 
-        logger.debug("Wysyłam info do dc");
         e.deferEdit().queue(); // potwierdza, że przycisk został kliknięty. Inaczej wywali "Żądanie nie zostało przetworzone"
 
         for (ButtonWaiterAction action : getButtonWaiterActionList()) {
             if (action.getButton().getId() == null) {
-                logger.debug("Komponent nie ma ID!");
                 continue;
             }
 
             logger.debug(action.getButton().getId());
             logger.debug(e.getButton().getId());
             if (action.getButton().getId().equals(e.getButton().getId())) {
-                logger.debug("Znaleziono pasujące ID!");
-
                 action.getAction().accept(e);
-
                 if (isDisableComponentOnClick()) { // Wyłącza przyciski
                     List<Button> collect = getButtonWaiterActionList().stream().map(m -> m.getButton().asDisabled()).collect(Collectors.toList());
                     hook.editOriginalComponents(ActionRow.of(collect)).complete();
                 }
-
             }
         }
     }

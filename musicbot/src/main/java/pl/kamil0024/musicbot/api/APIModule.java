@@ -38,6 +38,9 @@ public class APIModule implements Modul {
     private final EventWaiter eventWaiter;
     private final SocketClient client;
 
+    @Getter
+    private final String name = "api";
+
     @Getter @Setter
     private boolean start = false;
 
@@ -65,11 +68,6 @@ public class APIModule implements Modul {
     public boolean shutDown() {
         api.removeEventListener(this.leaveVcListener);
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return "api";
     }
 
 }

@@ -69,11 +69,8 @@ public class SwearWords {
                     wykryteSlowa++;
                 }
             }
-
             if (wykryteSlowa == splitZwrot.length) return s;
-
         }
-
         return null;
     }
 

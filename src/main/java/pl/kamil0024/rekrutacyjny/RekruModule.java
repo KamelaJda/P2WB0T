@@ -38,6 +38,9 @@ public class RekruModule implements Modul {
     private final ShardManager api;
 
     @Getter
+    private final String name = "rekrutacyjny";
+
+    @Getter
     @Setter
     private boolean start = false;
 
@@ -66,11 +69,6 @@ public class RekruModule implements Modul {
         commandManager.unregisterCommands(cmd);
         setStart(false);
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return "rekrutacyjny";
     }
 
 }

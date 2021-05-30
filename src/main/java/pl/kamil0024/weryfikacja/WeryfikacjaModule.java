@@ -58,6 +58,9 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
     public final APIModule apiModule;
 
     @Getter
+    private final String name = "weryfikacja";
+
+    @Getter
     @Setter
     private boolean start = false;
     private ChangeNickname changeNickname;
@@ -84,11 +87,6 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
     public boolean shutDown() {
         apiModule.getApi().removeEventListener(this, changeNickname);
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return "weryfikacja";
     }
 
     public void executeCode(Member member, MessageChannel channel, String code, Guild g, boolean bypass) {
@@ -187,8 +185,7 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
 
         try {
             g.modifyNickname(member, nickname + " " + config.getNick()).complete();
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) { }
 
         MultiConfig conf = multiDao.get(member.getId());
         conf.getNicki().add(new Nick(config.getNick(), nickname, new BDate().getTimestamp()));
@@ -222,8 +219,7 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
         String msg = event.getMessage().getContentRaw();
         try {
             event.getMessage().delete().complete();
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) { }
 
         executeCode(event.getMember(), event.getChannel(), msg, event.getGuild(), false);
     }

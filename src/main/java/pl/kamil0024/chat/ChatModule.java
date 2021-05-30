@@ -42,6 +42,9 @@ public class ChatModule implements Modul {
     private final RedisManager redisManager;
 
     @Getter
+    private final String name = "chat";
+
+    @Getter
     @Setter
     private boolean start = false;
     private ChatListener chatListener;
@@ -70,11 +73,6 @@ public class ChatModule implements Modul {
         api.removeEventListener(chatListener, karyListener);
         setStart(false);
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return "chat";
     }
 
 }

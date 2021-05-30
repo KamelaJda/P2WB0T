@@ -40,14 +40,18 @@ public class LogsModule implements Modul {
     private final ShardManager api;
 
     @Getter
-    @Setter
-    private boolean start = false;
+    private final String name = "logs";
 
-    private MessageManager messageManager;
-    private Logger logger;
     private final StatsModule statsModule;
     private final RedisManager redisManager;
     private final DeletedMessagesDao deletedMessagesDao;
+
+    private MessageManager messageManager;
+    private Logger logger;
+
+    @Getter
+    @Setter
+    private boolean start = false;
 
     public LogsModule(ShardManager api, StatsModule statsModule, RedisManager redisManager, DeletedMessagesDao deletedMessagesDao) {
         this.api = api;
@@ -80,11 +84,6 @@ public class LogsModule implements Modul {
         api.removeEventListener(messageManager, logger);
         setStart(false);
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return "logs";
     }
 
 }

@@ -46,20 +46,21 @@ public class StatusModule implements Modul {
     public final Cache<String> cache;
 
     @Getter
+    private final String name = "status";
+
+    @Getter
     @Setter
     private boolean start = false;
 
     public StatusModule(ShardManager api, RedisManager redisManager) {
         this.api = api;
-        this.cache = redisManager.new CacheRetriever<String>() {
-        }.getCache(300);
+        this.cache = redisManager.new CacheRetriever<String>() {}.getCache(300);
     }
 
     @Override
     public boolean startUp() {
         ScheduledExecutorService executorSche = Executors.newSingleThreadScheduledExecutor();
         executorSche.scheduleAtFixedRate(() -> check(api), 0, 5, TimeUnit.MINUTES);
-
         setStart(true);
         return true;
     }
@@ -86,13 +87,10 @@ public class StatusModule implements Modul {
                         String[] s = entry.getValue().split("-");
                         Integer.parseInt(s[0]);
                         if (s.length == 2) continue;
-                    } catch (Exception ignored) {
-                    }
+                    } catch (Exception ignored) { }
                     cache.put(entry.getKey(), entry.getValue());
                 }
-
             }
-
         } catch (Exception e) {
             Log.newError(e, getClass());
         }
@@ -102,11 +100,6 @@ public class StatusModule implements Modul {
     public boolean shutDown() {
         setStart(false);
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return "status";
     }
 
 }

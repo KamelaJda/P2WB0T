@@ -37,6 +37,9 @@ public class EmbedGeneratorModule implements Modul {
     private ArrayList<Command> cmd;
 
     @Getter
+    private final String name = "embed";
+
+    @Getter
     @Setter
     private boolean start = false;
 
@@ -59,11 +62,6 @@ public class EmbedGeneratorModule implements Modul {
         commandManager.unregisterCommands(cmd);
         setStart(false);
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return "embed";
     }
 
 }

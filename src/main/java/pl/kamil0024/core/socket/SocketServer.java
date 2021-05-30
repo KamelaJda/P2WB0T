@@ -43,7 +43,6 @@ public class SocketServer {
     }
 
     public void start() {
-
         ServerSocket serverSocket;
 
         try {

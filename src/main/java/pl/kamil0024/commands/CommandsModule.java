@@ -98,6 +98,9 @@ public class CommandsModule implements Modul {
     private final SpotifyUtil spotifyUtil;
 
     @Getter
+    private final String name = "commands";
+
+    @Getter
     @Setter
     private boolean start = false;
     private final ModLog modLog;
@@ -225,11 +228,6 @@ public class CommandsModule implements Modul {
         commandManager.unregisterCommands(cmd);
         setStart(false);
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return "commands";
     }
 
     @Data

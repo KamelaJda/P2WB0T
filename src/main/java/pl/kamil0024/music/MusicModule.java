@@ -72,6 +72,9 @@ public class MusicModule implements Modul {
     private final SpotifyUtil spotifyUtil;
 
     @Getter
+    private final String name = "music";
+
+    @Getter
     @Setter
     private boolean start = false;
 
@@ -148,11 +151,6 @@ public class MusicModule implements Modul {
         commandManager.unregisterCommands(cmd);
         setStart(false);
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return "music";
     }
 
     public synchronized GuildMusicManager getGuildAudioPlayer(Guild guild) {

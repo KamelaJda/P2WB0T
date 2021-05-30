@@ -44,6 +44,9 @@ public class StatsModule implements Modul {
 
     private ArrayList<Command> cmd;
 
+    @Getter
+    private final String name = "stats";
+
     private final CommandManager commandManager;
     private final ShardManager api;
     private final EventWaiter eventWaiter;
@@ -74,7 +77,6 @@ public class StatsModule implements Modul {
             if (s == null) continue;
             statsCache.save(statsConfig.getId(), s);
         }
-
     }
 
     @Override
@@ -98,11 +100,6 @@ public class StatsModule implements Modul {
         api.removeEventListener(statsListener);
         setStart(false);
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return "stats";
     }
 
 }

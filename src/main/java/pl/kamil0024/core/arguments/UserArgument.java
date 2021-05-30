@@ -47,9 +47,7 @@ public class UserArgument extends Args {
             try { //NOSONAR
                 if (jda.retrieveUserById(prawieUser).complete() != null)
                     return jda.retrieveUserById(prawieUser).complete();
-            } catch (Exception e1) {
-                // nic
-            }
+            } catch (Exception ignored) { }
             Matcher matcher = MENTION_REGEX.matcher(prawieUser);
             if (matcher.matches()) {
                 return jda.retrieveUserById(matcher.group(1)).complete();
@@ -60,10 +58,7 @@ public class UserArgument extends Args {
                         .collect(Collectors.toList());
                 if (ul.size() == 1) return ul.get(0);
             }
-        } catch (Exception ignored) {
-            /* lul */
-        }
-
+        } catch (Exception ignored) { }
         return null;
     }
 

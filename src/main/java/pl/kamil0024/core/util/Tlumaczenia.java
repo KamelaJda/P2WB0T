@@ -96,8 +96,8 @@ public class Tlumaczenia {
                 replaceAll("Ã³", "ó").
                 replaceAll("Å\u009B", "ś").
                 replaceAll("Åº", "ź").
-                replaceAll("Å¼", "ż")
-                .replaceAll("Å\u0081", "Ł");
+                replaceAll("Å¼", "ż").
+                replaceAll("Å\u0081", "Ł");
     }
 
 }

@@ -28,11 +28,9 @@ import pl.kamil0024.core.database.config.CaseConfig;
 import pl.kamil0024.core.util.kary.Dowod;
 import pl.kamil0024.moderation.commands.DowodCommand;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 @AllArgsConstructor
 public class DowodWaiter {

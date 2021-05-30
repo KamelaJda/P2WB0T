@@ -32,16 +32,19 @@ import pl.kamil0024.ticket.listener.VoiceChatListener;
 
 public class TicketModule implements Modul {
 
-    TicketDao ticketDao;
-    ShardManager api;
-    RedisManager redisManager;
-    EventWaiter eventWaiter;
+    private final TicketRedisManager ticketRedisManager;
+
+    public TicketDao ticketDao;
+    public ShardManager api;
+    public RedisManager redisManager;
+    public EventWaiter eventWaiter;
+
+    @Getter
+    private final String name = "ticket";
 
     @Getter
     @Setter
     private boolean start = false;
-
-    private final TicketRedisManager ticketRedisManager;
 
     // Listeners
     private VoiceChatListener vcl;
@@ -65,11 +68,6 @@ public class TicketModule implements Modul {
     public boolean shutDown() {
         api.removeEventListener(vcl);
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return "ticket";
     }
 
 }

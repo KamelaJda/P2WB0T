@@ -48,6 +48,9 @@ public class ModerationModule implements Modul {
     private final KaryJSON karyJSON;
     private final MultiDao multiDao;
 
+    @Getter
+    private final String name = "moderation";
+
     private ArrayList<Command> cmd;
 
     @Getter
@@ -97,11 +100,6 @@ public class ModerationModule implements Modul {
         commandManager.unregisterCommands(cmd);
         setStart(false);
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return "moderation";
     }
 
 }

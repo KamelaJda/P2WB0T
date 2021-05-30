@@ -23,6 +23,7 @@ import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -38,16 +39,16 @@ import java.util.Calendar;
 @Data
 public class WebhookUtil {
 
-    LogType type;
-    String name;
-    String message;
-    String avatar;
-    String url;
-    WebhookEmbed embed;
-    String time = new SimpleDateFormat("MM.dd HH:mm:ss").format(Calendar.getInstance().getTime());
+    private static final String time = new SimpleDateFormat("MM.dd HH:mm:ss").format(Calendar.getInstance().getTime());
 
-    public WebhookUtil() {
-    }
+    private LogType type;
+    private String name;
+    private String message;
+    private String avatar;
+    private String url;
+    private WebhookEmbed embed;
+
+    public WebhookUtil() { }
 
     public void send() {
         if (type == null) throw new NullPointerException("type == null");
@@ -58,7 +59,7 @@ public class WebhookUtil {
         else builder.setUsername(getName());
 
         if (avatar != null) builder.setAvatarUrl(getAvatar());
-        if (!getMessage().isEmpty()) builder.setContent(String.format("[%s] %s", getTime(), getMessage()));
+        if (!getMessage().isEmpty()) builder.setContent(String.format("[%s] %s", time, getMessage()));
         if (getEmbed() != null) builder.addEmbeds(getEmbed());
         client.send(builder.build());
         client.close();
@@ -86,48 +87,39 @@ public class WebhookUtil {
             if (msg.getAuthor().getName() != null) builder.setAuthor(
                     new WebhookEmbed.EmbedAuthor(msg.getAuthor().getName(), msg.getAuthor().getIconUrl(), msg.getAuthor().getUrl())
             );
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) { }
         try {
             if (msg.getFooter().getText() != null) {
                 builder.setFooter(new WebhookEmbed.EmbedFooter(msg.getFooter().getText(), msg.getFooter().getIconUrl()));
             }
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) { }
         try {
             builder.setImageUrl(msg.getImage().getUrl());
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) { }
 
         try {
             msg.getFields().forEach(f -> builder.addField(getField(f)));
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) { }
 
         try {
             builder.setTitle(new WebhookEmbed.EmbedTitle(msg.getTitle(), msg.getUrl()));
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) { }
 
         try {
             builder.setDescription(msg.getDescription());
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) { }
 
         try {
             builder.setColor(msg.getColor().getRGB());
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) { }
 
         try {
             builder.setTimestamp(msg.getTimestamp());
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) { }
 
         try {
             builder.setThumbnailUrl(msg.getThumbnail().getUrl());
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) { }
         return builder.build();
     }
 
@@ -136,6 +128,8 @@ public class WebhookUtil {
         return new WebhookEmbed.EmbedField(f.isInline(), f.getName(), f.getValue());
     }
 
+    @AllArgsConstructor
+    @Getter
     public enum LogType {
 
         ERROR("Logi errorów", Ustawienia.instance.webhook.error),
@@ -144,15 +138,8 @@ public class WebhookUtil {
         STATUS("Logi statusów", Ustawienia.instance.webhook.status),
         CASES("Logi Akcji", Ustawienia.instance.webhook.cases);
 
-        @Getter
         private final String slownie;
-        @Getter
         private final String url;
-
-        LogType(String slownie, String url) {
-            this.slownie = slownie;
-            this.url = url;
-        }
 
     }
 }

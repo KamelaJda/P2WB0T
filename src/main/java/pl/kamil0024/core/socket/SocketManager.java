@@ -54,6 +54,7 @@ public class SocketManager {
 
     @Getter
     private final HashMap<Integer, SocketClient> clients;
+
     @Getter
     private final HashMap<Integer, String> botIds;
 
