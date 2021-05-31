@@ -36,7 +36,6 @@ public class PingCommand extends Command {
         name = "ping";
         cooldown = 15;
         enabledInRekru = true;
-        commandData = new CommandData(name, Tlumaczenia.get(name + ".opis"));
     }
 
     @Override
@@ -44,14 +43,6 @@ public class PingCommand extends Command {
         Message msg = context.send(context.getTranslate("ping.ping")).complete();
         long ping = context.getEvent().getMessage().getTimeCreated().until(msg.getTimeCreated(), ChronoUnit.MILLIS);
         msg.editMessage(context.getTranslate("ping.pong", ping, context.getEvent().getJDA().getGatewayPing())).queue();
-        return true;
-    }
-
-    @Override
-    public boolean execute(SlashContext context) {
-        InteractionHook msg = context.getEvent().reply(context.getTranslate("ping.ping")).complete();
-        long ping = context.getHook().retrieveOriginal().complete().getTimeCreated().until(msg.retrieveOriginal().complete().getTimeCreated(), ChronoUnit.MILLIS);
-        msg.editOriginal(context.getTranslate("ping.pong", ping, context.getEvent().getJDA().getGatewayPing())).queue();
         return true;
     }
 

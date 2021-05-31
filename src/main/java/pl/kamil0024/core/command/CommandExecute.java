@@ -238,13 +238,10 @@ public class CommandExecute extends ListenerAdapter {
         Command c = commandManager.commands.get(e.getName());
         if (c != null && c.getCommandData() != null) {
             e.deferReply(true).queue();
-            SlashContext context = new SlashContext(e, "/", argumentManager, c);
-
             try {
-                c.execute(context);
+                c.execute(new SlashContext(e, "/", argumentManager, c));
             } catch (Exception ex) {
-                ex.printStackTrace();
-                e.reply("Wystąpił błąd podczas wykonywania komendy! Error: " + ex.getLocalizedMessage()).complete();
+                Log.newError(ex, getClass());
             }
 
         }

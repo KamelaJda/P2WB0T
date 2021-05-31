@@ -337,6 +337,7 @@ public class B0T {
             try {
                 CommandUpdateAction cmd = jda.updateCommands();
                 cmd.addCommands(data).queue();
+                jda.updateCommands().addCommands(data).queue();
             } catch (Exception e) {
                 e.printStackTrace();
             }
