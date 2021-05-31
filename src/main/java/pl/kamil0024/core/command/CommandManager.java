@@ -20,9 +20,7 @@
 package pl.kamil0024.core.command;
 
 import lombok.Getter;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,10 +37,15 @@ public class CommandManager extends ListenerAdapter {
 
     @Getter
     public Set<Command> registered;
+
     @Getter
     public Map<String, Command> commands;
+
     @Getter
     public Map<String, Command> aliases;
+
+    @Getter
+    public List<Command> slashCommands = new ArrayList<>();
 
     public CommandManager(ShardManager shardManager) {
         this.commands = new HashMap<>();
@@ -83,13 +86,8 @@ public class CommandManager extends ListenerAdapter {
         logger.debug("Rejestruje komende {}", command.getName());
 
         if (command.getCommandData() != null) {
-            CommandData data = command.getCommandData();
-            logger.debug("Rejestruje slash komende {}", data.getName());
-
-            for (JDA jda : shardManager.getShards()) {
-                jda.updateCommands().addCommands(data).queue();
-            }
-
+            logger.debug("Dodaje slash komende {}", command.getCommandData().getName());
+            slashCommands.add(command);
         }
 
     }

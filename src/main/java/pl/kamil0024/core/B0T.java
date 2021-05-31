@@ -31,7 +31,9 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
@@ -46,6 +48,7 @@ import pl.kamil0024.chat.ChatModule;
 import pl.kamil0024.commands.CommandsModule;
 import pl.kamil0024.commands.dews.RebootCommand;
 import pl.kamil0024.core.arguments.ArgumentManager;
+import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandExecute;
 import pl.kamil0024.core.command.CommandManager;
 import pl.kamil0024.core.database.*;
@@ -87,6 +90,7 @@ import java.lang.reflect.Method;
 import java.security.cert.X509Certificate;
 import java.util.*;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import static pl.kamil0024.core.util.Statyczne.WERSJA;
 
@@ -321,6 +325,20 @@ public class B0T {
                 modules.put(modul.getName(), modul);
             } catch (Exception ignored) {
                 logger.error(Tlumaczenia.get("module.loading.fail"));
+            }
+        }
+
+        List<CommandData> data = commandManager.getSlashCommands()
+                .stream().map(Command::getCommandData)
+                .collect(Collectors.toList());
+        logger.info("Ładuje slash komendy " + commandManager.getSlashCommands().size());
+
+        for (JDA jda : api.getShards()) {
+            try {
+                CommandUpdateAction cmd = jda.updateCommands();
+                cmd.addCommands(data).queue();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
