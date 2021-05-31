@@ -60,7 +60,7 @@ public class UserinfoCommand extends Command {
         cooldown = 60;
         enabledInRekru = true;
         commandData = new CommandData(name, Tlumaczenia.get(name + ".opis"))
-                .addOptions(new OptionData(OptionType.USER, "user", "Zostaną pokazana informacje na temat tego użytkownika", false));
+                .addOptions(new OptionData(OptionType.USER, "user", "Zostanie pokazana informacja na temat tego użytkownika", false));
     }
 
     @Override
@@ -74,7 +74,7 @@ public class UserinfoCommand extends Command {
         OptionMapping user = context.getEvent().getOption("user");
         User u = null;
         if (user != null) u = user.getAsUser();
-        context.getEvent().replyEmbeds(embed(context.getUser(), u, context.getGuild(), context.getMember()).build()).queue();
+        context.getHook().sendMessageEmbeds(embed(context.getUser(), u, context.getGuild(), context.getMember()).build()).queue();
         return true;
     }
 
