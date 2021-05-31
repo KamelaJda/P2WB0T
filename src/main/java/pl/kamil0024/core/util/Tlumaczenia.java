@@ -33,18 +33,19 @@ import java.util.Properties;
 
 public class Tlumaczenia {
 
-    private final Logger logger = LoggerFactory.getLogger(Tlumaczenia.class);
+    private static final Logger logger = LoggerFactory.getLogger(Tlumaczenia.class);
 
     @Getter
-    private Properties languages = getProp();
+    private static Properties languages = getProp();
+
     @Getter
     @Setter
-    private String lang;
+    private static String lang;
 
     public Tlumaczenia() {
     }
 
-    public Properties getProp() {
+    public static Properties getProp() {
         Properties p = new Properties();
 
         try {
@@ -57,13 +58,13 @@ public class Tlumaczenia {
         return p;
     }
 
-    public boolean load() {
+    public static boolean load() {
         languages = getProp();
         logger.debug(get("translation.load"));
         return true;
     }
 
-    public String get(String key) {
+    public static String get(String key) {
         if (languages == null) throw new NullPointerException("getProp() == null");
         String a = repla(languages.getProperty(key, key));
         if (a.equals(key)) {
@@ -72,7 +73,7 @@ public class Tlumaczenia {
         return a;
     }
 
-    public String get(String key, Object... toReplace) {
+    public static String get(String key, Object... toReplace) {
         if (languages == null) throw new NullPointerException("getProp() == null");
         String property = get(key);
         ArrayList<String> parsedArray = new ArrayList<>();
@@ -82,7 +83,7 @@ public class Tlumaczenia {
         return repla(String.format(property, parsedArray.toArray()));
     }
 
-    public String get(String key, String... toReplace) {
+    public static String get(String key, String... toReplace) {
         if (languages == null) throw new NullPointerException("getProp() == null");
         return repla(String.format(get(key), (Object[]) toReplace));
     }
@@ -99,5 +100,6 @@ public class Tlumaczenia {
                 replaceAll("Å¼", "ż").
                 replaceAll("Å\u0081", "Ł");
     }
+
 
 }

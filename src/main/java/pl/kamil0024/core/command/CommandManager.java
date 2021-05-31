@@ -20,9 +20,10 @@
 package pl.kamil0024.core.command;
 
 import lombok.Getter;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.kamil0024.core.logger.Log;
@@ -34,6 +35,8 @@ public class CommandManager extends ListenerAdapter {
 
     private static final Logger logger = LoggerFactory.getLogger(CommandManager.class);
 
+    private final ShardManager shardManager;
+
     @Getter
     public Set<Command> registered;
     @Getter
@@ -41,10 +44,11 @@ public class CommandManager extends ListenerAdapter {
     @Getter
     public Map<String, Command> aliases;
 
-    public CommandManager() {
+    public CommandManager(ShardManager shardManager) {
         this.commands = new HashMap<>();
         this.registered = new HashSet<>();
         this.aliases = new HashMap<>();
+        this.shardManager = shardManager;
     }
 
     public void registerCommand(Command command) {
@@ -75,8 +79,19 @@ public class CommandManager extends ListenerAdapter {
 
         registered.add(command);
         commands.put(command.getName(), command);
-        logger.debug("Rejestruje komende {}", command.getName());
         registerAliases(command);
+        logger.debug("Rejestruje komende {}", command.getName());
+
+        if (command.getCommandData() != null) {
+            CommandData data = command.getCommandData();
+            logger.debug("Rejestruje slash komende {}", data.getName());
+
+            for (JDA jda : shardManager.getShards()) {
+                jda.updateCommands().addCommands(data).queue();
+            }
+
+        }
+
     }
 
     public void registerAliases(Command command) {

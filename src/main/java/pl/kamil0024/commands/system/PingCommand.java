@@ -20,9 +20,13 @@
 package pl.kamil0024.commands.system;
 
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.jetbrains.annotations.NotNull;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
+import pl.kamil0024.core.command.SlashContext;
+import pl.kamil0024.core.util.Tlumaczenia;
 
 import java.time.temporal.ChronoUnit;
 
@@ -32,6 +36,7 @@ public class PingCommand extends Command {
         name = "ping";
         cooldown = 15;
         enabledInRekru = true;
+        commandData = new CommandData(name, Tlumaczenia.get(name + ".opis"));
     }
 
     @Override
@@ -39,6 +44,14 @@ public class PingCommand extends Command {
         Message msg = context.send(context.getTranslate("ping.ping")).complete();
         long ping = context.getEvent().getMessage().getTimeCreated().until(msg.getTimeCreated(), ChronoUnit.MILLIS);
         msg.editMessage(context.getTranslate("ping.pong", ping, context.getEvent().getJDA().getGatewayPing())).queue();
+        return true;
+    }
+
+    @Override
+    public boolean execute(SlashContext context) {
+        InteractionHook msg = context.getEvent().reply(context.getTranslate("ping.ping")).complete();
+        long ping = context.getHook().retrieveOriginal().complete().getTimeCreated().until(msg.retrieveOriginal().complete().getTimeCreated(), ChronoUnit.MILLIS);
+        msg.editOriginal(context.getTranslate("ping.pong", ping, context.getEvent().getJDA().getGatewayPing())).queue();
         return true;
     }
 

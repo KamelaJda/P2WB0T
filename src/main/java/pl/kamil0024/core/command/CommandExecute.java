@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -61,7 +62,6 @@ public class CommandExecute extends ListenerAdapter {
 
     private final ArgumentManager argumentManager;
     private final CommandManager commandManager;
-    private final Tlumaczenia tlumaczenia;
     private final UserDao userDao;
     private final ExecutorService executor = Executors.newFixedThreadPool(8);
 
@@ -70,9 +70,8 @@ public class CommandExecute extends ListenerAdapter {
 
     private final Map<String, Instant> cooldowns = new HashMap<>();
 
-    public CommandExecute(CommandManager commandManager, Tlumaczenia tlumaczenia, ArgumentManager argumentManager, UserDao userDao) {
+    public CommandExecute(CommandManager commandManager, ArgumentManager argumentManager, UserDao userDao) {
         this.commandManager = commandManager;
-        this.tlumaczenia = tlumaczenia;
         this.argumentManager = argumentManager;
         this.userDao = userDao;
         reloadConfig();
@@ -160,12 +159,12 @@ public class CommandExecute extends ListenerAdapter {
         e.getChannel().sendTyping().queue();
 
         if (c.getPermLevel().getNumer() > jegoPerm.getNumer()) {
-            String wymaga = tlumaczenia.get(c.getPermLevel().getTranlsateKey());
-            String ma = tlumaczenia.get(jegoPerm.getTranlsateKey());
+            String wymaga = Tlumaczenia.get(c.getPermLevel().getTranlsateKey());
+            String ma = Tlumaczenia.get(jegoPerm.getTranlsateKey());
             String trans = "generic.noperm";
             if (c.getCategory() == CommandCategory.MUSIC) trans = "generic.ytnoperm";
 
-            e.getChannel().sendMessage(tlumaczenia.get(trans, wymaga, c.getPermLevel().getNumer(),
+            e.getChannel().sendMessage(Tlumaczenia.get(trans, wymaga, c.getPermLevel().getNumer(),
                     ma, jegoPerm.getNumer())).queue();
 
             zareaguj(e.getMessage(), e.getAuthor(), false);
@@ -173,7 +172,7 @@ public class CommandExecute extends ListenerAdapter {
         }
 
         if (haveCooldown(e.getAuthor(), c) != 0) {
-            e.getChannel().sendMessage(tlumaczenia.get("generic.cooldown", haveCooldown(e.getAuthor(), c))).queue();
+            e.getChannel().sendMessage(Tlumaczenia.get("generic.cooldown", haveCooldown(e.getAuthor(), c))).queue();
             zareaguj(e.getMessage(), e.getAuthor(), false);
             return;
         }
@@ -192,7 +191,7 @@ public class CommandExecute extends ListenerAdapter {
                 }
             }
 
-            CommandContext cmdc = new CommandContext(e, finalPrefix, parsedArgs, tlumaczenia, argumentManager, finalC);
+            CommandContext cmdc = new CommandContext(e, finalPrefix, parsedArgs, argumentManager, finalC);
 
             Thread.currentThread().setName(cmdc.getUser().getId() + "-" + cmdc.getCommand().getName() + "-" + cmdc.getGuild().getId());
 
@@ -231,6 +230,24 @@ public class CommandExecute extends ListenerAdapter {
             Thread.currentThread().setName(name);
         };
         executor.execute(runnable);
+    }
+
+    @Override
+    public void onSlashCommand(SlashCommandEvent e) {
+        if (!e.isFromGuild()) return;
+        Command c = commandManager.commands.get(e.getName());
+        if (c != null && c.getCommandData() != null) {
+            e.deferReply(true).queue();
+            SlashContext context = new SlashContext(e, "/", argumentManager, c);
+
+            try {
+                c.execute(context);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                e.reply("Wystąpił błąd podczas wykonywania komendy! Error: " + ex.getLocalizedMessage()).complete();
+            }
+
+        }
     }
 
     @NotNull

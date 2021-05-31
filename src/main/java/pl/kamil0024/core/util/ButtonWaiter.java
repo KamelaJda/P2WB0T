@@ -87,8 +87,6 @@ public class ButtonWaiter {
                 continue;
             }
 
-            logger.debug(action.getButton().getId());
-            logger.debug(e.getButton().getId());
             if (action.getButton().getId().equals(e.getButton().getId())) {
                 action.getAction().accept(e);
                 if (isDisableComponentOnClick()) { // Wyłącza przyciski
