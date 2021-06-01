@@ -24,8 +24,6 @@ import lombok.Getter;
 import pl.kamil0024.core.database.config.Dao;
 import pl.kamil0024.core.database.config.RemindConfig;
 
-import java.util.List;
-
 public class RemindDao implements Dao<RemindConfig> {
 
     @Getter

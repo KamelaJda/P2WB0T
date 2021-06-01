@@ -20,13 +20,9 @@
 package pl.kamil0024.commands.system;
 
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.jetbrains.annotations.NotNull;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
-import pl.kamil0024.core.command.SlashContext;
-import pl.kamil0024.core.util.Tlumaczenia;
 
 import java.time.temporal.ChronoUnit;
 

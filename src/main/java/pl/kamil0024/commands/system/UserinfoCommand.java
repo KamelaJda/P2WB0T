@@ -37,7 +37,6 @@ import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.bdate.BDate;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.Command;
-import pl.kamil0024.core.command.CommandContext;
 import pl.kamil0024.core.command.SlashContext;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.util.Tlumaczenia;

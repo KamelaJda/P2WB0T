@@ -45,7 +45,7 @@ repositories {
 dependencies {
 
 //    compile 'net.dv8tion:JDA:' + jdaVersion
-    compile 'com.github.dv8fromtheworld:jda:0feb089'
+    compile 'com.github.dv8fromtheworld:jda:05d58f1'
     compile 'com.intellij:annotations:+@jar'
     compile 'com.github.queer:async-postgres-jsonb-orm:e348e109f8'
     compile 'org.json:json:20090211'

@@ -25,8 +25,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import org.jetbrains.annotations.NotNull;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
 import pl.kamil0024.core.command.SlashContext;
@@ -34,7 +32,6 @@ import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.socket.SocketClient;
 import pl.kamil0024.core.socket.SocketManager;
-import pl.kamil0024.core.util.Error;
 import pl.kamil0024.core.util.Tlumaczenia;
 import pl.kamil0024.core.util.UserUtil;
 import pl.kamil0024.music.MusicModule;
@@ -57,130 +54,11 @@ public class PrivatePlayCommand extends Command {
         aliases.add("privateplay");
         category = CommandCategory.PRIVATE_CHANNEL;
         hideSlash = true;
-        commandData = new CommandData(name, Tlumaczenia.get(name + ".opis"))
+        commandData = getData()
                 .addOption(OptionType.STRING, "link", "Link do piosenki lub playlisty YouTube'a/Spotify", true);
         this.socketManager = socketManager;
         this.spotifyUtil = spotifyUtil;
         this.musicModule = musicModule;
-    }
-
-    @Override
-    public boolean execute(@NotNull CommandContext context) {
-        if (!check(context)) return false;
-
-        String link = context.getArgs().get(0);
-        if (link == null) {
-            Error.usageError(context);
-            return false;
-        }
-
-        List<String> linki = new ArrayList<>();
-
-        if (link.contains("https://open.spotify.com/")) {
-            List<String> iteml = new ArrayList<>();
-
-            try {
-                if (spotifyUtil.isTrack(link)) {
-                    Track track = spotifyUtil.getTrackFromUrl(link);
-                    if (track != null) iteml.add(track.getArtists()[0].getName() + " " + track.getName());
-                } else if (spotifyUtil.isAlbum(link)) {
-                    Album album = spotifyUtil.getAlbumFromUrl(link);
-                    for (TrackSimplified item : album.getTracks().getItems()) {
-                        iteml.add(item.getArtists()[0].getName() + " " + item.getName());
-                        if (iteml.size() == 10) break;
-                    }
-                } else if (spotifyUtil.isArtists(link)) {
-                    Track[] tracks = spotifyUtil.getArtistsTracks(link);
-                    for (Track track : tracks) {
-                        iteml.add(track.getArtists()[0].getName() + " " + track.getName());
-                        if (iteml.size() == 10) break;
-                    }
-                } else if (spotifyUtil.isPlaylist(link)) {
-                    context.getChannel().sendTyping().queue();
-                    Paging<PlaylistTrack> album = spotifyUtil.getPlaylistFromUrl(link);
-                    List<PlaylistTrack> items = Arrays.stream(album.getItems())
-                            .filter(s -> !s.getIsLocal())
-                            .collect(Collectors.toList());
-                    Collections.reverse(items);
-
-                    for (PlaylistTrack item : items) {
-                        try {
-                            Track track = (Track) item.getTrack();
-                            iteml.add(track.getArtists()[0].getName() + " " + track.getName());
-                            if (iteml.size() == 10) break;
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    if (iteml.isEmpty()) {
-                        context.send("Nie znaleziono żadnych piosenek w tej playliście!");
-                        return false;
-                    }
-                }
-
-                if (!iteml.isEmpty()) {
-                    for (String s : iteml) {
-                        List<AudioTrack> audioTrackList = musicModule.search(s);
-                        if (!audioTrackList.isEmpty()) {
-                            linki.add(QueueCommand.getYtLink(audioTrackList.get(0)));
-                        }
-                    }
-                } else {
-                    context.send("Nie znaleziono nic pod tym linkiem! (jeżeli miał on odtworzyć piosenkę(-i), zgłoś to do administracji!)");
-                    return false;
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                context.send("Wystąpił błąd podczas pobierania piosenki!").queue();
-                return false;
-            }
-
-        }
-
-        SocketClient client = socketManager.getClientFromChannel(context.getMember());
-
-        if (client != null) {
-            SocketManager.Action sm = socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId())
-                    .setSendMessage(false);
-            if (!linki.isEmpty()) {
-                context.send("Dodaje **" + linki.size() + "** piosenek do kolejki").queue();
-                for (String s : linki) {
-                    sm.play(s);
-                }
-                return true;
-            }
-            sm.setSendMessage(true).play(link);
-        } else {
-            boolean find = false;
-            for (Map.Entry<Integer, SocketClient> entry : socketManager.getClients().entrySet()) {
-                Member mem = context.getGuild().getMemberById(entry.getValue().getBotId());
-                if (mem == null) continue;
-                if (mem.getVoiceState() == null || mem.getVoiceState().getChannel() == null) {
-                    find = true;
-                    SocketManager.Action sm = socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), entry.getKey())
-                            .setSendMessage(false)
-                            .connect(PlayCommand.getVc(context.getMember()).getId());
-                    if (!linki.isEmpty()) {
-                        context.send("Dodaje **" + linki.size() + "** piosenek do kolejki").queue();
-                        for (String s : linki) {
-                            sm.play(s);
-                        }
-                        break;
-                    }
-                    sm.setSendMessage(true).play(link);
-                    break;
-                }
-            }
-            if (!find) {
-                context.sendTranslate("pplay.to.small.bot").queue();
-                return false;
-            }
-
-        }
-
-        return true;
     }
 
     @Override

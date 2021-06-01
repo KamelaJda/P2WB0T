@@ -22,8 +22,6 @@ import lombok.Getter;
 import pl.kamil0024.core.database.config.AntiRaidConfig;
 import pl.kamil0024.core.database.config.Dao;
 
-import java.util.List;
-
 public class AntiRaidDao implements Dao<AntiRaidConfig> {
 
     @Getter

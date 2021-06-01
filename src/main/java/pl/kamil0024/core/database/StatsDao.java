@@ -24,8 +24,6 @@ import lombok.Getter;
 import pl.kamil0024.core.database.config.Dao;
 import pl.kamil0024.core.database.config.StatsConfig;
 
-import java.util.List;
-
 public class StatsDao implements Dao<StatsConfig> {
 
     @Getter

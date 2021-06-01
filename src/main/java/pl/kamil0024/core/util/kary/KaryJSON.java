@@ -65,7 +65,7 @@ public class KaryJSON {
     private void loadKary() {
         if (object == null) throw new UnsupportedOperationException("object przy ladowaniu kar jest nullem");
 
-        for (int i = 1; i < object.size(); i++) {
+        for (int i = 1; i < object.size() + 1; i++) {
             JsonObject jsonKara = object.getAsJsonObject(String.valueOf(i));
             if (jsonKara == null) continue;
 

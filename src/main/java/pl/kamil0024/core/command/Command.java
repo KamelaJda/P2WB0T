@@ -21,6 +21,7 @@ import lombok.Getter;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.command.enums.PermLevel;
+import pl.kamil0024.core.util.Tlumaczenia;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -53,6 +54,10 @@ public abstract class Command {
     @Override
     public String toString() {
         return this.name;
+    }
+
+    protected CommandData getData() {
+        return new CommandData(this.name, Tlumaczenia.get(this.name + ".opis"));
     }
 
 }

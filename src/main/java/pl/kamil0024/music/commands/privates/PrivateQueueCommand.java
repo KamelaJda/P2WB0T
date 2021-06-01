@@ -23,16 +23,11 @@ import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import org.jetbrains.annotations.NotNull;
 import pl.kamil0024.core.command.Command;
-import pl.kamil0024.core.command.CommandContext;
 import pl.kamil0024.core.command.SlashContext;
 import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.socket.SocketClient;
 import pl.kamil0024.core.socket.SocketManager;
-import pl.kamil0024.core.util.Tlumaczenia;
 import pl.kamil0024.music.commands.QueueCommand;
 
 import java.awt.*;
@@ -49,21 +44,8 @@ public class PrivateQueueCommand extends Command {
         aliases.add("privatequeue");
         category = CommandCategory.PRIVATE_CHANNEL;
         this.socketManager = socketManager;
-        commandData = new CommandData(name, Tlumaczenia.get(name + ".opis"));
+        commandData = getData();
         hideSlash = true;
-    }
-
-    @Override
-    public boolean execute(@NotNull CommandContext context) {
-        if (!PrivatePlayCommand.check(context)) return false;
-        SocketClient client = socketManager.getClientFromChannel(context.getMember());
-        if (client == null) {
-            context.sendTranslate("pleave.no.bot").queue();
-            return false;
-        }
-        socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId())
-                .queue();
-        return true;
     }
 
     @Override

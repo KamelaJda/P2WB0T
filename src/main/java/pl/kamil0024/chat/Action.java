@@ -30,7 +30,6 @@ import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import pl.kamil0024.chat.listener.KaryListener;
 import pl.kamil0024.core.Ustawienia;
-import pl.kamil0024.core.command.CommandExecute;
 import pl.kamil0024.core.util.UserUtil;
 import pl.kamil0024.logs.logger.FakeMessage;
 

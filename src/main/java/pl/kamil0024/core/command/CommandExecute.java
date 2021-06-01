@@ -114,6 +114,13 @@ public class CommandExecute extends ListenerAdapter {
 
         if (c == null) return;
 
+        if (c.getCommandData() != null) {
+            e.getChannel().sendMessage(e.getAuthor().getAsMention() +
+                    ", komendy można użyć tylko poprzez slash komendy").complete();
+            zareaguj(e.getMessage(), e.getAuthor(), false);
+            return;
+        }
+
         if (RebootCommand.reboot) {
             e.getChannel().sendMessage("Bot jest podczas restartowania...").queue();
             zareaguj(e.getMessage(), e.getAuthor(), false);

@@ -27,7 +27,6 @@ import pl.kamil0024.core.database.config.NieobecnosciConfig;
 import pl.kamil0024.nieobecnosci.config.Nieobecnosc;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class NieobecnosciDao implements Dao<NieobecnosciConfig> {
 

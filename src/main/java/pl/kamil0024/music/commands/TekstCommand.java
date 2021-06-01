@@ -17,14 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package pl.kamil0024.stats.commands;
+package pl.kamil0024.music.commands;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.EmbedBuilder;
-import org.jetbrains.annotations.NotNull;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.json.JSONObject;
 import pl.kamil0024.core.command.Command;
-import pl.kamil0024.core.command.CommandContext;
+import pl.kamil0024.core.command.SlashContext;
 import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.util.*;
@@ -44,22 +46,24 @@ public class TekstCommand extends Command {
         name = "tekst";
         aliases.add("lyrics");
         category = CommandCategory.MUSIC;
-
         this.eventWaiter = eventWaiter;
         this.musicModule = musicModule;
+        commandData = new CommandData(name, Tlumaczenia.get(name + ".opis"))
+                .addOption(OptionType.STRING, "piosenka", "Tytuł piosenki", false);
+        hideSlash = true;
     }
 
     @Override
-    public boolean execute(@NotNull CommandContext context) {
+    public boolean execute(SlashContext context) {
         String arg;
         AudioTrack track = musicModule.getGuildAudioPlayer(context.getGuild()).getPlayer().getPlayingTrack();
 
-        String arg0 = context.getArgs().get(0);
+        OptionMapping arg0 = context.getEvent().getOption("piosenka");
         if (UserUtil.getPermLevel(context.getMember()).getNumer() >= PermLevel.STAZYSTA.getNumer() && arg0 == null && musicModule.getGuildAudioPlayer(context.getGuild()).getPlayer().getPlayingTrack() != null) {
             arg = track.getInfo().title;
         } else {
-            arg = context.getArgsToString(0);
             if (arg0 == null) throw new UsageException();
+            arg = arg0.getAsString();
         }
 
         try {
@@ -109,15 +113,13 @@ public class TekstCommand extends Command {
             } else pages.add(tekst);
             if (!sb.toString().isEmpty()) tekst.addField(" ", sb.toString(), false);
 
-            new EmbedPaginator(pages, context.getUser(), eventWaiter).
-                    create(context.getChannel(), context.getMessage());
-
+            context.send("Komenda wykonana!");
+            new EmbedPaginator(pages, context.getUser(), eventWaiter).create(context.getChannel());
             return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        context.sendTranslate("tekst.error").queue();
+        context.sendTranslate("tekst.error");
         return false;
     }
 
