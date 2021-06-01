@@ -66,7 +66,7 @@ public class CommandExecute extends ListenerAdapter {
     private final ExecutorService executor = Executors.newFixedThreadPool(8);
 
     @Getter
-    HashMap<String, UserConfig> userConfig;
+    private HashMap<String, UserConfig> userConfig;
 
     private final Map<String, Instant> cooldowns = new HashMap<>();
 
@@ -84,6 +84,7 @@ public class CommandExecute extends ListenerAdapter {
             return;
         }
         boolean inRekru = e.getGuild().getId().equals(Ustawienia.instance.rekrutacyjny.guildId);
+
 
         if (!inRekru && !e.getGuild().getId().equals(Ustawienia.instance.bot.guildId)) return;
 
@@ -237,7 +238,7 @@ public class CommandExecute extends ListenerAdapter {
         if (!e.isFromGuild()) return;
         Command c = commandManager.commands.get(e.getName());
         if (c != null && c.getCommandData() != null) {
-            e.deferReply(true).queue();
+            e.deferReply(c.isHideSlash()).queue();
             try {
                 c.execute(new SlashContext(e, "/", argumentManager, c));
             } catch (Exception ex) {
@@ -268,8 +269,7 @@ public class CommandExecute extends ListenerAdapter {
     private static void zareaguj(Message msg, User user, boolean bol) {
         try {
             msg.addReaction(getReaction(user, bol)).complete();
-        } catch (ErrorResponseException ignored) {
-        }
+        } catch (ErrorResponseException ignored) { }
     }
 
     private void setCooldown(User user, Command command) {
@@ -294,14 +294,9 @@ public class CommandExecute extends ListenerAdapter {
     public void onExecuteEvent(@Nullable CommandContext context) {
         if (context == null) return;
         String msg = "`%s` użył komendy %s(%s) na serwerze %s[%s]";
-        StringBuilder b = new StringBuilder(" ");
-
-        for (Map.Entry<Integer, String> m : context.getArgs().entrySet()) {
-            b.append(m.getValue()).append(",");
-        }
 
         msg = String.format(msg, UserUtil.getLogName(context.getUser()),
-                context.getCommand(), b.toString().replaceAll("@", "@\u200b$1"), context.getGuild(), context.getGuild().getId());
+                context.getCommand(), String.join(",", context.getArgs().values()).replaceAll("@", "@\u200b$1"), context.getGuild(), context.getGuild().getId());
 
         WebhookUtil web = new WebhookUtil();
         web.setMessage(msg);

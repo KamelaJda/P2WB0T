@@ -64,12 +64,6 @@ public class UserinfoCommand extends Command {
     }
 
     @Override
-    public boolean execute(@NotNull CommandContext context) {
-        context.send(embed(context.getUser(), context.getParsed().getUser(context.getArgs().get(0)), context.getGuild(), context.getMember()).build()).queue();
-        return true;
-    }
-
-    @Override
     public boolean execute(@NotNull SlashContext context) {
         OptionMapping user = context.getEvent().getOption("user");
         User u = null;

@@ -120,7 +120,7 @@ public class PrivateYouTubeCommand extends Command {
                             List<String> urls = new ArrayList<>();
                             lista.forEach(i -> urls.add(QueueCommand.getYtLink(mapa.get(i))));
 
-                            SocketClient client = socketManager.getClientFromChannel(context);
+                            SocketClient client = socketManager.getClientFromChannel(context.getMember());
 
                             if (client != null) {
                                 SocketManager.Action action = socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId());

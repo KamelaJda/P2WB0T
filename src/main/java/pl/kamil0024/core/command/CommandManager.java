@@ -62,6 +62,11 @@ public class CommandManager extends ListenerAdapter {
             logger.error("Nazwa komendy {} jest pusta!", command.getClass().getName());
         }
 
+        if (command.getCommandData() != null) {
+            logger.debug("Dodaje slash komende {}", command.getCommandData().getName());
+            slashCommands.add(command);
+        }
+
         for (Method method : command.getClass().getMethods()) {
             try {
                 if (method.isAnnotationPresent(SubCommand.class) && method.getParameterCount() == 1) {
@@ -84,12 +89,6 @@ public class CommandManager extends ListenerAdapter {
         commands.put(command.getName(), command);
         registerAliases(command);
         logger.debug("Rejestruje komende {}", command.getName());
-
-        if (command.getCommandData() != null) {
-            logger.debug("Dodaje slash komende {}", command.getCommandData().getName());
-            slashCommands.add(command);
-        }
-
     }
 
     public void registerAliases(Command command) {

@@ -22,9 +22,7 @@ package pl.kamil0024.core.command;
 import com.google.errorprone.annotations.CheckReturnValue;
 import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.sharding.ShardManager;
@@ -33,6 +31,8 @@ import pl.kamil0024.core.arguments.ArgumentManager;
 import pl.kamil0024.core.util.Tlumaczenia;
 
 import java.util.ArrayList;
+
+import static pl.kamil0024.core.command.CommandContext.URLPATTERN;
 
 public class SlashContext {
 
@@ -98,6 +98,30 @@ public class SlashContext {
 
     public InteractionHook getHook() {
         return getEvent().getHook();
+    }
+
+    public Message sendTranslate(String key, Object... obj) {
+        return send(getTranslate(key, obj));
+    }
+
+    public Message sendTranslate(String key) {
+        return send(getTranslate(key));
+    }
+
+    public Message send(CharSequence msg) {
+        return send(msg, true);
+    }
+
+    public Message send(CharSequence msg, boolean checkUrl) {
+        String message = String.valueOf(msg);
+        if (checkUrl && URLPATTERN.matcher(msg).matches()) {
+            message = message.replaceAll(String.valueOf(URLPATTERN), "[LINK]");
+        }
+        return getEvent().getHook().sendMessage(message.replaceAll("@(everyone|here)", "@\u200b$1")).complete();
+    }
+
+    public MessageChannel getChannel() {
+        return getEvent().getChannel();
     }
 
 }

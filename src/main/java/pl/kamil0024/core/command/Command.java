@@ -39,6 +39,7 @@ public abstract class Command {
     protected CommandData commandData = null;
     protected boolean enabledInRekru = false;
     protected boolean onlyInRekru = false;
+    protected boolean hideSlash = false;
     protected final Map<String, Method> subCommands = new HashMap<>();
 
     protected boolean execute(CommandContext context) {

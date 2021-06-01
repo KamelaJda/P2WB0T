@@ -42,7 +42,7 @@ public class PrivateSkipCommand extends Command {
     public boolean execute(@NotNull CommandContext context) {
         if (!PrivatePlayCommand.check(context)) return false;
 
-        SocketClient client = socketManager.getClientFromChannel(context);
+        SocketClient client = socketManager.getClientFromChannel(context.getMember());
         if (client == null) {
             context.sendTranslate("pleave.no.bot").queue();
             return false;

@@ -37,6 +37,7 @@ import org.json.JSONArray;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.CommandContext;
 import pl.kamil0024.core.command.CommandExecute;
+import pl.kamil0024.core.command.SlashContext;
 import pl.kamil0024.core.database.VoiceStateDao;
 import pl.kamil0024.core.database.config.VoiceStateConfig;
 import pl.kamil0024.core.logger.Log;
@@ -209,8 +210,8 @@ public class SocketManager {
     }
 
     @Nullable
-    public SocketClient getClientFromChannel(CommandContext context) {
-        for (Member member : PlayCommand.getVc(context.getMember()).getMembers()) {
+    public SocketClient getClientFromChannel(Member mem) {
+        for (Member member : PlayCommand.getVc(mem).getMembers()) {
             if (member.getUser().isBot()) {
                 SocketClient agent = getClientFromId(member.getId());
                 if (agent != null) return agent;
