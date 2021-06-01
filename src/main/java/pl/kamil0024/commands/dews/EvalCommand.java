@@ -23,6 +23,7 @@ import com.google.gson.Gson;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,6 +120,7 @@ public class EvalCommand extends Command {
 
     @Override
     public boolean execute(@NotNull CommandContext context) {
+        context.getGuild().updateCommands().queue();
         String kod = context.getArgsToString(0);
         if (context.getArgs().get(0) == null || kod.isEmpty()) throw new UsageException();
 

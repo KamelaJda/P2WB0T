@@ -21,6 +21,7 @@ package pl.kamil0024.music.commands;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -36,6 +37,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.FutureTask;
 
 public class TekstCommand extends Command {
 
@@ -75,7 +77,7 @@ public class TekstCommand extends Command {
             JSONObject thumbnail = job.getJSONObject("thumbnail");
             JSONObject links = job.getJSONObject("links");
 
-            ArrayList<EmbedBuilder> pages = new ArrayList<>();
+            List<FutureTask<EmbedBuilder>> pages = new ArrayList<>();
 
             EmbedBuilder eb = new EmbedBuilder();
             eb.setColor(UserUtil.getColor(context.getMember()));
@@ -107,14 +109,20 @@ public class TekstCommand extends Command {
                 }
             }
 
-            pages.add(eb);
+            pages.add(new FutureTask<>(() -> eb));
+
             if (!teksty.isEmpty()) {
-                pages.addAll(teksty);
-            } else pages.add(tekst);
+                for (EmbedBuilder builder : teksty) {
+                    pages.add(new FutureTask<>(() -> builder));
+                }
+            } else {
+                EmbedBuilder finalTekst = tekst;
+                pages.add(new FutureTask<>(() -> finalTekst));
+            }
             if (!sb.toString().isEmpty()) tekst.addField(" ", sb.toString(), false);
 
-            context.send("Komenda wykonana!");
-            new EmbedPaginator(pages, context.getUser(), eventWaiter).create(context.getChannel());
+            Message message = context.send("Ładuje");
+            new DynamicEmbedPaginator(pages, context.getUser(), eventWaiter, 60).create(message);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
