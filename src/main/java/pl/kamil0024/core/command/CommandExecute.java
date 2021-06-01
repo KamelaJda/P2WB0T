@@ -36,6 +36,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.kamil0024.commands.dews.RebootCommand;
+import pl.kamil0024.commands.system.HelpCommand;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.arguments.ArgumentManager;
 import pl.kamil0024.core.command.enums.CommandCategory;
@@ -83,9 +84,8 @@ public class CommandExecute extends ListenerAdapter {
                 e.getMessage().getContentRaw().isEmpty()) {
             return;
         }
+
         boolean inRekru = e.getGuild().getId().equals(Ustawienia.instance.rekrutacyjny.guildId);
-
-
         if (!inRekru && !e.getGuild().getId().equals(Ustawienia.instance.bot.guildId)) return;
 
         String prefix = Ustawienia.instance.prefix;
@@ -238,11 +238,70 @@ public class CommandExecute extends ListenerAdapter {
         if (!e.isFromGuild()) return;
         Command c = commandManager.commands.get(e.getName());
         if (c != null && c.getCommandData() != null) {
+            boolean inRekru = e.getGuild().getId().equals(Ustawienia.instance.rekrutacyjny.guildId);
+
+            if (RebootCommand.reboot) {
+                e.deferReply(true).queue();
+                e.getHook().sendMessage("Bot jest podczas restartowania...").complete();
+                return;
+            }
+
+            PermLevel jegoPerm = UserUtil.getPermLevel(e.getUser());
+
+            if (inRekru && !c.isEnabledInRekru()) {
+                e.deferReply(true).queue();
+                e.getHook().sendMessage("ta komenda nie jest dostępna na tym serwerze!").queue();
+                return;
+            }
+
+            if (!inRekru && c.isOnlyInRekru()) {
+                e.deferReply(true).queue();
+                e.getHook().sendMessage("Ta komenda jest dostępna tylko na serwerze rekrutacyjnym!").queue();
+                return;
+            }
+
+            if (c.getPermLevel().getNumer() > jegoPerm.getNumer()) {
+                String wymaga = Tlumaczenia.get(c.getPermLevel().getTranlsateKey());
+                String ma = Tlumaczenia.get(jegoPerm.getTranlsateKey());
+                String trans = "generic.noperm";
+                if (c.getCategory() == CommandCategory.MUSIC) trans = "generic.ytnoperm";
+
+                e.deferReply(true).queue();
+                e.getHook().sendMessage(Tlumaczenia.get(trans, wymaga, c.getPermLevel().getNumer(),
+                        ma, jegoPerm.getNumer())).queue();
+                return;
+            }
+
+            int i = haveCooldown(e.getUser(), c);
+            if (i != 0) {
+                e.deferReply(true).queue();
+                e.getHook().sendMessage(Tlumaczenia.get("generic.cooldown", i)).queue();
+                return;
+            }
+
+            SlashContext context = new SlashContext(e, "/", argumentManager, c);
             e.deferReply(c.isHideSlash()).queue();
+            if (jegoPerm.getNumer() < PermLevel.DEVELOPER.getNumer()) setCooldown(e.getUser(), c);
             try {
-                c.execute(new SlashContext(e, "/", argumentManager, c));
+                c.execute(context);
+            } catch (UsageException ex) {
+                context.getHook().sendMessageEmbeds(HelpCommand.getUsage(context, null).build()).complete();
             } catch (Exception ex) {
-                Log.newError(ex, getClass());
+                ex.printStackTrace();
+                Log.newError("`%s` uzyl komendy %s (%s) ale wystapil blad: %s", CommandExecute.class, e.getUser().getName(), c.getName(), c.getClass().getSimpleName(), ex);
+                Log.newError(ex, CommandExecute.class);
+
+                SentryEvent event = new SentryEvent();
+                io.sentry.protocol.User user = new io.sentry.protocol.User();
+                user.setId(e.getUser().getId());
+                user.setUsername(UserUtil.getName(e.getUser()));
+                event.setUser(user);
+                event.setLevel(SentryLevel.ERROR);
+                event.setLogger(getClass().getName());
+                event.setThrowable(ex);
+                Sentry.captureEvent(event);
+
+                e.getHook().sendMessage(String.format("Wystąpił błąd! `%s`.", ex)).queue();
             }
 
         }

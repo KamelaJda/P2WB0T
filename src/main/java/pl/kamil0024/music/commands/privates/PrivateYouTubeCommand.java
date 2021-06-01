@@ -219,7 +219,6 @@ public class PrivateYouTubeCommand extends Command {
                             if (client != null) {
                                 SocketManager.Action action = socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId());
                                 action.play(urls.get(0));
-                                context.send("Komenda wykonana!");
                             } else {
                                 boolean find = false;
                                 for (Map.Entry<Integer, SocketClient> entry : socketManager.getClients().entrySet()) {
@@ -227,7 +226,6 @@ public class PrivateYouTubeCommand extends Command {
                                     if (mem == null) continue;
                                     if (mem.getVoiceState() == null || mem.getVoiceState().getChannel() == null) {
                                         find = true;
-                                        context.send("Komenda wykonana!");
                                         socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), entry.getKey())
                                                 .setSendMessage(false)
                                                 .connect(PlayCommand.getVc(context.getMember()).getId())

@@ -43,6 +43,8 @@ public class SlashContext {
     private final String prefix;
 
     private final ArgumentManager argumentManager;
+
+    @Getter
     private final Command cmd;
 
     public SlashContext(SlashCommandEvent event, String prefix, ArgumentManager argumentManager, Command cmd) {

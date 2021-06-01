@@ -27,6 +27,7 @@ import pl.kamil0024.core.command.SlashContext;
 import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.socket.SocketClient;
 import pl.kamil0024.core.socket.SocketManager;
+import pl.kamil0024.core.util.Tlumaczenia;
 
 @SuppressWarnings("DuplicatedCode")
 public class PrivateSkipCommand extends Command {
@@ -39,7 +40,7 @@ public class PrivateSkipCommand extends Command {
         category = CommandCategory.PRIVATE_CHANNEL;
         this.socketManager = socketManager;
         hideSlash = true;
-        commandData = new CommandData(name, name + ".opis");
+        commandData = new CommandData(name, Tlumaczenia.get(name + ".opis"));
     }
 
     @Override
@@ -62,6 +63,7 @@ public class PrivateSkipCommand extends Command {
             context.sendTranslate("pleave.no.bot");
             return false;
         }
+        context.send("Komenda wykonana!");
         socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId()).skip();
         return true;
     }
