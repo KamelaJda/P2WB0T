@@ -332,16 +332,7 @@ public class B0T {
                 .stream().map(Command::getCommandData)
                 .collect(Collectors.toList());
         logger.info("Ładuje slash komendy " + commandManager.getSlashCommands().size());
-
-        for (JDA jda : api.getShards()) {
-            try {
-                CommandUpdateAction cmd = jda.updateCommands();
-                cmd.addCommands(data).queue();
-                jda.updateCommands().addCommands(data).queue();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        primGuild.updateCommands().addCommands(data).queue();
 
         api.setStatus(OnlineStatus.ONLINE);
         api.setActivity(Activity.playing(Tlumaczenia.get("status.hi", WERSJA)));
