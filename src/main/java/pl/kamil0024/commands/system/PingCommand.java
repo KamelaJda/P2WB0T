@@ -36,7 +36,6 @@ public class PingCommand extends Command {
         name = "ping";
         cooldown = 15;
         enabledInRekru = true;
-        commandData = new CommandData(name, Tlumaczenia.get(name + ".opis"));
     }
 
     @Override

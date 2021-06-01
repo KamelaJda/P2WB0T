@@ -56,6 +56,7 @@ public class PrivatePlayCommand extends Command {
         name = "pplay";
         aliases.add("privateplay");
         category = CommandCategory.PRIVATE_CHANNEL;
+        hideSlash = true;
         commandData = new CommandData(name, Tlumaczenia.get(name + ".opis"))
                 .addOption(OptionType.STRING, "link", "Link do piosenki lub playlisty YouTube'a/Spotify", true);
         this.socketManager = socketManager;
@@ -263,7 +264,7 @@ public class PrivatePlayCommand extends Command {
                     sm.play(s);
                 }
                 return true;
-            }
+            } else context.send("Komenda wykonana pomyślnie!");
             sm.setSendMessage(true).play(link);
         } else {
             boolean find = false;
@@ -281,7 +282,7 @@ public class PrivatePlayCommand extends Command {
                             sm.play(s);
                         }
                         break;
-                    }
+                    } else context.send("Komenda wykonana pomyślnie!");
                     sm.setSendMessage(true).play(link);
                     break;
                 }

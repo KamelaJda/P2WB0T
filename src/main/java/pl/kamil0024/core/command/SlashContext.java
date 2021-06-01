@@ -124,4 +124,8 @@ public class SlashContext {
         return getEvent().getChannel();
     }
 
+    public CommandContext.ParsedArgumenty getParsed() {
+        return new CommandContext.ParsedArgumenty();
+    }
+
 }
