@@ -20,13 +20,14 @@
 package pl.kamil0024.core.util;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
-import net.dv8tion.jda.api.exceptions.PermissionException;
+import net.dv8tion.jda.api.entities.Emoji;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -39,21 +40,26 @@ public class EmbedPaginator {
     public static final String LAST_EMOJI = "\u23ED";
     public static final String STOP_EMOJI = "\u23F9";
 
+    public static final Button FIRST_BUTTON = Button.secondary("FIRST", Emoji.fromUnicode(FIRST_EMOJI));
+    public static final Button LEFT_BUTTON = Button.primary("LEFT", Emoji.fromUnicode(LEFT_EMOJI));
+    public static final Button RIGHT_BUTTON = Button.primary("RIGHT", Emoji.fromUnicode(RIGHT_EMOJI));
+    public static final Button LAST_BUTTON = Button.secondary("LAST", Emoji.fromUnicode(LAST_EMOJI));
+    public static final Button STOP_BUTTON = Button.danger("STOP", Emoji.fromUnicode(STOP_EMOJI));
+
     private final EventWaiter eventWaiter;
     private final List<EmbedBuilder> pages;
     private int thisPage = 1;
-    private boolean isPun;
-    private boolean customFooter = false;
 
     private Message botMsg;
-    private long botMsgId;
     private final long userId;
     private final int secound;
 
     public static final String[] values;
+    public static final ActionRow actionRow;
 
     static {
         values = new String[] {FIRST_EMOJI, LEFT_EMOJI, RIGHT_EMOJI, LAST_EMOJI, STOP_EMOJI};
+        actionRow = ActionRow.of(FIRST_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, LEFT_BUTTON, STOP_BUTTON);
     }
 
     public EmbedPaginator(List<EmbedBuilder> pages, User user, EventWaiter eventWaiter, int secound) {
@@ -71,92 +77,59 @@ public class EmbedPaginator {
     }
 
     public EmbedPaginator create(MessageChannel channel) {
-        //noinspection DuplicatedCode
-        channel.sendMessage(render(1)).override(true).queue(msg -> {
+        MessageAction action = channel.sendMessage(render(1));
+        action.setActionRows(getActionRow(1)).queue(msg -> {
             botMsg = msg;
-            botMsgId = msg.getIdLong();
-            if (pages.size() != 1) {
-                addReactions(msg);
-                waitForReaction();
-            }
+            if (pages.size() != 1) waitForReaction();
         });
         return this;
     }
 
     public EmbedPaginator create(MessageChannel channel, Message mes) {
-        //noinspection DuplicatedCode
-        channel.sendMessage(render(1)).reference(mes).override(true).queue(msg -> {
+        MessageAction action = channel.sendMessage(render(1)).reference(mes);
+        action.setActionRows(getActionRow(1)).queue(msg -> {
             botMsg = msg;
-            botMsgId = msg.getIdLong();
-            if (pages.size() != 1) {
-                addReactions(msg);
-                waitForReaction();
-            }
+            if (pages.size() != 1) waitForReaction();
         });
         return this;
     }
 
     private void waitForReaction() {
-        eventWaiter.waitForEvent(MessageReactionAddEvent.class, this::checkReaction,
-                this::onMessageReactionAdd, secound, TimeUnit.SECONDS, this::clearReactions);
+        eventWaiter.waitForEvent(ButtonClickEvent.class, this::check,
+                this::handle, secound, TimeUnit.SECONDS, this::clearReactions);
     }
 
-    private void onMessageReactionAdd(MessageReactionAddEvent event) {
-        if (event.getUser() == null ||
-                event.getUserIdLong() != userId ||
-                event.getMessageIdLong() != botMsgId) return;
-
-        if (!event.getReactionEmote().isEmote()) {
-            switch (event.getReactionEmote().getName()) {
-                case FIRST_EMOJI:
-                    thisPage = 1;
-                    break;
-                case LEFT_EMOJI:
-                    if (thisPage > 1) thisPage--;
-                    break;
-                case RIGHT_EMOJI:
-                    if (thisPage < pages.size()) thisPage++;
-                    break;
-                case LAST_EMOJI:
-                    thisPage = pages.size();
-                    break;
-                case STOP_EMOJI:
-                    if (isPun) botMsg.delete().queue();
-                    return;
-                default:
-                    return;
-            }
+    private void handle(ButtonClickEvent event) {
+        switch (event.getComponentId()) {
+            case "FIRST":
+                thisPage = 1;
+                break;
+            case "LEFT":
+                if (thisPage > 1) thisPage--;
+                break;
+            case "RIGHT":
+                if (thisPage < pages.size()) thisPage++;
+                break;
+            case "LAST":
+                thisPage = pages.size();
+                break;
+            case "STOP":
+                clearReactions();
+                return;
         }
-        try {
-            event.getReaction().removeReaction(event.getUser()).queue();
-        } catch (PermissionException ignored) { }
-        botMsg.editMessage(render(thisPage)).override(true).complete();
+        botMsg.editMessage(render(thisPage)).setActionRows(getActionRow(thisPage)).override(true).complete();
         waitForReaction();
     }
 
-    private void addReactions(Message message) {
-        for (String s : values) {
-            message.addReaction(s).queue();
-        }
-    }
-
-    private void clearReactions() {
-        if (!isPun) {
-            try {
-                botMsg.clearReactions().complete();
-            } catch (Exception ignored) {/*lul*/}
-        }
-    }
-
-    private boolean checkReaction(MessageReactionAddEvent event) {
-        if (event.getMessageIdLong() == botMsgId && !event.getReactionEmote().isEmote()) {
-            switch (event.getReactionEmote().getName()) {
-                case FIRST_EMOJI:
-                case LEFT_EMOJI:
-                case RIGHT_EMOJI:
-                case LAST_EMOJI:
-                case STOP_EMOJI:
-                    return event.getUserIdLong() == userId;
+    private boolean check(ButtonClickEvent event) {
+        if (event.getMessageId().equals(botMsg.getId()) && event.getUser().getIdLong() == userId) {
+            switch (event.getComponentId()) {
+                case "FIRST":
+                case "LEFT":
+                case "RIGHT":
+                case "LAST":
+                case "STOP":
+                    return true;
                 default:
                     return false;
             }
@@ -164,20 +137,27 @@ public class EmbedPaginator {
         return false;
     }
 
+    private void clearReactions() {
+        try {
+            botMsg.editMessage(botMsg.getContentRaw()).setActionRows(ActionRow.of()).complete();
+        } catch (Exception ignored) {/*lul*/}
+    }
+
     private MessageEmbed render(int page) {
         EmbedBuilder pageEmbed = pages.get(page - 1);
-        if (!customFooter) pageEmbed.setFooter(String.format("%s/%s", page, pages.size()), null);
+        pageEmbed.setFooter(String.format("%s/%s", page, pages.size()), null);
         return pageEmbed.build();
     }
 
-    public EmbedPaginator setPun(boolean bol) {
-        isPun = bol;
-        return this;
-    }
-
-    public EmbedPaginator setCustomFooter(boolean bol) {
-        this.customFooter = bol;
-        return this;
+    private ActionRow getActionRow(int page) {
+        List<Button> buttons = new ArrayList<>();
+        if (page == 1) buttons.add(FIRST_BUTTON.asDisabled());
+        buttons.add(LEFT_BUTTON.asDisabled());
+        buttons.add(RIGHT_BUTTON.asEnabled());
+        if (pages.size() == page) buttons.add(LAST_BUTTON.asDisabled());
+        else buttons.add(LAST_BUTTON.asEnabled());
+        buttons.add(STOP_BUTTON);
+        return ActionRow.of(buttons);
     }
 
 }

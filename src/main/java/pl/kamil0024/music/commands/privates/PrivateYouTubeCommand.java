@@ -56,7 +56,7 @@ public class PrivateYouTubeCommand extends Command {
         this.eventWaiter = eventWaiter;
         this.musicModule = musicModule;
         commandData = getData()
-                .addOption(OptionType.STRING, "title", "Tytuł piosenki");
+                .addOption(OptionType.STRING, "title", "Tytuł piosenki", true);
     }
 
     @Override

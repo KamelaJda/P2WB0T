@@ -52,7 +52,6 @@ public class TekstCommand extends Command {
         this.musicModule = musicModule;
         commandData = new CommandData(name, Tlumaczenia.get(name + ".opis"))
                 .addOption(OptionType.STRING, "piosenka", "Tytuł piosenki", false);
-        hideSlash = true;
     }
 
     @Override

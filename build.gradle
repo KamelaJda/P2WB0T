@@ -67,7 +67,7 @@ dependencies {
     compile 'io.undertow:undertow-core:2.0.28.Final'
 
     implementation 'se.michaelthelin.spotify:spotify-web-api-java:6.5.3'
-    implementation 'io.sentry:sentry:4.3.0'
+    implementation 'io.sentry:sentry:5.0.0'
     implementation 'com.sedmelluq:lavaplayer:1.3.75'
     implementation 'com.github.KAMIL0024:Bdate:-SNAPSHOT'
     implementation 'com.squareup.okhttp3:okhttp:3.13.0'

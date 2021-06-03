@@ -109,6 +109,9 @@ public class KaryListener extends ListenerAdapter {
                 PunishCommand.putPun(kara, Collections.singletonList(mem), e.getMember(), e.getTextChannel(), caseDao, modLog, statsModule, d, null);
                 embedy.invalidate(e.getMessageId());
                 deleteMessage(e.getMessage());
+                try {
+                    deleteMessage(e.getGuild().getTextChannelById(action.getMsg().getChannel()).retrieveMessageById(action.getMsg().getId()).complete());
+                } catch (Exception ignored) { }
                 break;
             case "2":
                 deleteMessage(e.getMessage());
