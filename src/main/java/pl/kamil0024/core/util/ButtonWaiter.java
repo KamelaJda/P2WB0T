@@ -75,9 +75,7 @@ public class ButtonWaiter {
     }
 
     private void handleEvent(ButtonClickEvent e) {
-        if (e.getButton() == null || e.getButton().getId() == null) {
-            return;
-        }
+        if (e.getButton() == null || e.getButton().getId() == null) return;
         InteractionHook hook = e.getHook();
 
         e.deferEdit().queue(); // potwierdza, że przycisk został kliknięty. Inaczej wywali "Żądanie nie zostało przetworzone"

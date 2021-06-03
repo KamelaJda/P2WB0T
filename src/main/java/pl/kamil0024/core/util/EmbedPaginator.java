@@ -100,6 +100,7 @@ public class EmbedPaginator {
     }
 
     private void handle(ButtonClickEvent event) {
+        event.deferEdit().queue();
         switch (event.getComponentId()) {
             case "FIRST":
                 thisPage = 1;
@@ -151,11 +152,10 @@ public class EmbedPaginator {
 
     private ActionRow getActionRow(int page) {
         List<Button> buttons = new ArrayList<>();
-        if (page == 1) buttons.add(FIRST_BUTTON.asDisabled());
-        buttons.add(LEFT_BUTTON.asDisabled());
-        buttons.add(RIGHT_BUTTON.asEnabled());
-        if (pages.size() == page) buttons.add(LAST_BUTTON.asDisabled());
-        else buttons.add(LAST_BUTTON.asEnabled());
+        buttons.add(FIRST_BUTTON.withDisabled(page == 1));
+        buttons.add(LEFT_BUTTON.withLabel(page == 1 ? "" : page - 1 + "").withDisabled(page == 1));
+        buttons.add(RIGHT_BUTTON.withLabel(pages.size() == 1 ? "" : page + 1 + "").withDisabled(pages.size() == 1));
+        buttons.add(LAST_BUTTON.withDisabled(pages.size() == page));
         buttons.add(STOP_BUTTON);
         return ActionRow.of(buttons);
     }
