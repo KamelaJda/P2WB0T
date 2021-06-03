@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -140,7 +141,7 @@ public class EmbedPaginator {
 
     private void clear() {
         try {
-            botMsg.editMessage(botMsg.getContentRaw()).setActionRows(ActionRow.of()).complete();
+            botMsg.editMessage(botMsg.getContentRaw()).setActionRows(Collections.emptyList()).complete();
         } catch (Exception ignored) {/*lul*/}
     }
 

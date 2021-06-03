@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -137,7 +138,7 @@ public class DynamicEmbedPaginator {
     private void clear() {
         if (!isPun) {
             try {
-                botMsg.editMessage(botMsg.getContentRaw()).setActionRows(ActionRow.of()).complete();
+                botMsg.editMessage(botMsg.getContentRaw()).setActionRows(Collections.emptyList()).complete();
             } catch (Exception ignored) {/*lul*/}
         }
     }

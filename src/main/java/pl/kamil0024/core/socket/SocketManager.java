@@ -243,6 +243,14 @@ public class SocketManager {
             return this;
         }
 
+        public Action play(List<String> tracki) {
+            for (String s : tracki) {
+                play(s);
+                setSendMessage(false);
+            }
+            return this;
+        }
+
         public Action queue() {
             manager.sendMessage(new QueueAction(sendMessage, memberId, channelId, socketId));
             return this;

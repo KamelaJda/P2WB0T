@@ -119,8 +119,8 @@ public class PrivateYouTubeCommand extends Command {
                             SocketClient client = socketManager.getClientFromChannel(context.getMember());
 
                             if (client != null) {
-                                SocketManager.Action action = socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId());
-                                action.play(urls.get(0));
+                                socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId())
+                                        .play(urls);
                             } else {
                                 boolean find = false;
                                 for (Map.Entry<Integer, SocketClient> entry : socketManager.getClients().entrySet()) {
@@ -132,7 +132,7 @@ public class PrivateYouTubeCommand extends Command {
                                                 .setSendMessage(false)
                                                 .connect(PlayCommand.getVc(context.getMember()).getId())
                                                 .setSendMessage(true)
-                                                .play(urls.get(0));
+                                                .play(urls);
                                         break;
                                     }
                                 }
