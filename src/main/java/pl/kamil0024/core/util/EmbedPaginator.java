@@ -153,8 +153,8 @@ public class EmbedPaginator {
     private ActionRow getActionRow(int page) {
         List<Button> buttons = new ArrayList<>();
         buttons.add(FIRST_BUTTON.withDisabled(page == 1));
-        buttons.add(LEFT_BUTTON.withLabel(page == 1 ? "" : page - 1 + "").withDisabled(page == 1));
-        buttons.add(RIGHT_BUTTON.withLabel(pages.size() == 1 ? "" : page + 1 + "").withDisabled(pages.size() == 1));
+        buttons.add(LEFT_BUTTON.withLabel(page == 1 ? "-" : page - 1 + "").withDisabled(page == 1));
+        buttons.add(RIGHT_BUTTON.withLabel(pages.size() == 1 ? "-" : page + 1 + "").withDisabled(pages.size() == 1));
         buttons.add(LAST_BUTTON.withDisabled(pages.size() == page));
         buttons.add(STOP_BUTTON);
         return ActionRow.of(buttons);
