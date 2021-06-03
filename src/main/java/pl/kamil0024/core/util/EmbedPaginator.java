@@ -96,7 +96,7 @@ public class EmbedPaginator {
 
     private void waitForReaction() {
         eventWaiter.waitForEvent(ButtonClickEvent.class, this::check,
-                this::handle, secound, TimeUnit.SECONDS, this::clearReactions);
+                this::handle, secound, TimeUnit.SECONDS, this::clear);
     }
 
     private void handle(ButtonClickEvent event) {
@@ -115,7 +115,7 @@ public class EmbedPaginator {
                 thisPage = pages.size();
                 break;
             case "STOP":
-                clearReactions();
+                clear();
                 return;
         }
         botMsg.editMessage(render(thisPage)).setActionRows(getActionRow(thisPage)).override(true).complete();
@@ -138,7 +138,7 @@ public class EmbedPaginator {
         return false;
     }
 
-    private void clearReactions() {
+    private void clear() {
         try {
             botMsg.editMessage(botMsg.getContentRaw()).setActionRows(ActionRow.of()).complete();
         } catch (Exception ignored) {/*lul*/}
@@ -150,11 +150,15 @@ public class EmbedPaginator {
         return pageEmbed.build();
     }
 
-    private ActionRow getActionRow(int page) {
+    public ActionRow getActionRow(int page) {
+        return getActionRow(page, pages);
+    }
+
+    public static ActionRow getActionRow(int page, List<?> pages) {
         List<Button> buttons = new ArrayList<>();
         buttons.add(FIRST_BUTTON.withDisabled(page == 1));
         buttons.add(LEFT_BUTTON.withLabel(page == 1 ? "-" : page - 1 + "").withDisabled(page == 1));
-        buttons.add(RIGHT_BUTTON.withLabel(pages.size() == 1 ? "-" : page + 1 + "").withDisabled(pages.size() == 1));
+        buttons.add(RIGHT_BUTTON.withLabel(pages.size() == page ? "-" : page + 1 + "").withDisabled(pages.size() == page));
         buttons.add(LAST_BUTTON.withDisabled(pages.size() == page));
         buttons.add(STOP_BUTTON);
         return ActionRow.of(buttons);
