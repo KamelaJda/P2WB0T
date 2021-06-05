@@ -108,6 +108,7 @@ public class SocketClient extends Thread {
     public void retrieveMessage(String msg) {
         Log.debug("Nowa wiadomość od serwera: " + msg);
         SocketAction socketAction = GSON.fromJson(msg, SocketAction.class);
+        Log.debug("actionID: " + socketAction.getActionID());
 
         SocketRestAction action = new SocketRestAction(api, musicManager);
         Response response = null;
@@ -157,7 +158,7 @@ public class SocketClient extends Thread {
                     List<Object> obj = new ArrayList<>();
                     obj.add(new QueueHandler.Track(track));
                     obj.add(traki);
-                    Response r = new Response(socketAction, true, "embedtrack", null, obj);
+                    Response r = new Response(socketAction, true, "embedtrack", null, obj, socketAction.getActionID());
                     sendMessage(r);
                 }
 
@@ -166,20 +167,20 @@ public class SocketClient extends Thread {
                     for (AudioTrack track : playlist.getTracks()) {
                         musicManager.play(guild, serwerManager, track, vc);
                     }
-                    Response r = new Response(socketAction, true, "message", null, "dodano " + playlist.getTracks().size() + " piosenek do kolejki (max. limit w kolejce to **10**).");
+                    Response r = new Response(socketAction, true, "message", null, "dodano " + playlist.getTracks().size() + " piosenek do kolejki (max. limit w kolejce to **10**).", socketAction.getActionID());
                     sendMessage(r);
                 }
 
                 @Override
                 public void noMatches() {
-                    Response r = new Response(socketAction, false, "message", "nie znaleziono dopasowań", null);
+                    Response r = new Response(socketAction, false, "message", "nie znaleziono dopasowań", null, socketAction.getActionID());
                     sendMessage(r);
                     if (serwerManager.getPlayer().getPlayingTrack() == null) serwerManager.destroy();
                 }
 
                 @Override
                 public void loadFailed(FriendlyException exception) {
-                    Response r = new Response(socketAction, false, "message", "nie udało się dodać piosenki do kolejki! Error: " + exception.getLocalizedMessage(), null);
+                    Response r = new Response(socketAction, false, "message", "nie udało się dodać piosenki do kolejki! Error: " + exception.getLocalizedMessage(), null, socketAction.getActionID());
                     sendMessage(r);
                     if (serwerManager.getPlayer().getPlayingTrack() == null) serwerManager.destroy();
                 }
@@ -257,6 +258,7 @@ public class SocketClient extends Thread {
         private String messageType;
         private String errorMessage;
         private Object data;
+        private Integer actionID;
     }
 
     private class LeaveListener extends ListenerAdapter {

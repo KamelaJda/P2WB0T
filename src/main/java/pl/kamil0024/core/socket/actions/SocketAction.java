@@ -53,6 +53,7 @@ public interface SocketAction {
         map.put("socketId", getSocketId());
         map.put("args", getArgs());
         map.put("sendMessage", getSendMessage());
+        map.put("actionID", getActionID());
         return SocketServer.GSON.toJson(map);
     }
 
