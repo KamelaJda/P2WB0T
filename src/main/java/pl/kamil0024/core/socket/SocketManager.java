@@ -148,6 +148,12 @@ public class SocketManager {
             if (!response.getAction().isSendMessage()) return;
 
             InteractionHook hook = getHookMap().get(response.getAction().getActionID());
+            Message oryginal = null;
+
+            try {
+                oryginal = hook.retrieveOriginal().complete();
+            } catch (Exception ignored) { }
+
             if (hook == null) logger.error("Nie ma hooka dla getActionID={}", response.getAction().getActionID());
             else getHookMap().remove(response.getAction().getActionID());
 
@@ -155,7 +161,9 @@ public class SocketManager {
                 case "message": {
                     if (response.getData() == null) return;
                     if (hook != null) {
-                        hook.sendMessage(ping + ", " + response.getData()).complete();
+                        if (oryginal != null) oryginal.editMessage(ping + ", " + response.getData())
+                                .override(true).complete();
+                        else hook.sendMessage(ping + ", " + response.getData()).complete();
                     } else {
                         Message msg = txt.sendMessage(ping + ", " + response.getData()).complete();
                         msg.addReaction(CommandExecute.getReaction(msg.getAuthor(), true)).queue();
@@ -171,7 +179,8 @@ public class SocketManager {
                     mb.setEmbed(track.build());
 
                     if (hook != null) {
-                        hook.sendMessage(mb.build()).complete();
+                        if (oryginal != null) oryginal.editMessage(mb.build()).override(true).complete();
+                        else hook.sendMessage(mb.build()).complete();
                     } else {
                         Message msg = txt.sendMessage(mb.build()).complete();
                         msg.addReaction(CommandExecute.getReaction(msg.getAuthor(), true)).queue();

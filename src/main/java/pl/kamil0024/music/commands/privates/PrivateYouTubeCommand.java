@@ -111,14 +111,12 @@ public class PrivateYouTubeCommand extends Command {
                             }
                         }
                         try {
-                            msg.delete().complete();
                             if (lista.isEmpty()) return;
 
                             List<String> urls = new ArrayList<>();
                             lista.forEach(i -> urls.add(QueueCommand.getYtLink(mapa.get(i))));
 
                             SocketClient client = socketManager.getClientFromChannel(context.getMember());
-
                             if (client != null) {
                                 socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId(), context.getHook())
                                         .play(urls);
