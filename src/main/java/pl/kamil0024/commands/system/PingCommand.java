@@ -32,7 +32,7 @@ public class PingCommand extends Command {
         cooldown = 15;
         enabledInRekru = true;
         commandData = getData();
-        hideSlash = true;
+        hideSlash = false;
     }
 
     @Override
