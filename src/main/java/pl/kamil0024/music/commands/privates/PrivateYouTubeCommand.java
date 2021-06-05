@@ -55,6 +55,7 @@ public class PrivateYouTubeCommand extends Command {
         this.socketManager = socketManager;
         this.eventWaiter = eventWaiter;
         this.musicModule = musicModule;
+        hideSlash = false;
         commandData = getData()
                 .addOption(OptionType.STRING, "title", "Tytuł piosenki", true);
     }
@@ -119,7 +120,7 @@ public class PrivateYouTubeCommand extends Command {
                             SocketClient client = socketManager.getClientFromChannel(context.getMember());
 
                             if (client != null) {
-                                socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId())
+                                socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId(), context.getHook())
                                         .play(urls);
                             } else {
                                 boolean find = false;
@@ -128,7 +129,7 @@ public class PrivateYouTubeCommand extends Command {
                                     if (mem == null) continue;
                                     if (mem.getVoiceState() == null || mem.getVoiceState().getChannel() == null) {
                                         find = true;
-                                        socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), entry.getKey())
+                                        socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), entry.getKey(), context.getHook())
                                                 .setSendMessage(false)
                                                 .connect(PlayCommand.getVc(context.getMember()).getId())
                                                 .setSendMessage(true)

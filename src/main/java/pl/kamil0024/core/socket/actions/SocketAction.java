@@ -38,6 +38,9 @@ public interface SocketAction {
 
     void setSendMessage(Boolean bol);
 
+    Integer getActionID();
+    void setActionID(Integer id);
+
     default Map<String, Object> getArgs() {
         return new HashMap<>();
     }

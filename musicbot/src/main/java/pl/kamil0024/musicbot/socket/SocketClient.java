@@ -244,7 +244,7 @@ public class SocketClient extends Thread {
         private String topic;
         private int socketId;
         private Map<String, Object> args;
-
+        private Integer actionID;
     }
 
     @Data
@@ -257,7 +257,6 @@ public class SocketClient extends Thread {
         private String messageType;
         private String errorMessage;
         private Object data;
-
     }
 
     private class LeaveListener extends ListenerAdapter {

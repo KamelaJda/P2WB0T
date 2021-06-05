@@ -47,8 +47,7 @@ public class PrivateLeaveCommand extends Command {
             context.sendTranslate("pleave.no.bot");
             return false;
         }
-        context.send("Komenda wykonana!");
-        socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId())
+        socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId(), context.getHook())
                 .disconnect();
         client.setVoiceChannel(null);
         return true;

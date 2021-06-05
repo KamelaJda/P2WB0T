@@ -32,6 +32,8 @@ public class PlayingTrackAction implements SocketAction {
     private final int socketId;
     private final String voiceChannelId;
 
+    private Integer actionID;
+
     private final String topic = "playingtrack";
 
 }

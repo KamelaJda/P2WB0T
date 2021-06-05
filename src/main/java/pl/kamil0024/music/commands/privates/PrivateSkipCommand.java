@@ -47,8 +47,7 @@ public class PrivateSkipCommand extends Command {
             context.sendTranslate("pleave.no.bot");
             return false;
         }
-        context.send("Komenda wykonana!");
-        socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId()).skip();
+        socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId(), context.getHook()).skip();
         return true;
     }
 

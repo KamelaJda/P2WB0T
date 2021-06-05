@@ -26,7 +26,6 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
 import java.util.Collections;
@@ -45,7 +44,7 @@ public class DynamicEmbedPaginator {
     private final boolean ended = false;
 
     private int thisPage = 1;
-    private boolean isPun;
+    private boolean isPun = false;
 
     private Message botMsg;
     private long botMsgId;
@@ -113,7 +112,6 @@ public class DynamicEmbedPaginator {
 
     private void handleEvent(ButtonClickEvent event) {
         event.deferEdit().queue();
-
         switch (event.getComponentId()) {
             case "FIRST":
                 thisPage = 1;

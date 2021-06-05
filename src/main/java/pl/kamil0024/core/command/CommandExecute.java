@@ -242,7 +242,7 @@ public class CommandExecute extends ListenerAdapter {
 
     @Override
     public void onSlashCommand(SlashCommandEvent e) {
-        if (!e.isFromGuild()) return;
+        if (e.getGuild() == null || !e.isFromGuild()) return;
         Command c = commandManager.commands.get(e.getName());
         if (c != null && c.getCommandData() != null) {
             boolean inRekru = e.getGuild().getId().equals(Ustawienia.instance.rekrutacyjny.guildId);
@@ -307,10 +307,8 @@ public class CommandExecute extends ListenerAdapter {
                 event.setLogger(getClass().getName());
                 event.setThrowable(ex);
                 Sentry.captureEvent(event);
-
                 e.getHook().sendMessage(String.format("Wystąpił błąd! `%s`.", ex)).queue();
             }
-
         }
     }
 

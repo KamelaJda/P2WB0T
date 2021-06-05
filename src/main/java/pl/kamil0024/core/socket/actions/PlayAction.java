@@ -35,6 +35,8 @@ public class PlayAction implements SocketAction {
     private final int socketId;
     private final String trackUrl;
 
+    private Integer actionID;
+
     private final String topic = "play";
 
     @Override

@@ -31,6 +31,8 @@ public class QueueAction implements SocketAction {
     private final String channelId;
     private final int socketId;
 
+    private Integer actionID;
+
     private final String topic = "queue";
 
 }

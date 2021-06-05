@@ -57,7 +57,7 @@ public class PrivateQueueCommand extends Command {
             return false;
         }
         context.send("Komenda wykonana!");
-        socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId())
+        socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId(), context.getHook())
                 .queue();
         return true;
     }

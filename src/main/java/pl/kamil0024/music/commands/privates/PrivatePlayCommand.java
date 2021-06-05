@@ -53,7 +53,7 @@ public class PrivatePlayCommand extends Command {
         name = "pplay";
         aliases.add("privateplay");
         category = CommandCategory.PRIVATE_CHANNEL;
-        hideSlash = true;
+        hideSlash = false;
         commandData = getData()
                 .addOption(OptionType.STRING, "link", "Link do piosenki lub playlisty YouTube'a/Spotify", true);
         this.socketManager = socketManager;
@@ -134,15 +134,14 @@ public class PrivatePlayCommand extends Command {
         SocketClient client = socketManager.getClientFromChannel(context.getMember());
 
         if (client != null) {
-            SocketManager.Action sm = socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId())
+            SocketManager.Action sm = socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId(), context.getHook())
                     .setSendMessage(false);
             if (!linki.isEmpty()) {
-                context.send("Dodaje **" + linki.size() + "** piosenek do kolejki");
                 for (String s : linki) {
                     sm.play(s);
                 }
                 return true;
-            } else context.send("Komenda wykonana pomyślnie!");
+            }
             sm.setSendMessage(true).play(link);
         } else {
             boolean find = false;
@@ -151,16 +150,15 @@ public class PrivatePlayCommand extends Command {
                 if (mem == null) continue;
                 if (mem.getVoiceState() == null || mem.getVoiceState().getChannel() == null) {
                     find = true;
-                    SocketManager.Action sm = socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), entry.getKey())
+                    SocketManager.Action sm = socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), entry.getKey(), context.getHook())
                             .setSendMessage(false)
                             .connect(PlayCommand.getVc(context.getMember()).getId());
                     if (!linki.isEmpty()) {
-                        context.send("Dodaje **" + linki.size() + "** piosenek do kolejki");
                         for (String s : linki) {
                             sm.play(s);
                         }
                         break;
-                    } else context.send("Komenda wykonana pomyślnie!");
+                    }
                     sm.setSendMessage(true).play(link);
                     break;
                 }
@@ -240,8 +238,7 @@ public class PrivatePlayCommand extends Command {
                     return false;
                 }
 
-            } catch (Exception ignored) {
-            }
+            } catch (Exception ignored) { }
         }
         return members.size() <= 1;
     }

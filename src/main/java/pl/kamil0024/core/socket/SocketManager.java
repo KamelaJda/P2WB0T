@@ -31,9 +31,12 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.CommandExecute;
 import pl.kamil0024.core.database.VoiceStateDao;
@@ -43,6 +46,7 @@ import pl.kamil0024.core.socket.actions.*;
 import pl.kamil0024.core.util.EmbedPaginator;
 import pl.kamil0024.core.util.EventWaiter;
 import pl.kamil0024.core.util.GsonUtil;
+import pl.kamil0024.moderation.commands.StatusCommand;
 import pl.kamil0024.music.commands.PlayCommand;
 import pl.kamil0024.music.commands.privates.PrivateQueueCommand;
 
@@ -51,8 +55,14 @@ import java.util.*;
 @SuppressWarnings("unused")
 public class SocketManager {
 
+    private final static Random RANDOM = new Random();
+    private final static Logger logger = LoggerFactory.getLogger(SocketManager.class);
+
     @Getter
     private final HashMap<Integer, SocketClient> clients;
+
+    @Getter
+    private final Map<Integer, InteractionHook> hookMap = new HashMap<>();
 
     @Getter
     private final HashMap<Integer, String> botIds;
@@ -83,7 +93,7 @@ public class SocketManager {
             if (vsc.getQueue() != null) {
                 VoiceChannel vc = api.getVoiceChannelById(vsc.getVoiceChannel());
                 if (vc != null) {
-                    Action act = getAction("0", Ustawienia.instance.channel.moddc, socketJson.getId())
+                    Action act = getAction("0", Ustawienia.instance.channel.moddc, socketJson.getId(), null)
                             .setSendMessage(false);
                     act.connect(vc.getId());
                     vsc.getQueue().forEach(act::play);
@@ -138,11 +148,19 @@ public class SocketManager {
 
             if (!response.getAction().isSendMessage()) return;
 
+            InteractionHook hook = getHookMap().get(response.getAction().getActionID());
+            if (hook == null) logger.error("Nie ma hooka dla getActionID={}", response.getAction().getActionID());
+            else getHookMap().remove(response.getAction().getActionID());
+
             switch (response.getMessageType()) {
                 case "message": {
                     if (response.getData() == null) return;
-                    Message msg = txt.sendMessage(ping + ", " + response.getData()).complete();
-                    msg.addReaction(CommandExecute.getReaction(msg.getAuthor(), true)).queue();
+                    if (hook != null) {
+                        hook.sendMessage(ping + ", " + response.getData()).complete();
+                    } else {
+                        Message msg = txt.sendMessage(ping + ", " + response.getData()).complete();
+                        msg.addReaction(CommandExecute.getReaction(msg.getAuthor(), true)).queue();
+                    }
                     break;
                 }
                 case "embedtrack": {
@@ -152,11 +170,15 @@ public class SocketManager {
                     MessageBuilder mb = new MessageBuilder();
                     mb.setContent(ping + ", dodano do kolejki!");
                     mb.setEmbed(track.build());
-                    Message msg = txt.sendMessage(mb.build()).complete();
-                    msg.addReaction(CommandExecute.getReaction(msg.getAuthor(), true)).queue();
 
-                    List<String> queue = GsonUtil.fromJSON(GsonUtil.toJSON(obj[1]), new TypeToken<List<String>>() {
-                    }.getType());
+                    if (hook != null) {
+                        hook.sendMessage(mb.build()).complete();
+                    } else {
+                        Message msg = txt.sendMessage(mb.build()).complete();
+                        msg.addReaction(CommandExecute.getReaction(msg.getAuthor(), true)).queue();
+                    }
+
+                    List<String> queue = GsonUtil.fromJSON(GsonUtil.toJSON(obj[1]), new TypeToken<List<String>>() {}.getType());
                     getClients().get(socketJson.getId()).setTracksList(queue);
                     break;
                 }
@@ -171,7 +193,6 @@ public class SocketManager {
                     }
                     new EmbedPaginator(tracks, Objects.requireNonNull(api.getUserById(response.getAction().getMemberId())), eventWaiter)
                             .create(txt);
-
                     break;
             }
 
@@ -182,12 +203,15 @@ public class SocketManager {
 
     }
 
-    public synchronized void sendMessage(SocketAction socketAction) {
+    public synchronized void sendMessage(SocketAction socketAction, InteractionHook hook) {
+        int i = RANDOM.nextInt(Integer.MAX_VALUE);
+        socketAction.setActionID(i);
         SocketClient client = clients.get(socketAction.getSocketId());
         if (client == null) {
             Log.newError("Próbowano wysłać wiadomość do socketa %s, ale ten nie istnieje!", getClass(), socketAction.getSocketId());
             return;
         }
+        getHookMap().put(i, hook);
         client.getWriter().println(socketAction.toJson());
     }
 
@@ -198,8 +222,8 @@ public class SocketManager {
         botIds.remove(socketDisconnect.getId());
     }
 
-    public Action getAction(String memberId, String channelId, int socketId) {
-        return new Action(this, memberId, channelId, socketId, true);
+    public Action getAction(String memberId, String channelId, int socketId, InteractionHook hook) {
+        return new Action(this, memberId, channelId, socketId, hook, true);
     }
 
     @Nullable
@@ -225,21 +249,22 @@ public class SocketManager {
         private final String memberId;
         private final String channelId;
         private final int socketId;
+        private final InteractionHook hook;
 
         private Boolean sendMessage;
 
         public Action connect(String voiceChannelId) {
-            manager.sendMessage(new ConnectAction(sendMessage, memberId, channelId, socketId, voiceChannelId));
+            manager.sendMessage(new ConnectAction(sendMessage, memberId, channelId, socketId, voiceChannelId, 0), hook);
             return this;
         }
 
         public Action disconnect() {
-            manager.sendMessage(new DisconnectAction(sendMessage, memberId, channelId, socketId));
+            manager.sendMessage(new DisconnectAction(sendMessage, memberId, channelId, socketId, 0), hook);
             return this;
         }
 
         public Action play(String track) {
-            manager.sendMessage(new PlayAction(sendMessage, memberId, channelId, socketId, track));
+            manager.sendMessage(new PlayAction(sendMessage, memberId, channelId, socketId, track, 0), hook);
             return this;
         }
 
@@ -252,17 +277,17 @@ public class SocketManager {
         }
 
         public Action queue() {
-            manager.sendMessage(new QueueAction(sendMessage, memberId, channelId, socketId));
+            manager.sendMessage(new QueueAction(sendMessage, memberId, channelId, socketId, 0), hook);
             return this;
         }
 
         public Action shutdown() {
-            manager.sendMessage(new ShutdownAction(sendMessage, memberId, channelId, socketId));
+            manager.sendMessage(new ShutdownAction(sendMessage, memberId, channelId, socketId, 0), hook);
             return this;
         }
 
         public Action skip() {
-            manager.sendMessage(new SkipAction(sendMessage, memberId, channelId, socketId));
+            manager.sendMessage(new SkipAction(sendMessage, memberId, channelId, socketId, 0), hook);
             return this;
         }
 
@@ -288,8 +313,7 @@ public class SocketManager {
 
         @Data
         public static class SocketAction {
-            public SocketAction() {
-            }
+            public SocketAction() { }
 
             private boolean sendMessage;
             private String memberId;
@@ -297,7 +321,7 @@ public class SocketManager {
             private String topic;
             private int socketId;
             private Map<String, Object> args;
-
+            private Integer actionID;
         }
 
     }

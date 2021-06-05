@@ -37,6 +37,8 @@ public class ConnectAction implements SocketAction {
 
     private final String topic = "connect";
 
+    private Integer actionID;
+
     @Override
     public Map<String, Object> getArgs() {
         Map<String, Object> map = new HashMap<>();
