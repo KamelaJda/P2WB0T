@@ -353,7 +353,7 @@ public class B0T {
                     vsc.setQueue(new ArrayList<>(soc.getTracksList()));
                     voiceStateDao.save(vsc);
                 }
-                socketManager.getAction("0", Ustawienia.instance.channel.moddc, entry.getKey())
+                socketManager.getAction("0", Ustawienia.instance.channel.moddc, entry.getKey(), null)
                         .setSendMessage(false).shutdown();
             }
 

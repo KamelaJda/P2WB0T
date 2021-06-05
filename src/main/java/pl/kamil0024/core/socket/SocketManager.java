@@ -46,7 +46,6 @@ import pl.kamil0024.core.socket.actions.*;
 import pl.kamil0024.core.util.EmbedPaginator;
 import pl.kamil0024.core.util.EventWaiter;
 import pl.kamil0024.core.util.GsonUtil;
-import pl.kamil0024.moderation.commands.StatusCommand;
 import pl.kamil0024.music.commands.PlayCommand;
 import pl.kamil0024.music.commands.privates.PrivateQueueCommand;
 
@@ -211,7 +210,7 @@ public class SocketManager {
             Log.newError("Próbowano wysłać wiadomość do socketa %s, ale ten nie istnieje!", getClass(), socketAction.getSocketId());
             return;
         }
-        getHookMap().put(i, hook);
+        if (hook != null) getHookMap().put(i, hook);
         client.getWriter().println(socketAction.toJson());
     }
 
