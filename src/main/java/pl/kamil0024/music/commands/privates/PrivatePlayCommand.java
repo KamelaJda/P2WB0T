@@ -69,8 +69,8 @@ public class PrivatePlayCommand extends Command {
         String link = Objects.requireNonNull(context.getEvent().getOption("link")).getAsString();
         List<String> linki = new ArrayList<>();
 
-        String load = Objects.requireNonNull(context.getJDA().getEmoteById(Ustawienia.instance.emote.load)).getAsMention();
-        context.send(load + " Ładuje...");
+        context.send(Objects.requireNonNull(context.getShardManager().getEmoteById(Ustawienia.instance.emote.load)).getAsMention() +
+                " Ładuje...");
 
         if (link.contains("https://open.spotify.com/")) {
             List<String> iteml = new ArrayList<>();

@@ -51,9 +51,8 @@ public class SocketClient extends Thread {
 
     private final static Gson GSON = new Gson();
 
-    Socket socket = null;
-    OutputStream output;
-    PrintWriter writer;
+    private Socket socket = null;
+    private PrintWriter writer;
 
     public final MusicManager musicManager;
     public final ShardManager api;
@@ -74,7 +73,7 @@ public class SocketClient extends Thread {
 
                try {
                    socket = new Socket("localhost", 7070);
-                   output = socket.getOutputStream();
+                   OutputStream output = socket.getOutputStream();
                    writer = new PrintWriter(output, true);
                    sendMessage("setBotId: " + Ustawienia.instance.bot.botId);
                    break;

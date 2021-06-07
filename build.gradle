@@ -30,7 +30,7 @@ def versionObj = new Version(major: 2)
 version = "$versionObj".toString()
 mainClassName = 'pl.kamil0024.core.Main'
 
-def jdaVersion = '4.2.0_222'
+def jdaVersion = 'bf71f22'
 
 repositories {
     maven { url = uri("https://dl.bintray.com/sedmelluq/com.sedmelluq") }
@@ -43,9 +43,7 @@ repositories {
 }
 
 dependencies {
-
-//    compile 'net.dv8tion:JDA:' + jdaVersion
-    compile 'com.github.dv8fromtheworld:jda:05d58f1'
+    compile 'com.github.dv8fromtheworld:jda:' + jdaVersion
     compile 'com.intellij:annotations:+@jar'
     compile 'com.github.queer:async-postgres-jsonb-orm:e348e109f8'
     compile 'org.json:json:20090211'
@@ -97,13 +95,6 @@ shadowJar {
 
 class Version {
     String major
-
-    static String getCommit() {
-        if (Os.isFamily(Os.FAMILY_WINDOWS)) return "???"
-        def proc = 'git rev-list --count HEAD'.execute()
-        proc.waitFor()
-        return proc.text.trim()
-    }
 
     static String getBuild() {
         if (Os.isFamily(Os.FAMILY_WINDOWS)) return "???"
