@@ -111,10 +111,9 @@ public class SocketClient extends Thread {
         Log.debug("actionID: " + socketAction.getActionID());
 
         SocketRestAction action = new SocketRestAction(api, musicManager);
-        Response response = null;
+        Response response = new Response();
 
         if (socketAction.getTopic().equals("play")) {
-            response = new Response();
             response.setMessageType("message");
             response.setSuccess(false);
 
@@ -137,6 +136,7 @@ public class SocketClient extends Thread {
             }
 
             if (!inChannel) {
+                response.setAction(socketAction);
                 response.setSuccess(false);
                 response.setErrorMessage("bot nie jest na żadnym kanale!");
                 sendMessage(response);

@@ -136,13 +136,19 @@ public class PrivatePlayCommand extends Command {
         }
 
         SocketClient client = socketManager.getClientFromChannel(context.getMember());
-
-        for (Map.Entry<Integer, SocketClient> entry : socketManager.getClients().entrySet()) {
-            Member mem = context.getGuild().getMemberById(entry.getValue().getBotId());
-            if (mem == null) continue;
-            if (mem.getVoiceState() == null || mem.getVoiceState().getChannel() == null) {
-                client = entry.getValue();
-                break;
+        SocketManager.Action sm = null;
+        if (client == null) {
+            for (Map.Entry<Integer, SocketClient> entry : socketManager.getClients().entrySet()) {
+                Member mem = context.getGuild().getMemberById(entry.getValue().getBotId());
+                if (mem == null) continue;
+                if (mem.getVoiceState() == null || mem.getVoiceState().getChannel() == null) {
+                    sm = socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), entry.getKey(), context.getHook())
+                            .setSendMessage(false)
+                            .connect(PlayCommand.getVc(context.getMember()).getId())
+                            .setSendMessage(true);
+                    client = entry.getValue();
+                    break;
+                }
             }
         }
 
@@ -151,8 +157,10 @@ public class PrivatePlayCommand extends Command {
             return false;
         }
 
-        SocketManager.Action sm = socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId(), context.getHook())
-                .setSendMessage(true);
+        if (sm == null) {
+            sm = socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId(), context.getHook())
+                    .setSendMessage(true);
+        }
 
         if (!linki.isEmpty()) sm.play(linki);
         else sm.play(link);
