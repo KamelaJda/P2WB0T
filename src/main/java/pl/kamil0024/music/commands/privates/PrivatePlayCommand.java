@@ -137,39 +137,25 @@ public class PrivatePlayCommand extends Command {
 
         SocketClient client = socketManager.getClientFromChannel(context.getMember());
 
-        if (client != null) {
-            SocketManager.Action sm = socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId(), context.getHook())
-                    .setSendMessage(true);
-            if (!linki.isEmpty()) {
-                sm.play(linki);
-                return true;
+        for (Map.Entry<Integer, SocketClient> entry : socketManager.getClients().entrySet()) {
+            Member mem = context.getGuild().getMemberById(entry.getValue().getBotId());
+            if (mem == null) continue;
+            if (mem.getVoiceState() == null || mem.getVoiceState().getChannel() == null) {
+                client = entry.getValue();
+                break;
             }
-            sm.play(link);
-        } else {
-            boolean find = false;
-            for (Map.Entry<Integer, SocketClient> entry : socketManager.getClients().entrySet()) {
-                Member mem = context.getGuild().getMemberById(entry.getValue().getBotId());
-                if (mem == null) continue;
-                if (mem.getVoiceState() == null || mem.getVoiceState().getChannel() == null) {
-                    find = true;
-                    SocketManager.Action sm = socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), entry.getKey(), context.getHook())
-                            .setSendMessage(false)
-                            .connect(PlayCommand.getVc(context.getMember()).getId())
-                            .setSendMessage(true);
-                    if (!linki.isEmpty()) {
-                        sm.play(linki);
-                        break;
-                    }
-                    sm.setSendMessage(true).play(link);
-                    break;
-                }
-            }
-            if (!find) {
-                context.sendTranslate("pplay.to.small.bot");
-                return false;
-            }
-
         }
+
+        if (client == null) {
+            context.sendTranslate("pplay.to.small.bot");
+            return false;
+        }
+
+        SocketManager.Action sm = socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId(), context.getHook())
+                .setSendMessage(true);
+
+        if (!linki.isEmpty()) sm.play(linki);
+        else sm.play(link);
         return true;
     }
 

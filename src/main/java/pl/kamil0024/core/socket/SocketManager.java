@@ -166,15 +166,12 @@ public class SocketManager {
                     if (hook != null) {
                         logger.debug("hook nie jest nullem");
                         if (original != null) {
-                            logger.debug("edytuje oryginalną wiadomość");
                             original.editMessage(ping + ", " + response.getData())
                                     .override(true).complete();
                         } else {
-                            logger.debug("tworze nowa wiadomosc");
                             hook.sendMessage(ping + ", " + response.getData()).complete();
                         }
                     } else {
-                        logger.debug("pisze wiadomosc na kanale");
                         Message msg = txt.sendMessage(ping + ", " + response.getData()).complete();
                         msg.addReaction(CommandExecute.getReaction(msg.getAuthor(), true)).queue();
                     }
