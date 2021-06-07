@@ -159,12 +159,22 @@ public class SocketManager {
 
             switch (response.getMessageType()) {
                 case "message": {
-                    if (response.getData() == null) return;
+                    if (response.getData() == null) {
+                        logger.debug("Nie ma daty!");
+                        return;
+                    }
                     if (hook != null) {
-                        if (oryginal != null) oryginal.editMessage(ping + ", " + response.getData())
-                                .override(true).complete();
-                        else hook.sendMessage(ping + ", " + response.getData()).complete();
+                        logger.debug("hook nie jest nullem");
+                        if (oryginal != null) {
+                            logger.debug("edytuje oryginalną wiadomość");
+                            oryginal.editMessage(ping + ", " + response.getData())
+                                    .override(true).complete();
+                        } else {
+                            logger.debug("tworze nowa wiadomosc");
+                            hook.sendMessage(ping + ", " + response.getData()).complete();
+                        }
                     } else {
+                        logger.debug("pisze wiadomosc na kanale");
                         Message msg = txt.sendMessage(ping + ", " + response.getData()).complete();
                         msg.addReaction(CommandExecute.getReaction(msg.getAuthor(), true)).queue();
                     }
