@@ -137,9 +137,7 @@ public class PrivatePlayCommand extends Command {
             SocketManager.Action sm = socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId(), context.getHook())
                     .setSendMessage(false);
             if (!linki.isEmpty()) {
-                for (String s : linki) {
-                    sm.play(s);
-                }
+                sm.play(linki);
                 return true;
             }
             sm.setSendMessage(true).play(link);
@@ -154,9 +152,7 @@ public class PrivatePlayCommand extends Command {
                             .setSendMessage(false)
                             .connect(PlayCommand.getVc(context.getMember()).getId());
                     if (!linki.isEmpty()) {
-                        for (String s : linki) {
-                            sm.play(s);
-                        }
+                        sm.play(linki);
                         break;
                     }
                     sm.setSendMessage(true).play(link);
