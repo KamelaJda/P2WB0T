@@ -141,7 +141,7 @@ public class EmbedPaginator {
 
     private void clear() {
         try {
-            botMsg.editMessage(botMsg.getContentRaw()).override(true).setActionRows(Collections.emptyList()).complete();
+            botMsg.editMessage("xd").setActionRows(Collections.emptyList()).complete();
         } catch (Exception ignored) {/*lul*/}
     }
 
