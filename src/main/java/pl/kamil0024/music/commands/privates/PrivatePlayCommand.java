@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
 import pl.kamil0024.core.command.SlashContext;
@@ -67,6 +68,9 @@ public class PrivatePlayCommand extends Command {
 
         String link = Objects.requireNonNull(context.getEvent().getOption("link")).getAsString();
         List<String> linki = new ArrayList<>();
+
+        String load = Objects.requireNonNull(context.getJDA().getEmoteById(Ustawienia.instance.emote.load)).getAsMention();
+        context.send(load + " Ładuje...");
 
         if (link.contains("https://open.spotify.com/")) {
             List<String> iteml = new ArrayList<>();
@@ -135,12 +139,12 @@ public class PrivatePlayCommand extends Command {
 
         if (client != null) {
             SocketManager.Action sm = socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId(), context.getHook())
-                    .setSendMessage(false);
+                    .setSendMessage(true);
             if (!linki.isEmpty()) {
                 sm.play(linki);
                 return true;
             }
-            sm.setSendMessage(true).play(link);
+            sm.play(link);
         } else {
             boolean find = false;
             for (Map.Entry<Integer, SocketClient> entry : socketManager.getClients().entrySet()) {
@@ -150,7 +154,8 @@ public class PrivatePlayCommand extends Command {
                     find = true;
                     SocketManager.Action sm = socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), entry.getKey(), context.getHook())
                             .setSendMessage(false)
-                            .connect(PlayCommand.getVc(context.getMember()).getId());
+                            .connect(PlayCommand.getVc(context.getMember()).getId())
+                            .setSendMessage(true);
                     if (!linki.isEmpty()) {
                         sm.play(linki);
                         break;

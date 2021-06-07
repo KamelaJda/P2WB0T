@@ -359,8 +359,11 @@ public class ChatListener extends ListenerAdapter {
 
     public static int containsCaps(String msg) {
         msg = msg.replaceAll(" ", "")
-                .replaceAll("<@!?([0-9])*>", "")
-                .replaceAll("([xX])", "").replaceAll("([dD])", "");
+                .replaceAll("<@!?([0-9])*>", "");
+
+        if (containsFlood(msg) < 10) {
+            msg = msg.replaceAll("([xX])", "").replaceAll("([dD])", "");
+        }
         int caps = 0;
         char[] split = msg.toCharArray();
         if (split.length < 5) return 0;

@@ -148,10 +148,10 @@ public class SocketManager {
             if (!response.getAction().isSendMessage()) return;
 
             InteractionHook hook = getHookMap().get(response.getAction().getActionID());
-            Message oryginal = null;
+            Message original = null;
 
             try {
-                oryginal = hook.retrieveOriginal().complete();
+                original = hook.retrieveOriginal().complete();
             } catch (Exception ignored) { }
 
             if (hook == null) logger.error("Nie ma hooka dla getActionID={}", response.getAction().getActionID());
@@ -165,9 +165,9 @@ public class SocketManager {
                     }
                     if (hook != null) {
                         logger.debug("hook nie jest nullem");
-                        if (oryginal != null) {
+                        if (original != null) {
                             logger.debug("edytuje oryginalną wiadomość");
-                            oryginal.editMessage(ping + ", " + response.getData())
+                            original.editMessage(ping + ", " + response.getData())
                                     .override(true).complete();
                         } else {
                             logger.debug("tworze nowa wiadomosc");
@@ -189,7 +189,7 @@ public class SocketManager {
                     mb.setEmbed(track.build());
 
                     if (hook != null) {
-                        if (oryginal != null) oryginal.editMessage(mb.build()).override(true).complete();
+                        if (original != null) original.editMessage(mb.build()).override(true).complete();
                         else hook.sendMessage(mb.build()).complete();
                     } else {
                         Message msg = txt.sendMessage(mb.build()).complete();
