@@ -27,10 +27,13 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.logger.Log;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class ComponentListener extends ListenerAdapter {
@@ -80,6 +83,7 @@ public class ComponentListener extends ListenerAdapter {
     private void createChannel(ButtonClickEvent e) {
         Guild guild = e.getGuild();
         if (guild == null) return;
+        e.deferEdit().queue();
 
         Category category = getCategory(guild);
 
@@ -152,14 +156,19 @@ public class ComponentListener extends ListenerAdapter {
     }
 
     public static GuildChannel getTicketChannel(ChannelType type, Guild guild, String user) {
+        List<? extends GuildChannel> gc;
         switch (type) {
             case TEXT:
-                return guild.getTextChannelsByName(String.format(CHANNEL_FORMAT, user), true).get(0);
+                gc = guild.getTextChannelsByName(String.format(CHANNEL_FORMAT, user), true);
+                break;
             case VOICE:
-                return guild.getVoiceChannelsByName(String.format(CHANNEL_FORMAT, user), true).get(0);
+                gc = guild.getVoiceChannelsByName(String.format(CHANNEL_FORMAT, user), true);
+                break;
             default:
                 return null;
         }
+        if (gc.size() == 0) return null;
+        return gc.get(0);
     }
 
 }
