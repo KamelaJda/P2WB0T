@@ -120,7 +120,6 @@ public class EvalCommand extends Command {
 
     @Override
     public boolean execute(@NotNull CommandContext context) {
-        context.getGuild().updateCommands().queue();
         String kod = context.getArgsToString(0);
         if (context.getArgs().get(0) == null || kod.isEmpty()) throw new UsageException();
 

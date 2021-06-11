@@ -330,7 +330,7 @@ public class B0T {
         List<CommandData> data = commandManager.getSlashCommands()
                 .stream().map(Command::getCommandData)
                 .collect(Collectors.toList());
-        logger.info("Ładuje slash komendy " + commandManager.getSlashCommands().size());
+        logger.info("Ładuje {} slash komend", data.size());
         primGuild.updateCommands().addCommands(data).queue();
 
         api.setStatus(OnlineStatus.ONLINE);

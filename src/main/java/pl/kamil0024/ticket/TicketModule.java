@@ -27,6 +27,7 @@ import pl.kamil0024.core.database.TicketDao;
 import pl.kamil0024.core.module.Modul;
 import pl.kamil0024.core.redis.RedisManager;
 import pl.kamil0024.core.util.EventWaiter;
+import pl.kamil0024.ticket.components.ComponentListener;
 import pl.kamil0024.ticket.config.TicketRedisManager;
 import pl.kamil0024.ticket.listener.VoiceChatListener;
 
@@ -61,6 +62,7 @@ public class TicketModule implements Modul {
     public boolean startUp() {
         vcl = new VoiceChatListener(ticketDao, ticketRedisManager, eventWaiter, redisManager);
         api.addEventListener(vcl);
+        api.addEventListener(new ComponentListener());
         return true;
     }
 
