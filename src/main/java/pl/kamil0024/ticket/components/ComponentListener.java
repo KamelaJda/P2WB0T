@@ -288,7 +288,12 @@ public class ComponentListener extends ListenerAdapter {
                     for (int i = 0; i < messages.size(); i++) {
                         int from = Math.max(0, page * 2_000);
                         int to = Math.min(string.length(), (page + 1) * 2_000);
-                        rawMessages.add(string.substring(from, to));
+                        if (from > string.length()) break;
+                        try {
+                            rawMessages.add(string.substring(from, to));
+                        } catch (Exception exception) {
+                            break;
+                        }
                         page++;
                     }
 
@@ -307,10 +312,11 @@ public class ComponentListener extends ListenerAdapter {
 
                 } catch (Exception exception) {
                     Log.newError(exception, getClass());
+                    toDelete.remove(e.getChannel().getId());
                     e.getTextChannel().sendMessage("Nie udało się usunąć kanału! :(").complete();
                 }
             };
-            ses.schedule(run, 30, TimeUnit.SECONDS);
+            ses.schedule(run, 5, TimeUnit.SECONDS); // TODO: 30 sekund
         }
     }
 
