@@ -31,10 +31,8 @@ import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.logger.Log;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 
 public class ComponentListener extends ListenerAdapter {
 
@@ -50,8 +48,9 @@ public class ComponentListener extends ListenerAdapter {
     );
 
     public static final ActionRow actionsRow = ActionRow.of(
+            Button.success("TICKET-TAKE", "Przydziel siebie do pomocy"),
             Button.secondary("TICKET-CREATE_VC", "Utwórz kanał głosowy"),
-            Button.danger("TICKET-CLOSE", "Utwórz kanał głosowy")
+            Button.danger("TICKET-CLOSE", "Zamknij kanał pomocy")
     );
 
     /**
@@ -63,7 +62,16 @@ public class ComponentListener extends ListenerAdapter {
     private static final long VC_RAW_PERMS = Permission.getRaw(Permission.VOICE_CONNECT, Permission.VOICE_SPEAK, Permission.VIEW_CHANNEL);
     private static final long TXT_RAW_PERMS = Permission.getRaw(Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_HISTORY, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE);
 
-    public ComponentListener() { }
+    private final ScheduledExecutorService ses;
+
+    private final Map<String, ScheduledFuture<?>> futureMap;
+    private final List<String> toDelete;
+
+    public ComponentListener() {
+        ses =  Executors.newScheduledThreadPool(5);
+        futureMap = new HashMap<>();
+        toDelete = new ArrayList<>();
+    }
 
     @Override
     public void onButtonClick(@NotNull ButtonClickEvent e) {
@@ -76,8 +84,16 @@ public class ComponentListener extends ListenerAdapter {
                 break;
             case BUTTON_NAME:
                 createChannel(e);
+                break;
+            case "TICKET-CREATE_VC":
+            case "TICKET-CLOSE":
+                Member member = e.getMember();
+                if (member != null)
+                    member.getRoles().stream()
+                            .filter(f -> f.getId().equals("762345077624274964")) // TODO: Ustawienia.instance.rangi.ekipa
+                            .findAny()
+                            .ifPresent(r -> channelAction(e));
         }
-
     }
 
     private void createChannel(ButtonClickEvent e) {
@@ -86,6 +102,12 @@ public class ComponentListener extends ListenerAdapter {
         e.deferEdit().queue();
 
         Category category = getCategory(guild);
+
+        if (category == null) {
+            Log.newError("getCategory(Guild) == null", getClass());
+            sendAndDelete(e.getTextChannel(), e.getUser().getAsMention() + ", nie udało się odnaleźć kategorii");
+            return;
+        }
 
         if (category.getChannels().size() >= MAX_CHANNELS) {
             sendAndDelete(e.getTextChannel(), e.getUser().getAsMention() + ", nie można stworzyć ticketa z powodu zbyt dużej ilości kanałów! " +
@@ -108,7 +130,6 @@ public class ComponentListener extends ListenerAdapter {
                     .setTopic("Kanał pomocy użytkownika " + e.getUser().getAsMention());
 
             TextChannel channel = action.complete();
-
             sendAndDelete(e.getTextChannel(), e.getUser().getAsMention() + ", kanał pomocy " + channel.getAsMention() + " został stworzony!");
 
             channel.sendMessage("Cześć " + e.getUser().getAsMention() + ", \n" +
@@ -118,6 +139,8 @@ public class ComponentListener extends ListenerAdapter {
                     .setActionRows(categoryRow)
                     .complete();
 
+            futureMap.put(channel.getId(), ses.schedule(() -> channel.delete().complete(), 10, TimeUnit.SECONDS)); // TODO: 5 minut
+
         } catch (Exception ex) {
             Log.newError(ex, getClass());
             sendAndDelete(e.getTextChannel(), e.getUser().getAsMention() + ", nie udało się stworzyć kanału :(");
@@ -126,33 +149,107 @@ public class ComponentListener extends ListenerAdapter {
 
     private void chooseCategory(ButtonClickEvent e) {
         if (e.getMessage() != null) e.getMessage().delete().queue();
+
+        ScheduledFuture<?> future = futureMap.get(e.getChannel().getId());
+        future.cancel(true);
+        futureMap.remove(e.getChannel().getId());
+
         e.deferEdit().queue();
 
         String extraContext = "";
         if (e.getComponentId().equals("TICKET-APELACJE")) {
-            extraContext = "Aby administrator podjął odpowiednie czynności musisz napisać " +
+            extraContext = "\n**UWAGA** Aby administrator podjął odpowiednie czynności musisz napisać " +
                     "apelacje na forum (<https://p2w.pl/forum/9-odwołanie-od-bana/>). " +
                     "Po napisaniu apelacji, podeślij tutaj linka do tematu.";
         }
 
         e.getTextChannel()
-                .sendMessage("W sumie nie wiem co tutaj dać. Akcje pod tą wiadomością może wykonywać **tylko** administracja.\n" + extraContext)
+                .sendMessage("Opisz tutaj swój problem i poczekaj, aż któryś z administratorów dołączy do Twojego zgłoszenia. " +
+                        "Akcje pod tą wiadomością może wykonywać **tylko** administracja.\n" + extraContext)
                 .setActionRows(actionsRow)
                 .complete();
-
     }
 
-    public static Category getCategory(Guild guild) {
-        Category byId = guild.getCategoryById(CATEGORY);
-        if (byId == null) {
-            Log.newError("Kategoria jest nullem", ComponentListener.class);
-            throw new NullPointerException("Kategoria jest nullem!");
+    private void channelAction(ButtonClickEvent e) {
+        if (e.getGuild() == null) return;
+        e.deferEdit().queue();
+
+        if (e.getComponentId().equals("TICKET-TAKE")) {
+            Button button = Objects.requireNonNull(e.getComponent()).asDisabled();
+            ActionRow row = ComponentListener.actionsRow;
+            row.getComponents().remove(e.getComponent());
+            row.getComponents().add(button);
+
+            e.getMessage().editMessage(e.getMessage().getContentRaw()).setActionRows(row).complete();
+            e.getTextChannel().sendMessage("Administrator " + e.getUser().getAsMention() + " dołącza do pomocy")
+                    .complete();
+            return;
         }
-        return byId;
+
+        if (e.getComponentId().equals("TICKET-CREATE_VC")) {
+            if (getTicketChannel(ChannelType.VOICE, e.getGuild(), e.getUser().getId()) != null) {
+                e.getTextChannel().sendMessage(e.getUser().getAsMention() + ", kanał głosowy jest już stworzony!")
+                        .complete();
+            }
+
+            Category category = getCategory(e.getGuild());
+
+            if (category == null) {
+                Log.newError("getCategory(Guild) == null", getClass());
+                sendAndDelete(e.getTextChannel(), e.getUser().getAsMention() + ", nie udało się odnaleźć kategorii");
+                return;
+            }
+
+            if (category.getChannels().size() >= MAX_CHANNELS) {
+                sendAndDelete(e.getTextChannel(), e.getUser().getAsMention() + ", nie można stworzyć kanału z powodu zbyt dużej ilości kanałów! " +
+                        "Spróbuj ponownie później");
+                return;
+            }
+
+            ChannelAction<VoiceChannel> action = e.getGuild().createVoiceChannel(String.format(CHANNEL_FORMAT, e.getUser().getId()))
+                    .setParent(getCategory(e.getGuild()))
+                    .addMemberPermissionOverride(e.getUser().getIdLong(), VC_RAW_PERMS, 0)
+                    .addRolePermissionOverride(Long.parseLong(Ustawienia.instance.rangi.ekipa), VC_RAW_PERMS, 0)
+                    .addMemberPermissionOverride(e.getGuild().getSelfMember().getIdLong(), Permission.getRaw(Permission.VOICE_CONNECT, Permission.VOICE_SPEAK, Permission.VIEW_CHANNEL, Permission.MANAGE_CHANNEL), 0)
+                    .addRolePermissionOverride(e.getGuild().getPublicRole().getIdLong(), 0, VC_RAW_PERMS);
+
+            VoiceChannel channel = action.complete();
+            e.getTextChannel()
+                    .sendMessage(e.getUser().getAsMention() + ", kanał głosowy " + channel.getAsMention() + " został stworzony!")
+                    .complete();
+
+            return;
+        }
+
+        if (e.getComponentId().equals("TICKET-CLOSE")) {
+            if (toDelete.contains(e.getChannel().getId())) return;
+
+            toDelete.add(e.getChannel().getId());
+            e.getTextChannel()
+                    .sendMessage(e.getUser().getAsMention() + ", kanał zostanie zamknięty za **30 sekund**!")
+                    .complete();
+            Runnable run = () -> {
+                try {
+                    e.getTextChannel().delete().complete();
+                } catch (Exception exception) {
+                    Log.newError(exception, getClass());
+                    e.getTextChannel().sendMessage("Nie udało się usunąć kanału! :(").complete();
+                }
+            };
+            ses.schedule(run, 30, TimeUnit.SECONDS);
+
+        }
+
     }
 
-    private static void sendAndDelete(TextChannel c, String msg) {
+    private void sendAndDelete(TextChannel c, String msg) {
         c.sendMessage(msg).queue(m -> m.delete().queueAfter(8, TimeUnit.SECONDS));
+    }
+
+    @Nullable
+    public static Category getCategory(@Nullable Guild guild) {
+        if (guild == null) return null;
+        return guild.getCategoryById(CATEGORY);
     }
 
     public static GuildChannel getTicketChannel(ChannelType type, Guild guild, String user) {
