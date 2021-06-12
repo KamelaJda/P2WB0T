@@ -47,11 +47,10 @@ public class ComponentListener extends ListenerAdapter {
             Button.primary("TICKET-DISCORD", "Pomoc Discorda")
     );
 
-    public static final ActionRow actionsRow = ActionRow.of(
-            Button.success("TICKET-TAKE", "Przydziel siebie do pomocy"),
-            Button.secondary("TICKET-CREATE_VC", "Utwórz kanał głosowy"),
-            Button.danger("TICKET-CLOSE", "Zamknij kanał pomocy")
-    );
+
+    public static final Button TICKET_TAKE = Button.success("TICKET-TAKE", "Przydziel siebie do pomocy");
+    public static final Button TICKET_CREATE_VC = Button.secondary("TICKET-CREATE_VC", "Utwórz kanał głosowy");
+    public static final Button TICKET_CLOSE = Button.danger("TICKET-CLOSE", "Zamknij kanał pomocy");
 
     /**
      * TODO: Zmień na
@@ -165,8 +164,8 @@ public class ComponentListener extends ListenerAdapter {
 
         e.getTextChannel()
                 .sendMessage("Opisz tutaj swój problem i poczekaj, aż któryś z administratorów dołączy do Twojego zgłoszenia. " +
-                        "Akcje pod tą wiadomością może wykonywać **tylko** administracja.\n" + extraContext)
-                .setActionRows(actionsRow)
+                        "\n\nAkcje pod tą wiadomością może wykonywać **tylko** administracja.\n" + extraContext)
+                .setActionRows(ActionRow.of(TICKET_TAKE, TICKET_CREATE_VC, TICKET_CLOSE))
                 .complete();
     }
 
@@ -175,14 +174,15 @@ public class ComponentListener extends ListenerAdapter {
         e.deferEdit().queue();
 
         if (e.getComponentId().equals("TICKET-TAKE")) {
-            Button button = Objects.requireNonNull(e.getComponent()).asDisabled();
-            ActionRow row = ComponentListener.actionsRow;
-            row.getComponents().remove(e.getComponent());
-            row.getComponents().add(button);
-
-            e.getMessage().editMessage(e.getMessage().getContentRaw()).setActionRows(row).complete();
-            e.getTextChannel().sendMessage("Administrator " + e.getUser().getAsMention() + " dołącza do pomocy")
-                    .complete();
+            try {
+                e.getMessage().editMessage(e.getMessage().getContentRaw())
+                        .setActionRows(ActionRow.of(TICKET_TAKE.asDisabled(), TICKET_CREATE_VC, TICKET_CLOSE))
+                        .complete();
+                e.getTextChannel().sendMessage("Administrator " + e.getUser().getAsMention() + " dołącza do pomocy")
+                        .complete();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
             return;
         }
 
@@ -190,6 +190,7 @@ public class ComponentListener extends ListenerAdapter {
             if (getTicketChannel(ChannelType.VOICE, e.getGuild(), e.getUser().getId()) != null) {
                 e.getTextChannel().sendMessage(e.getUser().getAsMention() + ", kanał głosowy jest już stworzony!")
                         .complete();
+                return;
             }
 
             Category category = getCategory(e.getGuild());
@@ -231,6 +232,8 @@ public class ComponentListener extends ListenerAdapter {
             Runnable run = () -> {
                 try {
                     e.getTextChannel().delete().complete();
+                    GuildChannel channel = getTicketChannel(ChannelType.VOICE, e.getGuild(), e.getUser().getId());
+                    if (channel != null) channel.delete().complete();
                 } catch (Exception exception) {
                     Log.newError(exception, getClass());
                     e.getTextChannel().sendMessage("Nie udało się usunąć kanału! :(").complete();
