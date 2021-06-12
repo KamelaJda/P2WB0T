@@ -143,12 +143,10 @@ public class ComponentListener extends ListenerAdapter {
                     .addRolePermissionOverride(Long.parseLong(Ustawienia.instance.rangi.ekipa), TXT_RAW_PERMS, 0)
                     .addMemberPermissionOverride(e.getGuild().getSelfMember().getIdLong(), Permission.getRaw(Permission.VOICE_CONNECT, Permission.VOICE_SPEAK, Permission.VIEW_CHANNEL, Permission.MANAGE_CHANNEL), 0)
                     .addRolePermissionOverride(e.getGuild().getPublicRole().getIdLong(), 0, TXT_RAW_PERMS)
-                    .setTopic("Kanał pomocy użytkownika " + e.getUser().getAsMention());
+                    .setTopic(Tlumaczenia.get("ticket.channeltopic", e.getUser().getAsMention()));
 
             TextChannel channel = action.complete();
-
             sendAndDelete(e.getTextChannel(), Tlumaczenia.get("ticket.create", e.getUser().getAsMention(), channel.getAsMention()));
-
             channel.sendMessage(Tlumaczenia.get("ticket.choosecategory", e.getUser().getAsMention()))
                     .allowedMentions(Collections.singleton(Message.MentionType.USER))
                     .setActionRows(categoryRow)
@@ -206,8 +204,7 @@ public class ComponentListener extends ListenerAdapter {
                 Objects.requireNonNull(e.getMessage()).editMessage(e.getMessage().getContentRaw())
                         .setActionRows(ActionRow.of(TICKET_TAKE.asDisabled(), TICKET_CREATE_VC, TICKET_CLOSE))
                         .complete();
-                e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.admjoin", e.getUser().getAsMention()))
-                        .complete();
+                e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.admjoin", e.getUser().getAsMention())).complete();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -236,8 +233,7 @@ public class ComponentListener extends ListenerAdapter {
                     .addRolePermissionOverride(e.getGuild().getPublicRole().getIdLong(), 0, VC_RAW_PERMS);
 
             VoiceChannel channel = action.complete();
-            e.getTextChannel()
-                    .sendMessage(e.getUser().getAsMention() + ", kanał głosowy " + channel.getAsMention() + " został stworzony!")
+            e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.createvc", e.getUser().getAsMention(), channel.getAsMention()))
                     .complete();
             return;
         }
@@ -247,8 +243,9 @@ public class ComponentListener extends ListenerAdapter {
 
             toDelete.add(e.getChannel().getId());
             e.getTextChannel()
-                    .sendMessage(e.getUser().getAsMention() + ", kanał zostanie zamknięty za **30 sekund**!")
+                    .sendMessage(Tlumaczenia.get("ticket.close", e.getUser().getAsMention()))
                     .complete();
+
             Runnable run = () -> {
                 try {
                     GuildChannel channel = getTicketChannel(ChannelType.VOICE, e.getGuild(), e.getUser().getId());
