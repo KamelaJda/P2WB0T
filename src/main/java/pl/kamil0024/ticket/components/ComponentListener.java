@@ -34,6 +34,7 @@ import pl.kamil0024.core.database.config.TXTTicketConfig;
 import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.redis.Cache;
 import pl.kamil0024.core.redis.RedisManager;
+import pl.kamil0024.core.util.Tlumaczenia;
 import pl.kamil0024.core.util.UserUtil;
 
 import java.util.*;
@@ -122,22 +123,16 @@ public class ComponentListener extends ListenerAdapter {
         if (guild == null) return;
         e.deferEdit().queue();
 
-        Category category = getCategory(guild);
-
-        if (category == null) {
-            Log.newError("getCategory(Guild) == null", getClass());
-            sendAndDelete(e.getTextChannel(), e.getUser().getAsMention() + ", nie udało się odnaleźć kategorii");
-            return;
-        }
+        Category category = getCategory(guild, e.getTextChannel());
+        if (category == null) return;
 
         if (category.getChannels().size() >= MAX_CHANNELS) {
-            sendAndDelete(e.getTextChannel(), e.getUser().getAsMention() + ", nie można stworzyć ticketa z powodu zbyt dużej ilości kanałów! " +
-                    "Spróbuj ponownie później");
+            sendAndDelete(e.getTextChannel(), Tlumaczenia.get("ticket.toomuchchannels", e.getUser().getAsMention()));
             return;
         }
 
         if (getTicketChannel(ChannelType.TEXT, guild, e.getUser().getId()) != null) {
-            sendAndDelete(e.getTextChannel(), e.getUser().getAsMention() + ", Twój wcześniejszy ticket nie został jeszcze zamknięty!");
+            sendAndDelete(e.getTextChannel(), Tlumaczenia.get("ticket.lastt", e.getUser().getAsMention()));
             return;
         }
 
@@ -151,11 +146,10 @@ public class ComponentListener extends ListenerAdapter {
                     .setTopic("Kanał pomocy użytkownika " + e.getUser().getAsMention());
 
             TextChannel channel = action.complete();
-            sendAndDelete(e.getTextChannel(), e.getUser().getAsMention() + ", kanał pomocy " + channel.getAsMention() + " został stworzony!");
 
-            channel.sendMessage("Cześć " + e.getUser().getAsMention() + ", \n" +
-                    "Wybierz kategorie pomocy jaką potrzebujesz klikając w odpowiedni przycisk w tej wiadomości." +
-                    "Na kliknięcie masz 3 minuty. Jeżeli w tym czasie nie podejmiesz żadnej akcji, kanał zostanie usunięty.")
+            sendAndDelete(e.getTextChannel(), Tlumaczenia.get("ticket.create", e.getUser().getAsMention(), channel.getAsMention()));
+
+            channel.sendMessage(Tlumaczenia.get("ticket.choosecategory", e.getUser().getAsMention()))
                     .allowedMentions(Collections.singleton(Message.MentionType.USER))
                     .setActionRows(categoryRow)
                     .complete();
@@ -173,7 +167,7 @@ public class ComponentListener extends ListenerAdapter {
 
         } catch (Exception ex) {
             Log.newError(ex, getClass());
-            sendAndDelete(e.getTextChannel(), e.getUser().getAsMention() + ", nie udało się stworzyć kanału :(");
+            sendAndDelete(e.getTextChannel(), Tlumaczenia.get("ticket.createerror", e.getUser().getAsMention()));
         }
 
     }
@@ -188,15 +182,9 @@ public class ComponentListener extends ListenerAdapter {
         e.deferEdit().queue();
 
         String extraContext = "";
-        if (e.getComponentId().equals("TICKET-APELACJE")) {
-            extraContext = "\n**UWAGA** Aby administrator podjął odpowiednie czynności musisz napisać " +
-                    "apelacje na forum (<https://p2w.pl/forum/9-odwołanie-od-bana/>). " +
-                    "Po napisaniu apelacji, podeślij tutaj linka do tematu.";
-        }
+        if (e.getComponentId().equals("TICKET-APELACJE")) extraContext = Tlumaczenia.get("ticket.extrahelp");
 
-        e.getTextChannel()
-                .sendMessage("Opisz tutaj swój problem i poczekaj, aż któryś z administratorów dołączy do Twojego zgłoszenia. " +
-                        "\n\nAkcje pod tą wiadomością może wykonywać **tylko** administracja.\n" + extraContext)
+        e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.info", extraContext))
                 .setActionRows(ActionRow.of(TICKET_TAKE, TICKET_CREATE_VC, TICKET_CLOSE))
                 .complete();
 
@@ -218,7 +206,7 @@ public class ComponentListener extends ListenerAdapter {
                 Objects.requireNonNull(e.getMessage()).editMessage(e.getMessage().getContentRaw())
                         .setActionRows(ActionRow.of(TICKET_TAKE.asDisabled(), TICKET_CREATE_VC, TICKET_CLOSE))
                         .complete();
-                e.getTextChannel().sendMessage("Administrator " + e.getUser().getAsMention() + " dołącza do pomocy")
+                e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.admjoin", e.getUser().getAsMention()))
                         .complete();
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -228,25 +216,20 @@ public class ComponentListener extends ListenerAdapter {
 
         if (e.getComponentId().equals("TICKET-CREATE_VC")) {
             if (getTicketChannel(ChannelType.VOICE, e.getGuild(), e.getUser().getId()) != null) {
-                e.getTextChannel().sendMessage(e.getUser().getAsMention() + ", kanał głosowy jest już stworzony!")
+                e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.vcalreadycreated", e.getUser().getAsMention()))
                         .complete();
                 return;
             }
-            Category category = getCategory(e.getGuild());
-            if (category == null) {
-                Log.newError("getCategory(Guild) == null", getClass());
-                sendAndDelete(e.getTextChannel(), e.getUser().getAsMention() + ", nie udało się odnaleźć kategorii");
-                return;
-            }
+            Category category = getCategory(e.getGuild(), e.getTextChannel());
+            if (category == null) return;
 
             if (category.getChannels().size() >= MAX_CHANNELS) {
-                sendAndDelete(e.getTextChannel(), e.getUser().getAsMention() + ", nie można stworzyć kanału z powodu zbyt dużej ilości kanałów! " +
-                        "Spróbuj ponownie później");
+                sendAndDelete(e.getTextChannel(), Tlumaczenia.get("ticket.toomuchchannels", e.getUser().getAsMention()));
                 return;
             }
 
-            ChannelAction<VoiceChannel> action = e.getGuild().createVoiceChannel(String.format(CHANNEL_FORMAT, e.getUser().getId()))
-                    .setParent(getCategory(e.getGuild()))
+            ChannelAction<VoiceChannel> action = Objects.requireNonNull(e.getGuild()).createVoiceChannel(String.format(CHANNEL_FORMAT, e.getUser().getId()))
+                    .setParent(getCategory(e.getGuild(), e.getTextChannel()))
                     .addMemberPermissionOverride(e.getUser().getIdLong(), VC_RAW_PERMS, 0)
                     .addRolePermissionOverride(Long.parseLong(Ustawienia.instance.rangi.ekipa), VC_RAW_PERMS, 0)
                     .addMemberPermissionOverride(e.getGuild().getSelfMember().getIdLong(), Permission.getRaw(Permission.VOICE_CONNECT, Permission.VOICE_SPEAK, Permission.VIEW_CHANNEL, Permission.MANAGE_CHANNEL), 0)
@@ -277,8 +260,9 @@ public class ComponentListener extends ListenerAdapter {
                     List<String> messages = e.getTextChannel().getIterableHistory()
                             .takeAsync(1000)
                             .thenApply(ArrayList::new).join().stream()
-                            .map(m -> String.format("%s[%s]: %s", UserUtil.getMcNick(m.getMember()), m.getId(), m.getContentRaw()))
+                            .map(m -> String.format("%s[%s]: %s", UserUtil.getMcNick(m.getMember(), true), m.getId(), m.getContentRaw()))
                             .collect(Collectors.toList());
+                    Collections.reverse(messages);
 
                     StringBuilder sb = new StringBuilder();
                     for (String s : messages) {
@@ -304,19 +288,19 @@ public class ComponentListener extends ListenerAdapter {
                         Member memberById = e.getGuild().getMemberById(conf.getAdmId());
                         if (memberById == null) throw new NullPointerException("member jest nullem");
                         PrivateChannel pc = memberById.getUser().openPrivateChannel().complete();
+                        pc.sendMessage(Tlumaczenia.get("ticket.transcript", conf.getId())).complete();
                         for (String s : rawMessages) {
                             pc.sendMessage(s).complete();
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
-
                     e.getTextChannel().delete().complete();
 
                 } catch (Exception exception) {
                     Log.newError(exception, getClass());
                     toDelete.remove(e.getChannel().getId());
-                    e.getTextChannel().sendMessage("Nie udało się usunąć kanału! :(").complete();
+                    e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.deleteerror", e.getUser().getAsMention())).complete();
                 }
             };
             ses.schedule(run, 5, TimeUnit.SECONDS); // TODO: 30 sekund
@@ -328,9 +312,14 @@ public class ComponentListener extends ListenerAdapter {
     }
 
     @Nullable
-    public static Category getCategory(@Nullable Guild guild) {
+    public Category getCategory(@Nullable Guild guild, TextChannel channel) {
         if (guild == null) return null;
-        return guild.getCategoryById(CATEGORY);
+        Category id = guild.getCategoryById(CATEGORY);
+        if (id == null) {
+            Log.newError("getCategory(Guild) == null", getClass());
+            sendAndDelete(channel, Tlumaczenia.get("ticket.notfindcate"));
+        }
+        return id;
     }
 
     public static GuildChannel getTicketChannel(ChannelType type, Guild guild, String user) {
