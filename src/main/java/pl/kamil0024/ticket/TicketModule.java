@@ -23,6 +23,7 @@ package pl.kamil0024.ticket;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import pl.kamil0024.core.database.TXTTicketDao;
 import pl.kamil0024.core.database.TicketDao;
 import pl.kamil0024.core.module.Modul;
 import pl.kamil0024.core.redis.RedisManager;
@@ -35,10 +36,11 @@ public class TicketModule implements Modul {
 
     private final TicketRedisManager ticketRedisManager;
 
-    public TicketDao ticketDao;
-    public ShardManager api;
-    public RedisManager redisManager;
-    public EventWaiter eventWaiter;
+    private final TicketDao ticketDao;
+    private final ShardManager api;
+    private final RedisManager redisManager;
+    private final EventWaiter eventWaiter;
+    private final TXTTicketDao txtTicketDao;
 
     @Getter
     private final String name = "ticket";
@@ -50,19 +52,20 @@ public class TicketModule implements Modul {
     // Listeners
     private VoiceChatListener vcl;
 
-    public TicketModule(ShardManager api, TicketDao ticketDao, RedisManager redisManager, EventWaiter eventWaiter) {
+    public TicketModule(ShardManager api, TicketDao ticketDao, RedisManager redisManager, EventWaiter eventWaiter, TXTTicketDao txtTicketDao) {
         this.api = api;
         this.ticketDao = ticketDao;
         this.redisManager = redisManager;
         this.ticketRedisManager = new TicketRedisManager(redisManager);
         this.eventWaiter = eventWaiter;
+        this.txtTicketDao = txtTicketDao;
     }
 
     @Override
     public boolean startUp() {
         vcl = new VoiceChatListener(ticketDao, ticketRedisManager, eventWaiter, redisManager);
         api.addEventListener(vcl);
-        api.addEventListener(new ComponentListener());
+        api.addEventListener(new ComponentListener(txtTicketDao, redisManager));
         return true;
     }
 

@@ -29,15 +29,24 @@ import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.core.Ustawienia;
+import pl.kamil0024.core.database.TXTTicketDao;
+import pl.kamil0024.core.database.config.TXTTicketConfig;
 import pl.kamil0024.core.logger.Log;
+import pl.kamil0024.core.redis.Cache;
+import pl.kamil0024.core.redis.RedisManager;
+import pl.kamil0024.core.util.UserUtil;
 
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class ComponentListener extends ListenerAdapter {
 
     public static final String BUTTON_NAME = "CREATE-TICKET";
-    public static final int MAX_CHANNELS = 50;
+    public static final  int   MAX_CHANNELS = 50;
     public static final String CHANNEL_FORMAT = "pomoc-%s";
 
     public static final ActionRow categoryRow = ActionRow.of(
@@ -46,7 +55,6 @@ public class ComponentListener extends ListenerAdapter {
             Button.secondary("TICKET-FORUM", "Pomoc forum P2W.PL"),
             Button.primary("TICKET-DISCORD", "Pomoc Discorda")
     );
-
 
     public static final Button TICKET_TAKE = Button.success("TICKET-TAKE", "Przydziel siebie do pomocy");
     public static final Button TICKET_CREATE_VC = Button.secondary("TICKET-CREATE_VC", "Utwórz kanał głosowy");
@@ -57,19 +65,32 @@ public class ComponentListener extends ListenerAdapter {
      * @see pl.kamil0024.core.Ustawienia Ustawienia
      */
     private static final String CATEGORY = "762345284457332787";
+    private static final Random RANDOM = new Random();
 
-    private static final long VC_RAW_PERMS = Permission.getRaw(Permission.VOICE_CONNECT, Permission.VOICE_SPEAK, Permission.VIEW_CHANNEL);
-    private static final long TXT_RAW_PERMS = Permission.getRaw(Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_HISTORY, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE);
-
-    private final ScheduledExecutorService ses;
+    private static final long VC_RAW_PERMS = Permission.getRaw(
+            Permission.VOICE_CONNECT,
+            Permission.VOICE_SPEAK,
+            Permission.VIEW_CHANNEL
+    );
+    private static final long TXT_RAW_PERMS = Permission.getRaw(
+            Permission.MESSAGE_ATTACH_FILES,
+            Permission.MESSAGE_HISTORY,
+            Permission.MESSAGE_READ,
+            Permission.MESSAGE_WRITE
+    );
 
     private final Map<String, ScheduledFuture<?>> futureMap;
+    private final Cache<TXTTicketConfig> daoCache;
     private final List<String> toDelete;
+    private final TXTTicketDao txtTicketDao;
+    private final ScheduledExecutorService ses;
 
-    public ComponentListener() {
+    public ComponentListener(TXTTicketDao txtTicketDao, RedisManager redisManager) {
+        this.txtTicketDao = txtTicketDao;
         ses =  Executors.newScheduledThreadPool(5);
         futureMap = new HashMap<>();
         toDelete = new ArrayList<>();
+        daoCache = redisManager.new CacheRetriever<TXTTicketConfig>() {}.getCache(0);
     }
 
     @Override
@@ -85,6 +106,7 @@ public class ComponentListener extends ListenerAdapter {
                 createChannel(e);
                 break;
             case "TICKET-CREATE_VC":
+            case "TICKET-TAKE":
             case "TICKET-CLOSE":
                 Member member = e.getMember();
                 if (member != null)
@@ -133,17 +155,27 @@ public class ComponentListener extends ListenerAdapter {
 
             channel.sendMessage("Cześć " + e.getUser().getAsMention() + ", \n" +
                     "Wybierz kategorie pomocy jaką potrzebujesz klikając w odpowiedni przycisk w tej wiadomości." +
-                    "Na kliknięcie masz 5 minut. Jeżeli w tym czasie nie podejmiesz żadnej akcji, kanał zostanie usunięty.")
+                    "Na kliknięcie masz 3 minuty. Jeżeli w tym czasie nie podejmiesz żadnej akcji, kanał zostanie usunięty.")
                     .allowedMentions(Collections.singleton(Message.MentionType.USER))
                     .setActionRows(categoryRow)
                     .complete();
 
-            futureMap.put(channel.getId(), ses.schedule(() -> channel.delete().complete(), 10, TimeUnit.SECONDS)); // TODO: 5 minut
+            TXTTicketConfig ticketConfig = new TXTTicketConfig(String.valueOf(RANDOM.nextInt(Integer.MAX_VALUE)));
+            ticketConfig.setUserId(e.getUser().getId());
+            ticketConfig.setUserNick(UserUtil.getMcNick(e.getMember()));
+            ticketConfig.setCreatedAt(new Date().getTime());
+            daoCache.put(channel.getId(), ticketConfig);
+
+            futureMap.put(channel.getId(), ses.schedule(() -> {
+                daoCache.invalidate(channel.getId());
+                channel.delete().complete();
+            }, 10, TimeUnit.SECONDS)); // TODO: 3 minuty
 
         } catch (Exception ex) {
             Log.newError(ex, getClass());
             sendAndDelete(e.getTextChannel(), e.getUser().getAsMention() + ", nie udało się stworzyć kanału :(");
         }
+
     }
 
     private void chooseCategory(ButtonClickEvent e) {
@@ -167,6 +199,9 @@ public class ComponentListener extends ListenerAdapter {
                         "\n\nAkcje pod tą wiadomością może wykonywać **tylko** administracja.\n" + extraContext)
                 .setActionRows(ActionRow.of(TICKET_TAKE, TICKET_CREATE_VC, TICKET_CLOSE))
                 .complete();
+
+        TXTTicketConfig config = daoCache.getIfPresent(e.getTextChannel().getId());
+        config.setCategory(e.getComponentId());
     }
 
     private void channelAction(ButtonClickEvent e) {
@@ -175,7 +210,10 @@ public class ComponentListener extends ListenerAdapter {
 
         if (e.getComponentId().equals("TICKET-TAKE")) {
             try {
-                e.getMessage().editMessage(e.getMessage().getContentRaw())
+                TXTTicketConfig config = daoCache.getIfPresent(e.getTextChannel().getId());
+                config.setAdmId(e.getUser().getId());
+                config.setAdmNick(UserUtil.getMcNick(e.getMember()));
+                Objects.requireNonNull(e.getMessage()).editMessage(e.getMessage().getContentRaw())
                         .setActionRows(ActionRow.of(TICKET_TAKE.asDisabled(), TICKET_CREATE_VC, TICKET_CLOSE))
                         .complete();
                 e.getTextChannel().sendMessage("Administrator " + e.getUser().getAsMention() + " dołącza do pomocy")
@@ -192,9 +230,7 @@ public class ComponentListener extends ListenerAdapter {
                         .complete();
                 return;
             }
-
             Category category = getCategory(e.getGuild());
-
             if (category == null) {
                 Log.newError("getCategory(Guild) == null", getClass());
                 sendAndDelete(e.getTextChannel(), e.getUser().getAsMention() + ", nie udało się odnaleźć kategorii");
@@ -218,7 +254,6 @@ public class ComponentListener extends ListenerAdapter {
             e.getTextChannel()
                     .sendMessage(e.getUser().getAsMention() + ", kanał głosowy " + channel.getAsMention() + " został stworzony!")
                     .complete();
-
             return;
         }
 
@@ -231,18 +266,52 @@ public class ComponentListener extends ListenerAdapter {
                     .complete();
             Runnable run = () -> {
                 try {
-                    e.getTextChannel().delete().complete();
                     GuildChannel channel = getTicketChannel(ChannelType.VOICE, e.getGuild(), e.getUser().getId());
                     if (channel != null) channel.delete().complete();
+                    TXTTicketConfig conf = daoCache.getIfPresent(e.getChannel().getId());
+                    txtTicketDao.save(conf);
+
+                    List<String> messages = e.getTextChannel().getIterableHistory()
+                            .takeAsync(1000)
+                            .thenApply(ArrayList::new).join().stream()
+                            .map(m -> String.format("%s[%s]: %s", UserUtil.getMcNick(m.getMember()), m.getId(), m.getContentRaw()))
+                            .collect(Collectors.toList());
+
+                    StringBuilder sb = new StringBuilder();
+                    for (String s : messages) {
+                        sb.append(s).append("\n");
+                    }
+                    String string = sb.toString();
+
+                    int page = 0;
+                    List<String> rawMessages = new ArrayList<>();
+                    for (int i = 0; i < messages.size(); i++) {
+                        int from = Math.max(0, page * 2_000);
+                        int to = Math.min(string.length(), (page + 1) * 2_000);
+                        rawMessages.add(string.substring(from, to));
+                        page++;
+                    }
+
+                    try {
+                        Member memberById = e.getGuild().getMemberById(conf.getAdmId());
+                        if (memberById == null) throw new NullPointerException("member jest nullem");
+                        PrivateChannel pc = memberById.getUser().openPrivateChannel().complete();
+                        for (String s : rawMessages) {
+                            pc.sendMessage(s).complete();
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+
+                    e.getTextChannel().delete().complete();
+
                 } catch (Exception exception) {
                     Log.newError(exception, getClass());
                     e.getTextChannel().sendMessage("Nie udało się usunąć kanału! :(").complete();
                 }
             };
             ses.schedule(run, 30, TimeUnit.SECONDS);
-
         }
-
     }
 
     private void sendAndDelete(TextChannel c, String msg) {

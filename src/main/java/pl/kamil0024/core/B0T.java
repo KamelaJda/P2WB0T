@@ -260,6 +260,7 @@ public class B0T {
         DeletedMessagesDao deletedMessagesDao = new DeletedMessagesDao(databaseManager);
         UserstatsDao userstatsDao = new UserstatsDao(databaseManager);
         SpotifyDao spotifyDao = new SpotifyDao(databaseManager);
+        TXTTicketDao txtTicketDao = new TXTTicketDao(databaseManager);
 
         ArrayList<Object> listeners = new ArrayList<>();
         CommandExecute commandExecute = new CommandExecute(commandManager, argumentManager, userDao);
@@ -299,7 +300,7 @@ public class B0T {
         modulManager.getModules().add(apiModule);
         modulManager.getModules().add(new EmbedGeneratorModule(commandManager, embedRedisManager));
         modulManager.getModules().add(weryfikacjaModule);
-        modulManager.getModules().add(new TicketModule(api, ticketDao, redisManager, eventWaiter));
+        modulManager.getModules().add(new TicketModule(api, ticketDao, redisManager, eventWaiter, txtTicketDao));
         modulManager.getModules().add(new AntiRaidModule(api, antiRaidDao, redisManager, caseDao, modLog));
         modulManager.getModules().add(new ModerationModule(commandManager, eventWaiter, caseDao, statsModule, nieobecnosciManager, nieobecnosciDao, modLog, karyJSON, multiDao));
 
