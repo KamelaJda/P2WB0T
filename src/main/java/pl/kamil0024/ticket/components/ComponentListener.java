@@ -202,6 +202,7 @@ public class ComponentListener extends ListenerAdapter {
 
         TXTTicketConfig config = daoCache.getIfPresent(e.getTextChannel().getId());
         config.setCategory(e.getComponentId());
+        daoCache.put(e.getTextChannel().getId(), config);
     }
 
     private void channelAction(ButtonClickEvent e) {
@@ -213,6 +214,7 @@ public class ComponentListener extends ListenerAdapter {
                 TXTTicketConfig config = daoCache.getIfPresent(e.getTextChannel().getId());
                 config.setAdmId(e.getUser().getId());
                 config.setAdmNick(UserUtil.getMcNick(e.getMember()));
+                daoCache.put(e.getTextChannel().getId(), config);
                 Objects.requireNonNull(e.getMessage()).editMessage(e.getMessage().getContentRaw())
                         .setActionRows(ActionRow.of(TICKET_TAKE.asDisabled(), TICKET_CREATE_VC, TICKET_CLOSE))
                         .complete();
@@ -270,6 +272,7 @@ public class ComponentListener extends ListenerAdapter {
                     if (channel != null) channel.delete().complete();
                     TXTTicketConfig conf = daoCache.getIfPresent(e.getChannel().getId());
                     txtTicketDao.save(conf);
+                    daoCache.put(e.getTextChannel().getId(), conf);
 
                     List<String> messages = e.getTextChannel().getIterableHistory()
                             .takeAsync(1000)
