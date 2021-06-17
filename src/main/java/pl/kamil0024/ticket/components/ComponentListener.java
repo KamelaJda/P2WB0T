@@ -183,7 +183,7 @@ public class ComponentListener extends ListenerAdapter {
         String category = e.getComponentId();
 
         try {
-            category = TicketCategory.valueOf(e.getComponentId()).getName();
+            category = TicketCategory.valueOf(e.getComponentId().split("-")[1]).getName();
         } catch (Exception ignored) { }
 
         String extraContext = "";
