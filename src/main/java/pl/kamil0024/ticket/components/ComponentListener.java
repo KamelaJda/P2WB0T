@@ -19,6 +19,8 @@
 
 package pl.kamil0024.ticket.components;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
@@ -167,7 +169,6 @@ public class ComponentListener extends ListenerAdapter {
             Log.newError(ex, getClass());
             sendAndDelete(e.getTextChannel(), Tlumaczenia.get("ticket.createerror", e.getUser().getAsMention()));
         }
-
     }
 
     private void chooseCategory(ButtonClickEvent e) {
@@ -179,10 +180,16 @@ public class ComponentListener extends ListenerAdapter {
 
         e.deferEdit().queue();
 
-        String extraContext = "";
-        if (e.getComponentId().equals("TICKET-APELACJE")) extraContext = Tlumaczenia.get("ticket.extrahelp");
+        String category = e.getComponentId();
 
-        e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.info", extraContext))
+        try {
+            category = TicketCategory.valueOf(e.getComponentId()).getName();
+        } catch (Exception ignored) { }
+
+        String extraContext = "";
+        if (e.getComponentId().equals("TICKET-APELACJE")) extraContext = Tlumaczenia.get("ticket.extrahelp") + "\n\n";
+
+        e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.info", category, extraContext))
                 .setActionRows(ActionRow.of(TICKET_TAKE, TICKET_CREATE_VC, TICKET_CLOSE))
                 .complete();
 
@@ -333,6 +340,18 @@ public class ComponentListener extends ListenerAdapter {
         }
         if (gc.size() == 0) return null;
         return gc.get(0);
+    }
+
+    @Getter
+    @AllArgsConstructor
+    private enum TicketCategory {
+
+        APELACJE("Odwołanie od bana"),
+        FORUM("Pomod dotycząca forum"),
+        DISCORD("Pomod dotycząca Discorda"),
+        MINECRAFT("Pomoc serwera Minecraft");
+
+        String name;
     }
 
 }

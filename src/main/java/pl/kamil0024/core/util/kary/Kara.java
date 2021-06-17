@@ -88,7 +88,6 @@ public class Kara {
 
     public static synchronized void put(CaseDao caseDao, Kara kara, ModLog modLog, @Nullable EventWaiter eventWaiter, String userId, @Nullable TextChannel channel, CaseDao cd, boolean deleteWaiter) {
         CaseConfig cc = put(caseDao, kara, modLog);
-
         if (eventWaiter != null && channel != null) {
             DowodWaiter dowod = new DowodWaiter(userId, cc, cd, channel, eventWaiter, null);
             if (deleteWaiter) {

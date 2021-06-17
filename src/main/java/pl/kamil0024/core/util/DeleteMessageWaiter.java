@@ -20,9 +20,11 @@
 package pl.kamil0024.core.util;
 
 import lombok.AllArgsConstructor;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import pl.kamil0024.core.logger.Log;
 
 import java.util.concurrent.TimeUnit;
 
@@ -76,10 +78,15 @@ public class DeleteMessageWaiter implements Waiter<MessageReceivedEvent> {
         }
 
         try {
+            Guild guild = channel.getGuild();
             int i = Math.max(Integer.parseInt(msg.getContentRaw()), 0);
-            if (i <= 7) channel.getGuild().ban(bannedUser, i).complete();
+            if (i <= 7) {
+                guild.unban(bannedUser).complete();
+                guild.ban(bannedUser, i).complete();
+            }
         } catch (Exception ex) {
-            e.getChannel().sendMessage("Nie udało się usunąć wiadomości! Error:" + ex.getLocalizedMessage())
+            Log.newError(ex, getClass());
+            e.getChannel().sendMessage("Nie udało się zbanować! Error:" + ex.getLocalizedMessage())
                     .queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
         }
         clear();
