@@ -19,6 +19,7 @@
 
 package pl.kamil0024.core.util;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
+@AllArgsConstructor
 public enum DiscordRank {
 
     GRACZ(Ustawienia.instance.rangi.gracz),
@@ -50,10 +52,6 @@ public enum DiscordRank {
     ADMINISTRATOR(Ustawienia.instance.rangi.administrator);
 
     private final String roleId;
-
-    DiscordRank(String roleId) {
-        this.roleId = roleId;
-    }
 
     public static ArrayList<DiscordRank> getRanks(Member member) {
         ArrayList<DiscordRank> rank = new ArrayList<>();

@@ -191,13 +191,17 @@ public class CommandsModule implements Modul {
     }
 
     private void tak(ShardManager api) {
-        Log.debug("CommandsModule#tak(ShardManager)");
         RemindmeCommand.check(remindDao, api);
         TextChannel txt = api.getTextChannelById(Ustawienia.instance.channel.status);
         if (txt != null) {
             Message botMsg = null;
-            MessageHistory history = txt.getHistoryFromBeginning(15).complete();
-            if (!history.isEmpty()) {
+            MessageHistory history = null;
+
+            try {
+                history = txt.getHistoryFromBeginning(15).complete();
+            } catch (Exception ignored) { }
+
+            if (history != null && !history.isEmpty()) {
                 for (Message message : history.getRetrievedHistory()) {
                     if (message.getAuthor().getId().equals(Ustawienia.instance.bot.botId)) {
                         botMsg = message;

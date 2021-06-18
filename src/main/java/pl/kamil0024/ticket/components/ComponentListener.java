@@ -249,8 +249,7 @@ public class ComponentListener extends ListenerAdapter {
             if (toDelete.contains(e.getChannel().getId())) return;
 
             toDelete.add(e.getChannel().getId());
-            e.getTextChannel()
-                    .sendMessage(Tlumaczenia.get("ticket.close", e.getUser().getAsMention()))
+            e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.close", e.getUser().getAsMention()))
                     .complete();
 
             Runnable run = () -> {
