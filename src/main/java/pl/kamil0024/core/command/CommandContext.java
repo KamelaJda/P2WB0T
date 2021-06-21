@@ -160,9 +160,7 @@ public class CommandContext {
         StringBuilder args = new StringBuilder();
         int size = 1;
         for (Map.Entry<Integer, String> a : getArgs().entrySet()) {
-            if (a.getKey() >= num) {
-                args.append(a.getValue());
-            }
+            if (a.getKey() >= num) args.append(a.getValue());
             if (size < getArgs().size()) args.append(" ");
             size++;
         }

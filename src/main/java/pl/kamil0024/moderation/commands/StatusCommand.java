@@ -19,6 +19,7 @@
 
 package pl.kamil0024.moderation.commands;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageHistory;
@@ -134,6 +135,7 @@ public class StatusCommand extends Command {
     }
 
     @Getter
+    @AllArgsConstructor
     public enum Emote {
         ONLINE("\u2705", "Serwer chodzi sprawnie, bądź nie wiemy o problemie"),
         WARN("\u26A0", "Występują problemy na serwerze, sprawdzamy przyczynę"),
@@ -141,13 +143,8 @@ public class StatusCommand extends Command {
         PRZERWA("\uD83D\uDEE0️", "Serwer ma przerwę techniczną"),
         RESTART("\uD83D\uDD04", "Serwer jest restartowany");
 
-        public String unicode;
-        public String opis;
-
-        Emote(String unicode, String opis) {
-            this.unicode = unicode;
-            this.opis = opis;
-        }
+        private final String unicode;
+        private final String opis;
 
         @Nullable
         public static Emote byUnicode(String uni) {
@@ -160,21 +157,16 @@ public class StatusCommand extends Command {
     }
 
     @Getter
+    @AllArgsConstructor
     public enum MojangEmote {
         NULL("❓", "null", "null"),
         GREEN("\uD83D\uDFE9", "green", "Serwis nie ma żadnych problemów"),
         YELLOW("\uD83D\uDFE8", "yellow", "Serwis ma problemy"),
         RED("\uD83D\uDFE5", "red", "Serwis jest wyłączony");
 
-        public String unicode;
-        public String opis;
-        public String tlumaczenie;
-
-        MojangEmote(String unicode, String opis, String tlumaczenie) {
-            this.unicode = unicode;
-            this.opis = opis;
-            this.tlumaczenie = tlumaczenie;
-        }
+        private final String unicode;
+        private final String opis;
+        private final String tlumaczenie;
 
         public static MojangEmote byOpis(String opis) {
             for (MojangEmote value : MojangEmote.values()) {

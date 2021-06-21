@@ -19,6 +19,7 @@
 
 package pl.kamil0024.chat;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -86,6 +87,8 @@ public class Action {
         karyListener.getEmbedy().put(msg.getId(), this);
     }
 
+    @AllArgsConstructor
+    @Getter
     public enum ListaKar {
         ZACHOWANIE("Wszelkiej maści wyzwiska, obraza, wulgaryzmy, prowokacje, groźby i inne formy przemocy"),
         FLOOD("Nadmierny spam, flood lub caps lock wiadomościami lub emotikonami"),
@@ -93,13 +96,7 @@ public class Action {
         PING("Znieważanie osoby zmrałej"),
         TEXT_SWEAR("Umieszczanie zdjęć zawierających wulgaryzmy");
 
-        @Getter
         private final String powod;
-
-        ListaKar(String powod) {
-            this.powod = powod;
-        }
-
     }
 
 }

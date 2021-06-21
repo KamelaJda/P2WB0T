@@ -25,11 +25,11 @@ import pl.kamil0024.core.logger.Log;
 
 import java.io.File;
 import java.util.Random;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.*;
 
-@SuppressWarnings("unused")
 public class ImageUtil {
+
+    private final static ScheduledExecutorService ses = Executors.newScheduledThreadPool(5);
 
     private final static Random RANDOM = new Random();
 
@@ -44,11 +44,11 @@ public class ImageUtil {
                 ShellCommand.shell(String.format("tesseract %s %s -l pol", ls, outFile));
 
                 String ret = ShellCommand.shell("cat " + outFile + ".txt");
-                new Thread(() -> {
+
+                ses.schedule(() -> {
                     ShellCommand.shell("rm " + outFile);
                     ShellCommand.shell("rm " + outFile + ".txt");
-                }).start();
-
+                }, 0, TimeUnit.SECONDS);
                 return CompletableFuture.completedFuture(ret);
 
             } else Log.error("Nie Istnieje!");

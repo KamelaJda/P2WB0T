@@ -36,33 +36,25 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("DuplicatedCode")
 public class EmbedPaginator {
 
-    public static final String FIRST_EMOJI = "\u23EE";
-    public static final String LEFT_EMOJI = "\u25C0";
-    public static final String RIGHT_EMOJI = "\u25B6";
-    public static final String LAST_EMOJI = "\u23ED";
-    public static final String STOP_EMOJI = "\u23F9";
-
-    public static final Button FIRST_BUTTON = Button.secondary("FIRST", Emoji.fromUnicode(FIRST_EMOJI));
-    public static final Button LEFT_BUTTON = Button.primary("LEFT", Emoji.fromUnicode(LEFT_EMOJI));
-    public static final Button RIGHT_BUTTON = Button.primary("RIGHT", Emoji.fromUnicode(RIGHT_EMOJI));
-    public static final Button LAST_BUTTON = Button.secondary("LAST", Emoji.fromUnicode(LAST_EMOJI));
-    public static final Button STOP_BUTTON = Button.danger("STOP", Emoji.fromUnicode(STOP_EMOJI));
+    public static final Button FIRST_BUTTON = Button.secondary("FIRST", Emoji.fromUnicode("\u23EE"));
+    public static final Button LEFT_BUTTON = Button.primary("LEFT", Emoji.fromUnicode("\u25C0"));
+    public static final Button RIGHT_BUTTON = Button.primary("RIGHT", Emoji.fromUnicode("\u25B6"));
+    public static final Button LAST_BUTTON = Button.secondary("LAST", Emoji.fromUnicode("\u23ED"));
+    public static final Button STOP_BUTTON = Button.danger("STOP", Emoji.fromUnicode("\u23F9"));
 
     private final EventWaiter eventWaiter;
     private final List<EmbedBuilder> pages;
-    private int thisPage = 1;
-
-    private Message botMsg;
     private final long userId;
     private final int secound;
 
-    public static final String[] values;
     public static final ActionRow actionRow;
 
     static {
-        values = new String[] {FIRST_EMOJI, LEFT_EMOJI, RIGHT_EMOJI, LAST_EMOJI, STOP_EMOJI};
         actionRow = ActionRow.of(FIRST_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, LEFT_BUTTON, STOP_BUTTON);
     }
+
+    private int thisPage = 1;
+    private Message botMsg;
 
     public EmbedPaginator(List<EmbedBuilder> pages, User user, EventWaiter eventWaiter, int secound) {
         this.eventWaiter = eventWaiter;
@@ -79,8 +71,7 @@ public class EmbedPaginator {
     }
 
     public EmbedPaginator create(MessageChannel channel) {
-        MessageAction action = channel.sendMessage(render(1));
-        action.setActionRows(getActionRow(1)).queue(msg -> {
+        channel.sendMessage(render(1)).setActionRows(getActionRow(1)).queue(msg -> {
             botMsg = msg;
             if (pages.size() != 1) waitForReaction();
         });
@@ -88,8 +79,7 @@ public class EmbedPaginator {
     }
 
     public EmbedPaginator create(MessageChannel channel, Message mes) {
-        MessageAction action = channel.sendMessage(render(1)).reference(mes);
-        action.setActionRows(getActionRow(1)).queue(msg -> {
+        channel.sendMessage(render(1)).reference(mes).setActionRows(getActionRow(1)).queue(msg -> {
             botMsg = msg;
             if (pages.size() != 1) waitForReaction();
         });
@@ -146,7 +136,6 @@ public class EmbedPaginator {
             mb.setEmbed(botMsg.getEmbeds().get(0));
             mb.setContent(botMsg.getContentRaw());
             mb.setActionRows(Collections.emptyList());
-            botMsg.editMessage(mb.build()).complete();
             botMsg.editMessage(mb.build()).complete();
         } catch (Exception e) {
             e.printStackTrace();

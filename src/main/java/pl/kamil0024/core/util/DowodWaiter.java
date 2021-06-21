@@ -19,7 +19,7 @@
 
 package pl.kamil0024.core.util;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class DowodWaiter {
 
     private final String userId;
@@ -40,6 +40,7 @@ public class DowodWaiter {
     private final CaseDao cd;
     private final TextChannel channel;
     private final EventWaiter eventWaiter;
+    private final DeleteMessageWaiter deleteMessageWaiter;
 
     private Message botMsg;
 
@@ -66,6 +67,7 @@ public class DowodWaiter {
         try {
             botMsg.delete().complete();
         } catch (Exception ignored) { }
+        if (deleteMessageWaiter != null) deleteMessageWaiter.start();
     }
 
     private void event(MessageReceivedEvent e) {

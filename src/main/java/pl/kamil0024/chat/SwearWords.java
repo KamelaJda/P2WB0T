@@ -65,10 +65,9 @@ public class SwearWords {
                 String slowo = slowa.get(i);
                 if (i >= splitZwrot.length) continue;
                 String zwrot = splitZwrot[i];
-                if (zwrot.equals("*") || zwrot.equalsIgnoreCase(slowo)) {
-                    wykryteSlowa++;
-                }
+                if (zwrot.equals("*") || zwrot.equalsIgnoreCase(slowo)) wykryteSlowa++;
             }
+
             if (wykryteSlowa == splitZwrot.length) return s;
         }
         return null;

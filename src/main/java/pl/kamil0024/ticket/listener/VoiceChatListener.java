@@ -75,12 +75,9 @@ public class VoiceChatListener extends ListenerAdapter {
         this.ticketDao = ticketDao;
         this.ticketRedisManager = ticketRedisManager;
         this.eventWaiter = eventWaiter;
-        this.cooldownCache = redisManager.new CacheRetriever<Long>() {
-        }.getCache(7200);
-        this.messagesCache = redisManager.new CacheRetriever<String>() {
-        }.getCache(7200);
-        this.pingCache = redisManager.new CacheRetriever<Boolean>() {
-        }.getCache(7200);
+        this.cooldownCache = redisManager.new CacheRetriever<Long>() {}.getCache(7200);
+        this.messagesCache = redisManager.new CacheRetriever<String>() {}.getCache(7200);
+        this.pingCache = redisManager.new CacheRetriever<Boolean>() {}.getCache(7200);
     }
 
     @SuppressWarnings("ConstantConditions")

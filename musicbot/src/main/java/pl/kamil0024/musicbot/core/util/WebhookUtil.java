@@ -23,6 +23,7 @@ import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -109,6 +110,8 @@ public class WebhookUtil {
         return new WebhookEmbed.EmbedField(f.isInline(), f.getName(), f.getValue());
     }
 
+    @Getter
+    @AllArgsConstructor
     public enum LogType {
 
         ERROR("Logi errorów", Ustawienia.instance.webhook.error),
@@ -116,13 +119,8 @@ public class WebhookUtil {
         DEBUG("Logi debugu", Ustawienia.instance.webhook.debug),
         STATUS("Logi statusów", Ustawienia.instance.webhook.status);
 
-        @Getter private final String slownie;
-        @Getter private final String url;
-
-        LogType(String slownie, String url) {
-            this.slownie = slownie;
-            this.url = url;
-        }
+        private final String slownie;
+        private final String url;
 
     }
 }

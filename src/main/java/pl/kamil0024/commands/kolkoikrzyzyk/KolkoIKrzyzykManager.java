@@ -19,6 +19,7 @@
 
 package pl.kamil0024.commands.kolkoikrzyzyk;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.Member;
@@ -32,6 +33,9 @@ import pl.kamil0024.core.util.EventWaiter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Data
 public class KolkoIKrzyzykManager {
@@ -42,9 +46,10 @@ public class KolkoIKrzyzykManager {
     private ShardManager api;
     private EventWaiter eventWaiter;
 
+    private final ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
+
     public KolkoIKrzyzykManager(ShardManager api, EventWaiter eventWaiter) {
         zaproszenia = new HashMap<>();
-
         this.api = api;
         this.eventWaiter = eventWaiter;
     }
@@ -74,13 +79,7 @@ public class KolkoIKrzyzykManager {
     }
 
     private void waitForRemove(Zaproszenie zapro) {
-        new Thread(() -> {
-            try {
-                Thread.sleep(30000);
-            } catch (InterruptedException ignored) {
-            }
-            getZaproszenia().remove(zapro.getZapraszajacy());
-        }).start();
+        ses.schedule(() -> getZaproszenia().remove(zapro.getZapraszajacy()), 30, TimeUnit.SECONDS);
     }
 
     public boolean hasInvite(String id) {
@@ -98,15 +97,13 @@ public class KolkoIKrzyzykManager {
     public void nowaGra(Zaproszenie zapro) {
         Member osoba1 = zapro.getChannel().getGuild().retrieveMemberById(zapro.getZapraszajacy()).complete();
         Member osoba2 = zapro.getChannel().getGuild().retrieveMemberById(zapro.getZapraszajaGo()).complete();
-
         if (osoba1 == null || osoba2 == null) throw new NullPointerException("osoba1 || osoba2 == null");
-
         graja.add(osoba1.getId());
         graja.add(osoba2.getId());
-
         new Gra(osoba1, osoba2, zapro.getChannel(), eventWaiter).create();
     }
 
+    @AllArgsConstructor
     @Getter
     public enum ZaproszenieStatus {
 
@@ -116,11 +113,6 @@ public class KolkoIKrzyzykManager {
 
         private final String msg;
         private final boolean error;
-
-        ZaproszenieStatus(String msg, boolean error) {
-            this.msg = msg;
-            this.error = error;
-        }
 
     }
 

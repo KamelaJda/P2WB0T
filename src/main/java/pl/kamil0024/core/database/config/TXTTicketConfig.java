@@ -17,33 +17,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package pl.kamil0024.core.command.enums;
+package pl.kamil0024.core.database.config;
 
+import gg.amy.pgorm.annotations.GIndex;
+import gg.amy.pgorm.annotations.PrimaryKey;
+import gg.amy.pgorm.annotations.Table;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
+@Table("txtticket")
+@GIndex({"id"})
+@Data
 @AllArgsConstructor
-public enum PermLevel {
+public class TXTTicketConfig {
+    public TXTTicketConfig() { }
 
-    MEMBER(0, "permlvl.member"),
-    STAZYSTA(1, "permlvl.staz"),
-    CHATMOD(2, "permlvl.chatmod"),
-    HELPER(3, "permlvl.helper"),
-    MODERATOR(4, "permlvl.mod"),
-    ADMINISTRATOR(5, "permlvl.adm"),
-    DEVELOPER(10, "permlvl.dev");
-
-    private final int numer;
-    private final String tranlsateKey;
-
-    public static PermLevel getPermLevel(int numer) {
-        if (numer == 0) return MEMBER;
-        if (numer == 1) return HELPER;
-        if (numer == 2) return MODERATOR;
-        if (numer == 3) return ADMINISTRATOR;
-        if (numer == 10) return DEVELOPER;
-        throw new IllegalArgumentException("Nieprawidłowy poziom!");
+    public TXTTicketConfig(String id) {
+        this.id = id;
     }
+
+    @PrimaryKey
+    private String id;
+
+    private String userId;
+    private String userNick;
+
+    private String admId;
+    private String admNick;
+
+    private long createdAt;
+    private long closedAt;
+
+    private String category;
 
 }
