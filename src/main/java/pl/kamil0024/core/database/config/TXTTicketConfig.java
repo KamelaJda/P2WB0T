@@ -17,23 +17,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package pl.kamil0024.core.socket.actions;
+package pl.kamil0024.core.database.config;
 
+import gg.amy.pgorm.annotations.GIndex;
+import gg.amy.pgorm.annotations.PrimaryKey;
+import gg.amy.pgorm.annotations.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-@AllArgsConstructor
+@Table("txtticket")
+@GIndex({"id"})
 @Data
-public class PlayingTrackAction implements SocketAction {
+@AllArgsConstructor
+public class TXTTicketConfig {
+    public TXTTicketConfig() { }
 
-    private Boolean sendMessage;
-    private final String memberId;
-    private final String channelId;
-    private final int socketId;
-    private final String voiceChannelId;
+    public TXTTicketConfig(String id) {
+        this.id = id;
+    }
 
-    private Integer actionID;
+    @PrimaryKey
+    private String id;
 
-    private final String topic = "playingtrack";
+    private String userId;
+    private String userNick;
+
+    private String admId;
+    private String admNick;
+
+    private long createdAt;
+    private long closedAt;
+
+    private String category;
 
 }

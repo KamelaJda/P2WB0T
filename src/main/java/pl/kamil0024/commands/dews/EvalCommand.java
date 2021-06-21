@@ -23,6 +23,9 @@ import com.google.gson.Gson;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.Button;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +41,6 @@ import pl.kamil0024.core.module.ModulManager;
 import pl.kamil0024.core.socket.SocketManager;
 import pl.kamil0024.core.userstats.manager.UserstatsManager;
 import pl.kamil0024.core.util.EventWaiter;
-import pl.kamil0024.core.util.Tlumaczenia;
 import pl.kamil0024.core.util.UsageException;
 import pl.kamil0024.core.util.kary.KaryJSON;
 import pl.kamil0024.embedgenerator.entity.EmbedRedisManager;
@@ -60,7 +62,6 @@ public class EvalCommand extends Command {
     private final CaseDao caseDao;
     private final ModLog modLog;
     private final KaryJSON karyJSON;
-    private final Tlumaczenia tlumaczenia;
     private final CommandExecute commandExecute;
     private final UserDao userDao;
     private final NieobecnosciDao nieobecnosciDao;
@@ -84,7 +85,7 @@ public class EvalCommand extends Command {
     private final StatusModule statusModule;
     private final SpotifyUtil spotifyUtil;
 
-    public EvalCommand(EventWaiter eventWaiter, CommandManager commandManager, CaseDao caseDao, ModLog modLog, KaryJSON karyJSON, Tlumaczenia tlumaczenia, CommandExecute commandExecute, UserDao userDao, NieobecnosciDao nieobecnosciDao, RemindDao remindDao, ModulManager modulManager, GiveawayListener giveawayListener, GiveawayDao giveawayDao, StatsModule statsModule, MultiDao multiDao, MusicModule musicModule, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, WeryfikacjaDao weryfikacjaDao, WeryfikacjaModule weryfikacjaModule, SocketManager socketManager, DeletedMessagesDao deletedMessagesDao, AcBanDao acBanDao, UserstatsManager userstatsManager, StatusModule statusModule, SpotifyUtil spotifyApi) {
+    public EvalCommand(EventWaiter eventWaiter, CommandManager commandManager, CaseDao caseDao, ModLog modLog, KaryJSON karyJSON, CommandExecute commandExecute, UserDao userDao, NieobecnosciDao nieobecnosciDao, RemindDao remindDao, ModulManager modulManager, GiveawayListener giveawayListener, GiveawayDao giveawayDao, StatsModule statsModule, MultiDao multiDao, MusicModule musicModule, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, WeryfikacjaDao weryfikacjaDao, WeryfikacjaModule weryfikacjaModule, SocketManager socketManager, DeletedMessagesDao deletedMessagesDao, AcBanDao acBanDao, UserstatsManager userstatsManager, StatusModule statusModule, SpotifyUtil spotifyApi) {
         name = "eval";
         aliases.add("ev");
         category = CommandCategory.DEVS;
@@ -95,7 +96,6 @@ public class EvalCommand extends Command {
         this.caseDao = caseDao;
         this.modLog = modLog;
         this.karyJSON = karyJSON;
-        this.tlumaczenia = tlumaczenia;
         this.commandExecute = commandExecute;
         this.userDao = userDao;
         this.nieobecnosciDao = nieobecnosciDao;
@@ -134,7 +134,6 @@ public class EvalCommand extends Command {
         shell.setVariable("caseDao", caseDao);
         shell.setVariable("modLog", modLog);
         shell.setVariable("karyJSON", karyJSON);
-        shell.setVariable("tlumaczenia", tlumaczenia);
         shell.setVariable("commandExecute", commandExecute);
         shell.setVariable("userDao", userDao);
         shell.setVariable("nieobecnosciDao", nieobecnosciDao);

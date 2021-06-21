@@ -53,11 +53,6 @@ public class TicketDao implements Dao<TicketConfig> {
         return mapper.getTicketBySpam(userId);
     }
 
-    private List<TicketConfig> reverse(List<TicketConfig> list) {
-        Collections.reverse(list);
-        return list;
-    }
-
     public List<TicketConfig> getById(String id, int offset) {
         return mapper.getTicketById(id, offset);
     }
@@ -119,8 +114,7 @@ public class TicketDao implements Dao<TicketConfig> {
 
             save(tc);
             member.getUser().openPrivateChannel().complete().sendMessage(msg.toString()).complete();
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) { }
     }
 
 }

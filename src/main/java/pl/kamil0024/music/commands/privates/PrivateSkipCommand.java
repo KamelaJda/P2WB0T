@@ -19,9 +19,8 @@
 
 package pl.kamil0024.music.commands.privates;
 
-import org.jetbrains.annotations.NotNull;
 import pl.kamil0024.core.command.Command;
-import pl.kamil0024.core.command.CommandContext;
+import pl.kamil0024.core.command.SlashContext;
 import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.socket.SocketClient;
 import pl.kamil0024.core.socket.SocketManager;
@@ -36,18 +35,19 @@ public class PrivateSkipCommand extends Command {
         aliases.add("privateskip");
         category = CommandCategory.PRIVATE_CHANNEL;
         this.socketManager = socketManager;
+        hideSlash = true;
+        commandData = getData();
     }
 
     @Override
-    public boolean execute(@NotNull CommandContext context) {
+    public boolean execute(SlashContext context) {
         if (!PrivatePlayCommand.check(context)) return false;
-
-        SocketClient client = socketManager.getClientFromChannel(context);
+        SocketClient client = socketManager.getClientFromChannel(context.getMember());
         if (client == null) {
-            context.sendTranslate("pleave.no.bot").queue();
+            context.sendTranslate("pleave.no.bot");
             return false;
         }
-        socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId()).skip();
+        socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId(), context.getHook()).skip();
         return true;
     }
 

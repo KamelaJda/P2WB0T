@@ -21,7 +21,6 @@ package pl.kamil0024.core.command;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 import com.google.gson.Gson;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
@@ -52,17 +51,15 @@ public class CommandContext {
 
     private final ArgumentManager argumentManager;
     private final Command cmd;
-    private final Tlumaczenia tlumaczenia;
 
-    private static final Pattern URLPATTERN = Pattern.compile("(https?://(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\." +
+    public static final Pattern URLPATTERN = Pattern.compile("(https?://(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\." +
             "[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?://(?:www\\.|(?!www))[a-zA-Z0-9]" +
             "\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]\\.[^\\s]{2,})");
 
-    public CommandContext(MessageReceivedEvent event, String prefix, @Nullable HashMap<Integer, String> args, Tlumaczenia tlumaczenia, ArgumentManager argumentManager, Command cmd) {
+    public CommandContext(MessageReceivedEvent event, String prefix, @Nullable HashMap<Integer, String> args, ArgumentManager argumentManager, Command cmd) {
         this.event = event;
         this.prefix = prefix;
         this.args = args;
-        this.tlumaczenia = tlumaczenia;
         this.argumentManager = argumentManager;
         this.cmd = cmd;
     }
@@ -142,12 +139,12 @@ public class CommandContext {
 
     @CheckReturnValue
     public String getTranslate(String msg) {
-        return tlumaczenia.get(msg);
+        return Tlumaczenia.get(msg);
     }
 
     @CheckReturnValue
     public String getTranslate(String key, String... argi) {
-        return tlumaczenia.get(key, argi);
+        return Tlumaczenia.get(key, argi);
     }
 
     @CheckReturnValue
@@ -156,16 +153,14 @@ public class CommandContext {
         for (Object arg : argi) {
             parsedArgi.add(arg.toString());
         }
-        return tlumaczenia.get(key, parsedArgi.toArray(new String[]{}));
+        return Tlumaczenia.get(key, parsedArgi.toArray(new String[]{}));
     }
 
     public String getArgsToString(Integer num) {
         StringBuilder args = new StringBuilder();
         int size = 1;
         for (Map.Entry<Integer, String> a : getArgs().entrySet()) {
-            if (a.getKey() >= num) {
-                args.append(a.getValue());
-            }
+            if (a.getKey() >= num) args.append(a.getValue());
             if (size < getArgs().size()) args.append(" ");
             size++;
         }
@@ -198,10 +193,15 @@ public class CommandContext {
                 "args=" + new Gson().toJson(getArgs());
     }
 
-    @AllArgsConstructor
     public static class ParsedArgumenty {
 
-        private final CommandContext context;
+        private CommandContext context;
+
+        public ParsedArgumenty() { }
+
+        public ParsedArgumenty(CommandContext context) {
+            this.context = context;
+        }
 
         @Nullable
         public User getUser(String user) {
@@ -224,8 +224,7 @@ public class CommandContext {
             if (num == null) return null;
             try {
                 return Integer.parseInt(num);
-            } catch (NumberFormatException ignored) {
-            }
+            } catch (NumberFormatException ignored) { }
             return null;
         }
 

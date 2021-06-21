@@ -22,54 +22,61 @@ package pl.kamil0024.ticket;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import pl.kamil0024.core.database.TXTTicketDao;
 import pl.kamil0024.core.database.TicketDao;
 import pl.kamil0024.core.module.Modul;
 import pl.kamil0024.core.redis.RedisManager;
 import pl.kamil0024.core.util.EventWaiter;
+import pl.kamil0024.ticket.components.ComponentListener;
 import pl.kamil0024.ticket.config.TicketRedisManager;
 import pl.kamil0024.ticket.listener.VoiceChatListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TicketModule implements Modul {
 
-    TicketDao ticketDao;
-    ShardManager api;
-    RedisManager redisManager;
-    EventWaiter eventWaiter;
+    private final TicketRedisManager ticketRedisManager;
+
+    private final TicketDao ticketDao;
+    private final ShardManager api;
+    private final RedisManager redisManager;
+    private final EventWaiter eventWaiter;
+    private final TXTTicketDao txtTicketDao;
+
+    @Getter
+    private final String name = "ticket";
 
     @Getter
     @Setter
     private boolean start = false;
 
-    private final TicketRedisManager ticketRedisManager;
+    private final List<ListenerAdapter> listeners = new ArrayList<>();
 
-    // Listeners
-    private VoiceChatListener vcl;
-
-    public TicketModule(ShardManager api, TicketDao ticketDao, RedisManager redisManager, EventWaiter eventWaiter) {
+    public TicketModule(ShardManager api, TicketDao ticketDao, RedisManager redisManager, EventWaiter eventWaiter, TXTTicketDao txtTicketDao) {
         this.api = api;
         this.ticketDao = ticketDao;
         this.redisManager = redisManager;
         this.ticketRedisManager = new TicketRedisManager(redisManager);
         this.eventWaiter = eventWaiter;
+        this.txtTicketDao = txtTicketDao;
     }
 
     @Override
     public boolean startUp() {
-        vcl = new VoiceChatListener(ticketDao, ticketRedisManager, eventWaiter, redisManager);
-        api.addEventListener(vcl);
+        listeners.add(new VoiceChatListener(ticketDao, ticketRedisManager, eventWaiter, redisManager));
+        listeners.add(new ComponentListener(txtTicketDao, redisManager));
+        api.addEventListener(listeners);
         return true;
     }
 
     @Override
     public boolean shutDown() {
-        api.removeEventListener(vcl);
+        api.removeEventListener(listeners);
+        listeners.clear();
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return "ticket";
     }
 
 }

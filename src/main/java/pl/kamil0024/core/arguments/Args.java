@@ -29,7 +29,7 @@ public abstract class Args {
     protected String name;
 
     public Object parsed(String o, JDA jda, CommandContext context) {
-        throw new UnsupportedOperationException("Argu nie ma zaimplementowanej funkcji execute()");
+        throw new UnsupportedOperationException("Args nie ma zaimplementowanej funkcji execute()");
     }
 
     @Override

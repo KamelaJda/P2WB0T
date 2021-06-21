@@ -391,7 +391,7 @@
       }
     },
     "26": {
-      "name": "Znieważanie osoby zmrałej",
+      "name": "Znieważanie osoby zmarłej",
       "tier_1": {
         "maxWarns": 1,
         "type": "TEMPBAN",
@@ -406,42 +406,6 @@
         "maxWarns": 3,
         "type": "TEMPBAN",
         "time": "30d"
-      }
-    },
-    "27": {
-      "name": "xd",
-      "tier_1": {
-        "maxWarns": 2,
-        "type": "TEMPMUTE",
-        "time": "1h"
-      },
-      "tier_2": {
-        "maxWarns": 2,
-        "type": "TEMPMUTE",
-        "time": "2h"
-      },
-      "tier_3": {
-        "maxWarns": 3,
-        "type": "TEMPMUTE",
-        "time": "3h"
-      },
-      "tier_4": {
-        "maxWarns": 4,
-        "type": "TEMPMUTE",
-        "time": "4h"
-      },
-      "tier_5": {
-        "maxWarns": 5,
-        "type": "TEMPBAN",
-        "time": "1d"
-      }
-    },
-    "28": {
-      "name": "xd",
-      "tier_1": {
-        "maxWarns": 2,
-        "type": "TEMPMUTE",
-        "time": "1h"
       }
     }
   }

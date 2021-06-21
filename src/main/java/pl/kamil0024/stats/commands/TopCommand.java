@@ -33,7 +33,7 @@ import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.database.NieobecnosciDao;
 import pl.kamil0024.core.database.StatsDao;
 import pl.kamil0024.core.database.config.StatsConfig;
-import pl.kamil0024.core.util.DynamicEmbedPageinator;
+import pl.kamil0024.core.util.DynamicEmbedPaginator;
 import pl.kamil0024.core.util.EventWaiter;
 import pl.kamil0024.core.util.UsageException;
 import pl.kamil0024.core.util.UserUtil;
@@ -127,7 +127,7 @@ public class TopCommand extends Command {
             for (EmbedBuilder page : pages) {
                 futurePages.add(new FutureTask<>(() -> page));
             }
-            new DynamicEmbedPageinator(futurePages, context.getUser(), eventWaiter, 240).create(msg);
+            new DynamicEmbedPaginator(futurePages, context.getUser(), eventWaiter, 240).create(msg);
         };
         ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
         ses.schedule(task, 1, TimeUnit.NANOSECONDS);

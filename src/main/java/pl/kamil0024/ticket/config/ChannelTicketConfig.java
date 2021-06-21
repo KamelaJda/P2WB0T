@@ -25,8 +25,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ChannelTicketConfig {
-    public ChannelTicketConfig() {
-    }
+    public ChannelTicketConfig() { }
 
     private String channelId = null;
     private String userId = null;

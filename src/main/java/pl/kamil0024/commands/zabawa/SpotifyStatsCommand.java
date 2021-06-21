@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import pl.kamil0024.commands.utils.SpotifyWaiter;
 import pl.kamil0024.core.command.Command;
-import pl.kamil0024.core.command.CommandContext;
+import pl.kamil0024.core.command.SlashContext;
 import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.util.EventWaiter;
@@ -45,17 +45,15 @@ public class SpotifyStatsCommand extends Command {
         permLevel = PermLevel.MEMBER;
         enabledInRekru = true;
         cooldown = 60;
-
+        commandData = getData();
         this.spotifyUtil = spotifyUtil;
         this.eventWaiter = eventWaiter;
     }
 
-
     @Override
-    public boolean execute(CommandContext context) {
-        Message msg = context.sendTranslate("generic.loading").complete();
+    public boolean execute(SlashContext context) {
+        Message msg = context.sendTranslate("generic.loading");
         UserCredentials user = spotifyUtil.getUser(context.getUser().getId());
-
         if (user == null) {
             msg.delete().queue();
 
@@ -69,12 +67,11 @@ public class SpotifyStatsCommand extends Command {
             eb.setDescription("Aby zobaczyć swoje statystyki Spotify musisz połączyć swoje konto Discord z kontem Spotify! " +
                     "Możesz to zrobić wchodząc " + String.format("[tutaj](%s)", link));
 
-            context.send(eb.build()).queue();
+            msg.editMessage(eb.build()).override(true).queue();
             return false;
         }
 
-        new SpotifyWaiter(context.getUser(), context.getChannel(), eventWaiter, user).create();
-        msg.delete().queue();
+        new SpotifyWaiter(context.getUser(), eventWaiter, user, msg).start();
         return true;
     }
 

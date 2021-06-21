@@ -19,18 +19,19 @@
 
 package pl.kamil0024.commands.system;
 
-import lombok.SneakyThrows;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDAInfo;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.jetbrains.annotations.NotNull;
 import pl.kamil0024.bdate.BDate;
 import pl.kamil0024.core.command.Command;
-import pl.kamil0024.core.command.CommandContext;
 import pl.kamil0024.core.command.CommandManager;
+import pl.kamil0024.core.command.SlashContext;
 import pl.kamil0024.core.module.ModulManager;
 import pl.kamil0024.core.socket.SocketManager;
 import pl.kamil0024.core.util.Statyczne;
+import pl.kamil0024.core.util.Tlumaczenia;
 import pl.kamil0024.core.util.UserUtil;
 import pl.kamil0024.moderation.listeners.ModLog;
 
@@ -52,15 +53,15 @@ public class BotinfoCommand extends Command {
         aliases = Arrays.asList("botstat", "botstats");
         cooldown = 5;
         enabledInRekru = true;
-
         this.commandManager = commandManager;
         this.modulManager = modulManager;
         this.socketManager = socketManager;
+        hideSlash = true;
+        commandData = new CommandData(name, Tlumaczenia.get(name + ".opis"));
     }
 
-    @SneakyThrows
     @Override
-    public boolean execute(@NotNull CommandContext context) {
+    public boolean execute(@NotNull SlashContext context) {
         EmbedBuilder eb = new EmbedBuilder();
         ArrayList<MessageEmbed.Field> fields = new ArrayList<>();
 
@@ -69,12 +70,7 @@ public class BotinfoCommand extends Command {
         double used = round((double) (total - free) / 1024 / 1024);
         String format = String.format("%s/%s MB", used, round((double) total / 1024 / 1024));
 
-        long startCPUTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
-        long start = System.nanoTime();
-        int cpuCount = ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors();
-
         fields.add(new MessageEmbed.Field(context.getTranslate("botinfo.ram"), format, false));
-//        fields.add(new MessageEmbed.Field(context.getTranslate("botinfo.cpu"), calcCPU(startCPUTime, start, cpuCount) + "%", false));
         fields.add(new MessageEmbed.Field(context.getTranslate("botinfo.uptime"), new BDate(Statyczne.START_DATE.getTime(), ModLog.getLang()).difference(new Date().getTime()), false));
         fields.add(new MessageEmbed.Field(context.getTranslate("botinfo.jda"), JDAInfo.VERSION, false));
         fields.add(new MessageEmbed.Field(context.getTranslate("botinfo.shard"), String.format("[ %s / %s ]", context.getJDA().getShardInfo().getShardId(), context.getJDA().getShardInfo().getShardTotal()), false));
@@ -83,7 +79,7 @@ public class BotinfoCommand extends Command {
         fields.add(new MessageEmbed.Field(context.getTranslate("botinfo.os"), System.getProperty("os.name"), false));
         fields.add(new MessageEmbed.Field(context.getTranslate("botinfo.users"), String.valueOf(context.getGuild().getMemberCount()),
                 false));
-        fields.add(new MessageEmbed.Field(context.getTranslate("botinfo.name"), UserUtil.getFullName(context.getBot()), false));
+        fields.add(new MessageEmbed.Field(context.getTranslate("botinfo.name"), UserUtil.getFullName(context.getJDA().getSelfUser()), false));
         fields.add(new MessageEmbed.Field(context.getTranslate("botinfo.cmd"), String.valueOf(commandManager.getCommands().size()), false));
         fields.add(new MessageEmbed.Field(context.getTranslate("botinfo.modules"), String.valueOf(modulManager.getModules().size()), false));
 
@@ -101,7 +97,7 @@ public class BotinfoCommand extends Command {
             eb.addField(field.getName(), field.getValue(), bol);
             i++;
         }
-        context.send(eb.build()).queue();
+        context.getHook().sendMessageEmbeds(eb.build()).queue();
         return true;
     }
 

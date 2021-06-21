@@ -25,7 +25,6 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.json.JSONObject;
 import pl.kamil0024.api.Response;
 import pl.kamil0024.commands.utils.SpotifyWaiter;
 import pl.kamil0024.music.utils.SpotifyUtil;

@@ -27,7 +27,7 @@ import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.database.CaseDao;
 import pl.kamil0024.core.database.config.CaseConfig;
-import pl.kamil0024.core.util.EmbedPageintaor;
+import pl.kamil0024.core.util.EmbedPaginator;
 import pl.kamil0024.core.util.EventWaiter;
 import pl.kamil0024.core.util.UsageException;
 import pl.kamil0024.core.util.kary.Dowod;
@@ -69,7 +69,7 @@ public class KarainfoCommand extends Command {
             }
         }
 
-        new EmbedPageintaor(list, context.getUser(), eventWaiter).create(context.getChannel());
+        new EmbedPaginator(list, context.getUser(), eventWaiter).create(context.getChannel());
         return true;
     }
 

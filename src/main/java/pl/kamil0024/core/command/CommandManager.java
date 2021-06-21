@@ -20,9 +20,8 @@
 package pl.kamil0024.core.command;
 
 import lombok.Getter;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.kamil0024.core.logger.Log;
@@ -34,17 +33,25 @@ public class CommandManager extends ListenerAdapter {
 
     private static final Logger logger = LoggerFactory.getLogger(CommandManager.class);
 
+    private final ShardManager shardManager;
+
     @Getter
     public Set<Command> registered;
+
     @Getter
     public Map<String, Command> commands;
+
     @Getter
     public Map<String, Command> aliases;
 
-    public CommandManager() {
+    @Getter
+    public List<Command> slashCommands = new ArrayList<>();
+
+    public CommandManager(ShardManager shardManager) {
         this.commands = new HashMap<>();
         this.registered = new HashSet<>();
         this.aliases = new HashMap<>();
+        this.shardManager = shardManager;
     }
 
     public void registerCommand(Command command) {
@@ -53,6 +60,11 @@ public class CommandManager extends ListenerAdapter {
             logger.error("Komenda o nazwie {} ({}) jest już zarejestrowana!", command.getName(), command.getClass().getName());
         if (command.getName() == null || command.getName().isEmpty()) {
             logger.error("Nazwa komendy {} jest pusta!", command.getClass().getName());
+        }
+
+        if (command.getCommandData() != null) {
+            logger.debug("Dodaje slash komende {}", command.getCommandData().getName());
+            slashCommands.add(command);
         }
 
         for (Method method : command.getClass().getMethods()) {
@@ -75,8 +87,8 @@ public class CommandManager extends ListenerAdapter {
 
         registered.add(command);
         commands.put(command.getName(), command);
-        logger.debug("Rejestruje komende {}", command.getName());
         registerAliases(command);
+        logger.debug("Rejestruje komende {}", command.getName());
     }
 
     public void registerAliases(Command command) {

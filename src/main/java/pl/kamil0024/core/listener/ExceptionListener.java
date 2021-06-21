@@ -25,8 +25,7 @@ import pl.kamil0024.core.logger.Log;
 
 public class ExceptionListener extends ListenerAdapter {
 
-    public ExceptionListener() {
-    }
+    public ExceptionListener() { }
 
     @Override
     public void onException(ExceptionEvent event) {

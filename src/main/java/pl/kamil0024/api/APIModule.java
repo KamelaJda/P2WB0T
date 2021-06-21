@@ -76,6 +76,9 @@ public class APIModule implements Modul {
     private final Guild guild;
 
     @Getter
+    private final String name = "api";
+
+    @Getter
     @Setter
     private boolean start = false;
 
@@ -174,11 +177,6 @@ public class APIModule implements Modul {
     public boolean shutDown() {
         this.server.stop();
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return "api";
     }
 
     private static HttpHandler wrapWithMiddleware(HttpHandler handler) {

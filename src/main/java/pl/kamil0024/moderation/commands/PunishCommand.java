@@ -20,18 +20,17 @@
 package pl.kamil0024.moderation.commands;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
-import pl.kamil0024.core.command.CommandExecute;
 import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.database.CaseDao;
@@ -90,7 +89,7 @@ public class PunishCommand extends Command {
                 for (EmbedBuilder embedBuilder : getKaraList(karyJSON, context.getMember())) {
                     pages.add(new FutureTask<>(() -> embedBuilder));
                 }
-                new DynamicEmbedPageinator(pages, context.getUser(), eventWaiter, 500).create(context.getChannel(), context.getMessage());
+                new DynamicEmbedPaginator(pages, context.getUser(), eventWaiter, 500).create(context.getChannel(), context.getMessage());
             } else {
                 Integer liczba = context.getParsed().getNumber(context.getArgs().get(1));
                 if (liczba == null || liczba > karyJSON.getKary().size() || liczba <= 0) {
@@ -169,7 +168,7 @@ public class PunishCommand extends Command {
             for (EmbedBuilder embedBuilder : getKaraList(karyJSON, context.getMember(), osoby)) {
                 pages.add(new FutureTask<>(() -> embedBuilder));
             }
-            new DynamicEmbedPageinator(pages, context.getUser(), eventWaiter, 120)
+            new DynamicEmbedPaginator(pages, context.getUser(), eventWaiter, 120)
                     .setPun(true)
                     .create(msg);
             initWaiter(context, msg, osoby, context.getMessage(), eventWaiter, karyJSON, caseDao, modLog, statsModule);
@@ -181,43 +180,25 @@ public class PunishCommand extends Command {
             return false;
         }
         KaryJSON.Kara kara = karyJSON.getKary().get(numer - 1);
-        msg.editMessage(context.getTranslate("punish.wait", sb.toString(), kara.getPowod())).queue();
-        Emote red = CommandExecute.getReaction(context.getUser(), false);
-        Emote green = CommandExecute.getReaction(context.getUser(), true);
-        msg.addReaction(Objects.requireNonNull(green)).queue();
-        msg.addReaction(Objects.requireNonNull(red)).queue();
+        msg.delete().queue();
+        MessageAction messageAction = context.getChannel().sendMessage(context.getTranslate("punish.wait", sb.toString(), kara.getPowod()));
 
-        final Message fmsg = msg;
+        List<ButtonWaiter.ButtonWaiterAction> list = new ArrayList<>();
 
-        eventWaiter.waitForEvent(MessageReactionAddEvent.class,
-                (event) -> event.getUserId().equals(context.getUser().getId()) && event.getMessageId().equals(fmsg.getId()),
-                (event) -> {
-                    try {
-                        if (event.getReactionEmote().getId().equals(red.getId())) {
-                            context.getMessage().delete().complete();
-                            fmsg.delete().complete();
-                            return;
-                        }
-                        if (event.getReactionEmote().getId().equals(green.getId())) {
-                            putPun(kara, osoby, context.getMember(), context.getChannel(), caseDao, modLog, statsModule, null, eventWaiter);
-                            try {
-                                context.getMessage().delete().complete();
-                                event.getChannel().retrieveMessageById(event.getMessageId()).complete().delete().complete();
-                            } catch (Exception ignored) {
-                            }
-                        }
-                        fmsg.clearReactions().complete();
-                    } catch (Exception ignored) {
-                    }
-                },
-                30, TimeUnit.SECONDS,
-                () -> {
-                    try {
-                        fmsg.getChannel().sendMessage(context.getTranslate("punish.endtime", context.getUser().getAsMention())).queue();
-                        fmsg.delete().queue();
-                    } catch (Exception ignored) {
-                    }
-                });
+        list.add(new ButtonWaiter.ButtonWaiterAction(Button.success("1", context.getTranslate("generic.yes")), (e) -> {
+            putPun(kara, osoby, context.getMember(), context.getChannel(), caseDao, modLog, statsModule, null, eventWaiter);
+            try {
+                context.getMessage().delete().complete();
+                e.getHook().deleteOriginal().complete();
+            } catch (Exception ignored) { }
+        }));
+
+        list.add(new ButtonWaiter.ButtonWaiterAction(Button.danger("2", context.getTranslate("generic.no")), (e) -> {
+            e.getHook().deleteOriginal().queue();
+        }));
+
+        ButtonWaiter buttonWaiter = new ButtonWaiter(eventWaiter, context.getUser(), messageAction, list);
+        buttonWaiter.create();
         return true;
     }
 
@@ -301,7 +282,7 @@ public class PunishCommand extends Command {
                     Log.newError("Typ " + jegoTier.getType().name() + " nie jest wpisany!", PunishCommand.class);
             }
             if (osoby.size() == 1 && eventWaiter != null && txt != null) {
-                Kara.put(caseDao, karaBuilder, modLog, eventWaiter, member.getId(), txt, caseDao, jegoTier.getType() == KaryEnum.TEMPBAN || jegoTier.getType() == KaryEnum.BAN);
+                Kara.put(caseDao, karaBuilder, modLog, eventWaiter, member.getId(), txt, jegoTier.getType() == KaryEnum.TEMPBAN || jegoTier.getType() == KaryEnum.BAN);
             } else Kara.put(caseDao, karaBuilder, modLog);
         }
     }

@@ -40,8 +40,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class Kara {
-    public Kara() {
-    }
+    public Kara() { }
 
     private int karaId;
     private String karanyId;
@@ -87,15 +86,11 @@ public class Kara {
         return cc;
     }
 
-    public static synchronized void put(CaseDao caseDao, Kara kara, ModLog modLog, @Nullable EventWaiter eventWaiter, String userId, @Nullable TextChannel channel, CaseDao cd, boolean deleteWaiter) {
+    public static synchronized void put(CaseDao caseDao, Kara kara, ModLog modLog, @Nullable EventWaiter eventWaiter, String userId, @Nullable TextChannel channel, boolean deleteWaiter) {
         CaseConfig cc = put(caseDao, kara, modLog);
-
         if (eventWaiter != null && channel != null) {
-            DowodWaiter dowod = new DowodWaiter(userId, cc, cd, channel, eventWaiter, null);
-            if (deleteWaiter) {
-                new DeleteMessageWaiter(userId, channel, eventWaiter, kara.getKaranyId(), null, dowod).start();
-                return;
-            }
+            DowodWaiter dowod = new DowodWaiter(userId, cc, caseDao, channel, eventWaiter,null);
+            if (deleteWaiter) dowod = new DowodWaiter(userId, cc, caseDao, channel, eventWaiter, new DeleteMessageWaiter(userId, channel, eventWaiter, kara.getKaranyId()));
             dowod.start();
         }
     }

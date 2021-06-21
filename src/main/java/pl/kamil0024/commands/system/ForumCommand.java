@@ -20,9 +20,8 @@
 package pl.kamil0024.commands.system;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import org.jetbrains.annotations.NotNull;
 import pl.kamil0024.core.command.Command;
-import pl.kamil0024.core.command.CommandContext;
+import pl.kamil0024.core.command.SlashContext;
 import pl.kamil0024.core.util.UserUtil;
 
 import java.time.Instant;
@@ -34,10 +33,12 @@ public class ForumCommand extends Command {
         name = "forum";
         cooldown = 60;
         enabledInRekru = true;
+        hideSlash = true;
+        commandData = getData();
     }
 
     @Override
-    public boolean execute(@NotNull CommandContext context) {
+    public boolean execute(SlashContext context) {
         EmbedBuilder eb = new EmbedBuilder();
         HashMap<Integer, String[]> tak = new HashMap<>();
         StringBuilder sb = new StringBuilder();
@@ -65,7 +66,7 @@ public class ForumCommand extends Command {
             s++;
         }
         eb.setDescription(sb.toString());
-        context.send(eb.build()).queue();
+        context.getHook().sendMessageEmbeds(eb.build()).queue();
         return true;
     }
 

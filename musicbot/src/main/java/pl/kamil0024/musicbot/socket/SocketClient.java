@@ -51,9 +51,8 @@ public class SocketClient extends Thread {
 
     private final static Gson GSON = new Gson();
 
-    Socket socket = null;
-    OutputStream output;
-    PrintWriter writer;
+    private Socket socket = null;
+    private PrintWriter writer;
 
     public final MusicManager musicManager;
     public final ShardManager api;
@@ -74,7 +73,7 @@ public class SocketClient extends Thread {
 
                try {
                    socket = new Socket("localhost", 7070);
-                   output = socket.getOutputStream();
+                   OutputStream output = socket.getOutputStream();
                    writer = new PrintWriter(output, true);
                    sendMessage("setBotId: " + Ustawienia.instance.bot.botId);
                    break;
@@ -108,12 +107,12 @@ public class SocketClient extends Thread {
     public void retrieveMessage(String msg) {
         Log.debug("Nowa wiadomość od serwera: " + msg);
         SocketAction socketAction = GSON.fromJson(msg, SocketAction.class);
+        Log.debug("actionID: " + socketAction.getActionID());
 
         SocketRestAction action = new SocketRestAction(api, musicManager);
-        Response response = null;
+        Response response = new Response();
 
         if (socketAction.getTopic().equals("play")) {
-            response = new Response();
             response.setMessageType("message");
             response.setSuccess(false);
 
@@ -136,6 +135,7 @@ public class SocketClient extends Thread {
             }
 
             if (!inChannel) {
+                response.setAction(socketAction);
                 response.setSuccess(false);
                 response.setErrorMessage("bot nie jest na żadnym kanale!");
                 sendMessage(response);
@@ -149,6 +149,7 @@ public class SocketClient extends Thread {
 
                 @Override
                 public void trackLoaded(AudioTrack track) {
+                    Log.debug("ładuje piosenkę");
                     musicManager.play(guild, serwerManager, track, vc);
                     List<String> traki = new ArrayList<>();
                     traki.add(0, serwerManager.getPlayer().getPlayingTrack().getIdentifier());
@@ -157,34 +158,33 @@ public class SocketClient extends Thread {
                     List<Object> obj = new ArrayList<>();
                     obj.add(new QueueHandler.Track(track));
                     obj.add(traki);
-                    Response r = new Response(socketAction, true, "embedtrack", null, obj);
+                    Response r = new Response(socketAction, true, "embedtrack", null, obj, socketAction.getActionID());
                     sendMessage(r);
                 }
 
                 @Override
                 public void playlistLoaded(AudioPlaylist playlist) {
+                    Log.debug("ładuje playliste");
                     for (AudioTrack track : playlist.getTracks()) {
                         musicManager.play(guild, serwerManager, track, vc);
                     }
-                    Response r = new Response(socketAction, true, "message", null, "dodano " + playlist.getTracks().size() + " piosenek do kolejki (max. limit w kolejce to **10**).");
-                    sendMessage(r);
+                    sendMessage(new Response(socketAction, true, "message", null, "dodano " + playlist.getTracks().size() + " piosenek do kolejki (max. limit w kolejce to **10**).", socketAction.getActionID()));
                 }
 
                 @Override
                 public void noMatches() {
-                    Response r = new Response(socketAction, false, "message", "nie znaleziono dopasowań", null);
-                    sendMessage(r);
+                    Log.debug("nie znaleziono dopasowań");
+                    sendMessage(new Response(socketAction, false, "message", "nie znaleziono dopasowań", null, socketAction.getActionID()));
                     if (serwerManager.getPlayer().getPlayingTrack() == null) serwerManager.destroy();
                 }
 
                 @Override
                 public void loadFailed(FriendlyException exception) {
-                    Response r = new Response(socketAction, false, "message", "nie udało się dodać piosenki do kolejki! Error: " + exception.getLocalizedMessage(), null);
-                    sendMessage(r);
+                    Log.debug("jakiś dziwny błąd");
+                    sendMessage(new Response(socketAction, false, "message", "nie udało się dodać piosenki do kolejki! Error: " + exception.getLocalizedMessage(), null, socketAction.getActionID()));
                     if (serwerManager.getPlayer().getPlayingTrack() == null) serwerManager.destroy();
                 }
             });
-
             return;
         }
 
@@ -244,7 +244,7 @@ public class SocketClient extends Thread {
         private String topic;
         private int socketId;
         private Map<String, Object> args;
-
+        private Integer actionID;
     }
 
     @Data
@@ -257,7 +257,7 @@ public class SocketClient extends Thread {
         private String messageType;
         private String errorMessage;
         private Object data;
-
+        private Integer actionID;
     }
 
     private class LeaveListener extends ListenerAdapter {

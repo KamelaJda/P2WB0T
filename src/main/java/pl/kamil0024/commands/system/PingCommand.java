@@ -20,9 +20,8 @@
 package pl.kamil0024.commands.system;
 
 import net.dv8tion.jda.api.entities.Message;
-import org.jetbrains.annotations.NotNull;
 import pl.kamil0024.core.command.Command;
-import pl.kamil0024.core.command.CommandContext;
+import pl.kamil0024.core.command.SlashContext;
 
 import java.time.temporal.ChronoUnit;
 
@@ -32,13 +31,15 @@ public class PingCommand extends Command {
         name = "ping";
         cooldown = 15;
         enabledInRekru = true;
+        commandData = getData();
+        hideSlash = false;
     }
 
     @Override
-    public boolean execute(@NotNull CommandContext context) {
-        Message msg = context.send(context.getTranslate("ping.ping")).complete();
-        long ping = context.getEvent().getMessage().getTimeCreated().until(msg.getTimeCreated(), ChronoUnit.MILLIS);
-        msg.editMessage(context.getTranslate("ping.pong", ping, context.getEvent().getJDA().getGatewayPing())).queue();
+    public boolean execute(SlashContext context) {
+        Message msg = context.send(context.getTranslate("ping.ping"));
+        long ping = context.getEvent().getTimeCreated().until(msg.getTimeCreated(), ChronoUnit.MILLIS);
+        msg.editMessage(context.getTranslate("ping.pong", ping, context.getEvent().getJDA().getGatewayPing())).complete();
         return true;
     }
 

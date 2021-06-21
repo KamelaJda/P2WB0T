@@ -74,7 +74,6 @@ public class WeryfikacjaCommand extends Command {
             return true;
         }
         msg.editMessage("Próbuje zweryfikować przez kod...").complete();
-
         weryfikacjaModule.executeCode(member, context.getChannel(), kod, context.getGuild(), true);
         return true;
     }
@@ -90,7 +89,7 @@ public class WeryfikacjaCommand extends Command {
             if (context.getArgs().get(2) == null || context.getArgs().get(3) == null) throw new UsageException();
 
             Role role = context.getGuild().getRoleById(context.getArgs().get(2));
-            String nick = context.getArgs().get(3);
+            String nick = context.getArgsToString(3);
 
             if (role == null) {
                 context.send("Nie ma takiej roli!").queue();

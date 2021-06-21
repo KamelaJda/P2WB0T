@@ -20,14 +20,17 @@
 package pl.kamil0024.commands.zabawa;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import org.jetbrains.annotations.NotNull;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.jsoup.Jsoup;
 import pl.kamil0024.core.command.Command;
-import pl.kamil0024.core.command.CommandContext;
+import pl.kamil0024.core.command.SlashContext;
 import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.util.NetworkUtil;
-import pl.kamil0024.core.util.UsageException;
+import pl.kamil0024.core.util.Tlumaczenia;
 import pl.kamil0024.core.util.UserUtil;
+
+import java.util.Objects;
 
 public class PogodaCommand extends Command {
 
@@ -37,23 +40,24 @@ public class PogodaCommand extends Command {
         category = CommandCategory.ZABAWA;
         cooldown = 30;
         enabledInRekru = true;
+        commandData = new CommandData(name, Tlumaczenia.get(name + ".opis"))
+                .addOption(OptionType.STRING, "miejsce", "Miasto lub miejsce na Ziemi", true);
     }
 
     @Override
-    public boolean execute(@NotNull CommandContext context) {
-        String lokacja = context.getArgsToString(0);
-        if (context.getArgs().get(0) == null) throw new UsageException();
+    public boolean execute(SlashContext context) {
+        String lokacja = Objects.requireNonNull(context.getEvent().getOption("miejsce")).getAsString();
 
         try {
             String downloaded = new String(NetworkUtil.download("http://en.wttr.in/" +
                     NetworkUtil.encodeURIComponent(lokacja) + "?T"));
             downloaded = Jsoup.parse(downloaded).getElementsByTag("body").text();
             if (downloaded.startsWith("ERROR:")) {
-                context.sendTranslate("pogoda.errorapi").queue();
+                context.sendTranslate("pogoda.errorapi");
                 return false;
             }
             if (downloaded.contains("We were unable to find your location")) {
-                context.sendTranslate("pogoda.badlocation").queue();
+                context.sendTranslate("pogoda.badlocation");
                 return false;
             }
             EmbedBuilder eb = new EmbedBuilder();
@@ -61,9 +65,9 @@ public class PogodaCommand extends Command {
             eb.setTitle(context.getTranslate("pogoda.pogodaw", lokacja));
             eb.setImage("http://" + "pl.wttr.in/" +
                     NetworkUtil.encodeURIComponent(lokacja) + ".png?0m");
-            context.send(eb.build()).queue();
+            context.getHook().sendMessageEmbeds(eb.build()).complete();
         } catch (Exception e) {
-            context.sendTranslate("pogoda.badlocation").queue();
+            context.sendTranslate("pogoda.badlocation");
             return false;
         }
         return true;

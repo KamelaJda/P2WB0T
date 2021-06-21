@@ -25,8 +25,6 @@ import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.core.database.config.Dao;
 import pl.kamil0024.core.database.config.GiveawayConfig;
 
-import java.util.List;
-
 public class GiveawayDao implements Dao<GiveawayConfig> {
 
     @Getter

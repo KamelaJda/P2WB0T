@@ -17,23 +17,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package pl.kamil0024.core.socket.actions;
+package pl.kamil0024.core.database;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import gg.amy.pgorm.PgMapper;
+import lombok.Getter;
+import pl.kamil0024.core.database.config.Dao;
+import pl.kamil0024.core.database.config.TXTTicketConfig;
 
-@AllArgsConstructor
-@Data
-public class PlayingTrackAction implements SocketAction {
+public class TXTTicketDao implements Dao<TXTTicketConfig> {
 
-    private Boolean sendMessage;
-    private final String memberId;
-    private final String channelId;
-    private final int socketId;
-    private final String voiceChannelId;
+    @Getter
+    private final PgMapper<TXTTicketConfig> mapper;
 
-    private Integer actionID;
+    public TXTTicketDao(DatabaseManager databaseManager) {
+        if (databaseManager == null) throw new IllegalStateException("databaseManager == null");
+        mapper = databaseManager.getPgStore().mapSync(TXTTicketConfig.class);
+    }
 
-    private final String topic = "playingtrack";
+    @Override
+    public TXTTicketConfig get(String id) {
+        return mapper.load(id).orElseGet(() -> new TXTTicketConfig(id));
+    }
 
 }

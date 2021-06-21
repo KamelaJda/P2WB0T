@@ -39,6 +39,9 @@ public class AntiRaidModule implements Modul {
     private final ModLog modLog;
 
     @Getter
+    private final String name = "antiraid";
+
+    @Getter
     @Setter
     private boolean start = false;
 
@@ -64,11 +67,6 @@ public class AntiRaidModule implements Modul {
     public boolean shutDown() {
         api.removeEventListener(antiRaidListener);
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return "antiraid";
     }
 
 }

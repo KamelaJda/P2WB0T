@@ -23,9 +23,8 @@ import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import net.dv8tion.jda.api.EmbedBuilder;
-import org.jetbrains.annotations.NotNull;
 import pl.kamil0024.core.command.Command;
-import pl.kamil0024.core.command.CommandContext;
+import pl.kamil0024.core.command.SlashContext;
 import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.socket.SocketClient;
 import pl.kamil0024.core.socket.SocketManager;
@@ -45,26 +44,25 @@ public class PrivateQueueCommand extends Command {
         aliases.add("privatequeue");
         category = CommandCategory.PRIVATE_CHANNEL;
         this.socketManager = socketManager;
+        commandData = getData();
+        hideSlash = true;
     }
 
     @Override
-    public boolean execute(@NotNull CommandContext context) {
+    public boolean execute(SlashContext context) {
         if (!PrivatePlayCommand.check(context)) return false;
-
-        SocketClient client = socketManager.getClientFromChannel(context);
-
+        SocketClient client = socketManager.getClientFromChannel(context.getMember());
         if (client == null) {
-            context.sendTranslate("pleave.no.bot").queue();
+            context.sendTranslate("pleave.no.bot");
             return false;
         }
-
-        socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId())
+        context.send("Komenda wykonana!");
+        socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId(), context.getHook())
                 .queue();
         return true;
     }
 
     public static class DecodeTrack {
-
         private final Track trak;
         private final boolean aktualnieGrana;
 

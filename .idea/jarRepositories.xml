@@ -71,5 +71,10 @@
       <option name="name" value="BintrayJCenter" />
       <option name="url" value="http://jcenter.bintray.com/" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven5" />
+      <option name="name" value="maven5" />
+      <option name="url" value="https://m2.dv8tion.net/releases" />
+    </remote-repository>
   </component>
 </project>

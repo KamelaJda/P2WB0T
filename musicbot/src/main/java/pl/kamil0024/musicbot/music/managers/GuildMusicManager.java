@@ -27,11 +27,9 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.api.managers.AudioManager;
-import net.dv8tion.jda.api.sharding.ShardManager;
 import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.musicbot.music.managers.entity.AudioPlayerSendHandler;
 import pl.kamil0024.musicbot.socket.SocketClient;
-import pl.kamil0024.musicbot.socket.SocketRestAction;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;

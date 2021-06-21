@@ -19,8 +19,8 @@
 
 package pl.kamil0024.chat.listener;
 
+import com.vdurmont.emoji.EmojiParser;
 import lombok.Getter;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
@@ -35,7 +35,6 @@ import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.database.CaseDao;
 import pl.kamil0024.core.logger.Log;
-import pl.kamil0024.core.util.Emoji;
 import pl.kamil0024.core.util.ImageUtil;
 import pl.kamil0024.core.util.UserUtil;
 import pl.kamil0024.core.util.kary.Dowod;
@@ -52,7 +51,6 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -125,8 +123,7 @@ public class ChatListener extends ListenerAdapter {
         char kurwa = 'a';
         try {
             kurwa = e.getMessage().getContentRaw().toCharArray()[1];
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) { }
 
         if (e.getChannel().getId().equals("426864003562864641") && !e.getAuthor().isBot() &&
                 !e.getMessage().getContentRaw().isEmpty() && kurwa == 'p') {
@@ -140,7 +137,10 @@ public class ChatListener extends ListenerAdapter {
         if (!e.getGuild().getId().equals(Ustawienia.instance.bot.guildId)) return;
         if (UserUtil.getPermLevel(e.getAuthor()).getNumer() >= PermLevel.CHATMOD.getNumer()) return;
         if (e.getAuthor().isBot() || e.getMessage().getContentRaw().isEmpty()) return;
-        if (e.getChannel().getId().equals("426809411378479105") || e.getChannel().getId().equals("503294063064121374") || e.getChannel().getId().equals("573873102757429256"))
+        if (e.getChannel().getId().equals("426809411378479105") ||
+                e.getChannel().getId().equals("503294063064121374") ||
+                e.getChannel().getId().equals("573873102757429256") ||
+                e.getChannel().getId().equals("816436328417198081"))
             return;
         checkMessage(e.getMember(), e.getMessage(), karyJSON, caseDao, modLog);
     }
@@ -212,7 +212,7 @@ public class ChatListener extends ListenerAdapter {
                     Role miniyt = member.getGuild().getRoleById("425670776272715776");
                     Role yt = member.getGuild().getRoleById("425670600049295360");
                     if (miniyt == null || yt == null) {
-                        Log.newError("Rola miniyt/yt jest nullem", ChatListener.class);
+                        Log.newError("Rola miniyt/yt jest nullem", getClass());
                         return;
                     }
                     if (!member.getRoles().contains(miniyt) || !member.getRoles().contains(yt)) {
@@ -232,7 +232,7 @@ public class ChatListener extends ListenerAdapter {
             String capsMsg = bezEmotek.replaceAll("[^\\w\\s]*", "");
 
             if (!msg.getChannel().getId().equals("652927860943880224")) {
-                if (containsCaps(capsMsg) >= 50 || emoteCount(takMsg, msg.getJDA()) >= 10) {
+                if (containsCaps(capsMsg) >= 50 || emoteCount(takMsg) >= 10) {
                     msg.delete().queue();
                     action.setDeleted(true);
                     action.setKara(Action.ListaKar.FLOOD);
@@ -359,8 +359,11 @@ public class ChatListener extends ListenerAdapter {
 
     public static int containsCaps(String msg) {
         msg = msg.replaceAll(" ", "")
-                .replaceAll("<@!?([0-9])*>", "")
-                .replaceAll("([xX])", "").replaceAll("([dD])", "");
+                .replaceAll("<@!?([0-9])*>", "");
+
+        if (containsFlood(msg) < 10) {
+            msg = msg.replaceAll("([xX])", "").replaceAll("([dD])", "");
+        }
         int caps = 0;
         char[] split = msg.toCharArray();
         if (split.length < 5) return 0;
@@ -379,21 +382,14 @@ public class ChatListener extends ListenerAdapter {
 
     }
 
-    public static int emoteCount(String msg, JDA api) {
+    public static int emoteCount(String msg) {
         int count = 0;
         Matcher m = EMOJI.matcher(msg);
         while (m.find()) {
             count++;
         }
-
-        List<String> list = new ArrayList<>(Arrays.asList(msg.split(" ")));
-        count += checkEmote(list, api);
-
+        count += EmojiParser.extractEmojis(msg).size();
         return count;
-    }
-
-    private static long checkEmote(List<String> list, JDA api) {
-        return list.stream().filter(m -> Emoji.resolve(m, api) != null).count();
     }
 
 }

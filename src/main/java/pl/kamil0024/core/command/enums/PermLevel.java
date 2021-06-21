@@ -19,9 +19,11 @@
 
 package pl.kamil0024.core.command.enums;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@SuppressWarnings("unused")
+@Getter
+@AllArgsConstructor
 public enum PermLevel {
 
     MEMBER(0, "permlvl.member"),
@@ -32,15 +34,8 @@ public enum PermLevel {
     ADMINISTRATOR(5, "permlvl.adm"),
     DEVELOPER(10, "permlvl.dev");
 
-    @Getter
     private final int numer;
-    @Getter
     private final String tranlsateKey;
-
-    PermLevel(int numer, String tranlsateKey) {
-        this.numer = numer;
-        this.tranlsateKey = tranlsateKey;
-    }
 
     public static PermLevel getPermLevel(int numer) {
         if (numer == 0) return MEMBER;

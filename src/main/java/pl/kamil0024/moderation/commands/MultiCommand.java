@@ -78,7 +78,7 @@ public class MultiCommand extends Command {
 
         List<EmbedBuilder> pages = getPages(mc, gracz, context.getMember(), showUser, context.getJDA());
 
-        new EmbedPageintaor(pages, context.getUser(), eventWaiter).create(context.getChannel(), context.getMessage());
+        new EmbedPaginator(pages, context.getUser(), eventWaiter).create(context.getChannel(), context.getMessage());
         msg.delete().queue();
         return true;
     }

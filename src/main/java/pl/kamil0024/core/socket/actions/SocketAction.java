@@ -38,6 +38,9 @@ public interface SocketAction {
 
     void setSendMessage(Boolean bol);
 
+    Integer getActionID();
+    void setActionID(Integer id);
+
     default Map<String, Object> getArgs() {
         return new HashMap<>();
     }
@@ -50,6 +53,7 @@ public interface SocketAction {
         map.put("socketId", getSocketId());
         map.put("args", getArgs());
         map.put("sendMessage", getSendMessage());
+        map.put("actionID", getActionID());
         return SocketServer.GSON.toJson(map);
     }
 

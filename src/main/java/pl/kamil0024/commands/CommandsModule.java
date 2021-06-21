@@ -47,7 +47,6 @@ import pl.kamil0024.core.module.ModulManager;
 import pl.kamil0024.core.socket.SocketManager;
 import pl.kamil0024.core.userstats.manager.UserstatsManager;
 import pl.kamil0024.core.util.EventWaiter;
-import pl.kamil0024.core.util.Tlumaczenia;
 import pl.kamil0024.core.util.kary.KaryJSON;
 import pl.kamil0024.embedgenerator.entity.EmbedRedisManager;
 import pl.kamil0024.moderation.commands.StatusCommand;
@@ -68,7 +67,6 @@ public class CommandsModule implements Modul {
     private static final Logger logger = LoggerFactory.getLogger(CommandsModule.class);
 
     private final CommandManager commandManager;
-    private final Tlumaczenia tlumaczenia;
     private final ShardManager api;
     private final EventWaiter eventWaiter;
     private final KaryJSON karyJSON;
@@ -98,6 +96,9 @@ public class CommandsModule implements Modul {
     private final SpotifyUtil spotifyUtil;
 
     @Getter
+    private final String name = "commands";
+
+    @Getter
     @Setter
     private boolean start = false;
     private final ModLog modLog;
@@ -109,9 +110,8 @@ public class CommandsModule implements Modul {
 
     private ArrayList<Command> cmd;
 
-    public CommandsModule(CommandManager commandManager, Tlumaczenia tlumaczenia, ShardManager api, EventWaiter eventWaiter, KaryJSON karyJSON, CaseDao caseDao, ModulManager modulManager, CommandExecute commandExecute, UserDao userDao, ModLog modLog, NieobecnosciDao nieobecnosciDao, RemindDao remindDao, GiveawayDao giveawayDao, StatsModule statsModule, MusicModule musicModule, MultiDao multiDao, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, WeryfikacjaDao weryfikacjaDao, WeryfikacjaModule weryfikacjaModule, RecordingDao recordingDao, SocketManager socketManager, DeletedMessagesDao deletedMessagesDao, AcBanDao acBanDao, UserstatsManager userstatsManager, StatusModule statusModule, APIModule apiModule, SpotifyUtil spotifyApi) {
+    public CommandsModule(CommandManager commandManager, ShardManager api, EventWaiter eventWaiter, KaryJSON karyJSON, CaseDao caseDao, ModulManager modulManager, CommandExecute commandExecute, UserDao userDao, ModLog modLog, NieobecnosciDao nieobecnosciDao, RemindDao remindDao, GiveawayDao giveawayDao, StatsModule statsModule, MusicModule musicModule, MultiDao multiDao, TicketDao ticketDao, ApelacjeDao apelacjeDao, AnkietaDao ankietaDao, EmbedRedisManager embedRedisManager, WeryfikacjaDao weryfikacjaDao, WeryfikacjaModule weryfikacjaModule, RecordingDao recordingDao, SocketManager socketManager, DeletedMessagesDao deletedMessagesDao, AcBanDao acBanDao, UserstatsManager userstatsManager, StatusModule statusModule, APIModule apiModule, SpotifyUtil spotifyApi) {
         this.commandManager = commandManager;
-        this.tlumaczenia = tlumaczenia;
         this.api = api;
         this.eventWaiter = eventWaiter;
         this.karyJSON = karyJSON;
@@ -166,7 +166,7 @@ public class CommandsModule implements Modul {
         cmd.add(new BotinfoCommand(commandManager, modulManager, socketManager));
         cmd.add(new HelpCommand(commandManager));
         cmd.add(new PoziomCommand());
-        cmd.add(new EvalCommand(eventWaiter, commandManager, caseDao, modLog, karyJSON, tlumaczenia, commandExecute, userDao, nieobecnosciDao, remindDao, modulManager, giveawayListener, giveawayDao, statsModule, multiDao, musicModule, ticketDao, apelacjeDao, ankietaDao, embedRedisManager, weryfikacjaDao, weryfikacjaModule, socketManager, deletedMessagesDao, acBanDao, userstatsManager, statusModule, spotifyUtil));
+        cmd.add(new EvalCommand(eventWaiter, commandManager, caseDao, modLog, karyJSON, commandExecute, userDao, nieobecnosciDao, remindDao, modulManager, giveawayListener, giveawayDao, statsModule, multiDao, musicModule, ticketDao, apelacjeDao, ankietaDao, embedRedisManager, weryfikacjaDao, weryfikacjaModule, socketManager, deletedMessagesDao, acBanDao, userstatsManager, statusModule, spotifyUtil));
         cmd.add(new ForumCommand());
         cmd.add(new UserinfoCommand());
         cmd.add(new McpremiumCommand());
@@ -191,13 +191,17 @@ public class CommandsModule implements Modul {
     }
 
     private void tak(ShardManager api) {
-        Log.debug("CommandsModule#tak(ShardManager)");
         RemindmeCommand.check(remindDao, api);
         TextChannel txt = api.getTextChannelById(Ustawienia.instance.channel.status);
         if (txt != null) {
             Message botMsg = null;
-            MessageHistory history = txt.getHistoryFromBeginning(15).complete();
-            if (!history.isEmpty()) {
+            MessageHistory history = null;
+
+            try {
+                history = txt.getHistoryFromBeginning(15).complete();
+            } catch (Exception ignored) { }
+
+            if (history != null && !history.isEmpty()) {
                 for (Message message : history.getRetrievedHistory()) {
                     if (message.getAuthor().getId().equals(Ustawienia.instance.bot.botId)) {
                         botMsg = message;
@@ -225,11 +229,6 @@ public class CommandsModule implements Modul {
         commandManager.unregisterCommands(cmd);
         setStart(false);
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return "commands";
     }
 
     @Data

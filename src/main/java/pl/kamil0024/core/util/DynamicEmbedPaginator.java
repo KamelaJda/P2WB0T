@@ -25,14 +25,15 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
-import net.dv8tion.jda.api.exceptions.PermissionException;
+import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 
 @SuppressWarnings("DuplicatedCode")
-public class DynamicEmbedPageinator {
+public class DynamicEmbedPaginator {
 
     private static final ExecutorService mainExecutor = Executors.newFixedThreadPool(8);
 
@@ -43,7 +44,7 @@ public class DynamicEmbedPageinator {
     private final boolean ended = false;
 
     private int thisPage = 1;
-    private boolean isPun;
+    private boolean isPun = false;
 
     private Message botMsg;
     private long botMsgId;
@@ -54,32 +55,29 @@ public class DynamicEmbedPageinator {
         Runtime.getRuntime().addShutdownHook(new Thread(mainExecutor::shutdown));
     }
 
-    public DynamicEmbedPageinator(List<FutureTask<EmbedBuilder>> pages, User user, EventWaiter eventWaiter, int secound) {
+    public DynamicEmbedPaginator(List<FutureTask<EmbedBuilder>> pages, User user, EventWaiter eventWaiter, int secound) {
         this.eventWaiter = eventWaiter;
         this.pages = pages;
         this.userId = user.getIdLong();
         this.secound = secound;
-        boolean preload = true;
-        if (preload) {
-            mainExecutor.submit(() -> {
-                ExecutorService executor = Executors.newFixedThreadPool(2, new NamedThreadFactory("PageLoader-" +
-                        userId + "-" + botMsgId + "-" + pages.size() + "-pages"));
-                pages.forEach(executor::execute);
-                while (!pages.stream().allMatch(FutureTask::isDone)) {
-                    try {
-                        if (ended) {
-                            pages.forEach(f -> f.cancel(true));
-                            break;
-                        }
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
+        mainExecutor.submit(() -> {
+            ExecutorService executor = Executors.newFixedThreadPool(2, new NamedThreadFactory("PageLoader-" +
+                    userId + "-" + botMsgId + "-" + pages.size() + "-pages"));
+            pages.forEach(executor::execute);
+            while (!pages.stream().allMatch(FutureTask::isDone)) {
+                try {
+                    if (ended) {
+                        pages.forEach(f -> f.cancel(true));
+                        break;
                     }
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 }
-                executor.shutdownNow();
-                setLoading(false);
-            });
-        } else loading = false;
+            }
+            executor.shutdownNow();
+            setLoading(false);
+        });
     }
 
     private void setLoading(boolean loading) {
@@ -87,91 +85,71 @@ public class DynamicEmbedPageinator {
         if (botMsg != null) botMsg.editMessage(render(thisPage)).override(true).queue();
     }
 
-    public DynamicEmbedPageinator create(MessageChannel channel, Message mess) {
-        channel.sendMessage(render(1)).reference(mess).override(true).queue(msg -> {
+    public DynamicEmbedPaginator create(MessageChannel channel, Message mess) {
+        MessageAction action = channel.sendMessage(render(1)).reference(mess);
+        action.setActionRows(EmbedPaginator.getActionRow(1, pages)).queue(msg -> {
             botMsg = msg;
             botMsgId = msg.getIdLong();
-            if (pages.size() != 1) {
-                addReactions(msg);
-                waitForReaction();
-            }
+            if (pages.size() != 1) waitForReaction();
         });
         return this;
     }
 
-    public DynamicEmbedPageinator create(Message message) {
-        message.editMessage(render(1)).override(true).queue(msg -> {
+    public DynamicEmbedPaginator create(Message message) {
+        MessageAction action = message.editMessage(render(1));
+        action.setActionRows(EmbedPaginator.getActionRow(1, pages)).override(true).queue(msg -> {
             botMsg = msg;
             botMsgId = msg.getIdLong();
-            if (pages.size() != 1) {
-                addReactions(msg);
-                waitForReaction();
-            }
+            if (pages.size() != 1) waitForReaction();
         });
         return this;
     }
 
     private void waitForReaction() {
-        eventWaiter.waitForEvent(MessageReactionAddEvent.class, this::checkReaction,
-                this::onMessageReactionAdd, secound, TimeUnit.SECONDS, this::clearReactions);
+        eventWaiter.waitForEvent(ButtonClickEvent.class, this::check,
+                this::handleEvent, secound, TimeUnit.SECONDS, this::clear);
     }
 
-    private void onMessageReactionAdd(MessageReactionAddEvent event) {
-        if (event.getUser() == null ||
-                event.getUser().getIdLong() != userId ||
-                event.getMessageIdLong() != botMsgId) return;
-
-        if (!event.getReactionEmote().isEmote()) {
-            switch (event.getReactionEmote().getName()) {
-                case EmbedPageintaor.FIRST_EMOJI:
-                    thisPage = 1;
-                    break;
-                case EmbedPageintaor.LEFT_EMOJI:
-                    if (thisPage > 1) thisPage--;
-                    break;
-                case EmbedPageintaor.RIGHT_EMOJI:
-                    if (thisPage < pages.size()) thisPage++;
-                    break;
-                case EmbedPageintaor.LAST_EMOJI:
-                    thisPage = pages.size();
-                    break;
-                case EmbedPageintaor.STOP_EMOJI:
-                    botMsg.delete().queue();
-                    return;
-                default:
-                    return;
-            }
+    private void handleEvent(ButtonClickEvent event) {
+        event.deferEdit().queue();
+        switch (event.getComponentId()) {
+            case "FIRST":
+                thisPage = 1;
+                break;
+            case "LEFT":
+                if (thisPage > 1) thisPage--;
+                break;
+            case "RIGHT":
+                if (thisPage < pages.size()) thisPage++;
+                break;
+            case "LAST":
+                thisPage = pages.size();
+                break;
+            case "STOP":
+                clear();
+                return;
         }
-        try {
-            event.getReaction().removeReaction(event.getUser()).queue();
-        } catch (PermissionException ignored) { }
-        botMsg.editMessage(render(thisPage)).override(true).complete();
+        botMsg.editMessage(render(thisPage)).setActionRows(EmbedPaginator.getActionRow(thisPage, pages)).complete();
         waitForReaction();
     }
 
-    private void addReactions(Message message) {
-        for (String s : EmbedPageintaor.values) {
-            message.addReaction(s).queue();
-        }
-    }
-
-    private void clearReactions() {
+    private void clear() {
         if (!isPun) {
             try {
-                botMsg.clearReactions().complete();
+                botMsg.editMessage(botMsg.getContentRaw()).setActionRows(Collections.emptyList()).complete();
             } catch (Exception ignored) {/*lul*/}
         }
     }
 
-    private boolean checkReaction(MessageReactionAddEvent event) {
-        if (event.getMessageIdLong() == botMsgId && !event.getReactionEmote().isEmote() && !event.getUser().isBot()) {
-            switch (event.getReactionEmote().getName()) {
-                case EmbedPageintaor.FIRST_EMOJI:
-                case EmbedPageintaor.LEFT_EMOJI:
-                case EmbedPageintaor.RIGHT_EMOJI:
-                case EmbedPageintaor.LAST_EMOJI:
-                case EmbedPageintaor.STOP_EMOJI:
-                    return event.getUser().getIdLong() == userId;
+    private boolean check(ButtonClickEvent event) {
+        if (event.getMessageId().equals(botMsg.getId()) && event.getUser().getIdLong() == userId) {
+            switch (event.getComponentId()) {
+                case "FIRST":
+                case "LEFT":
+                case "RIGHT":
+                case "LAST":
+                case "STOP":
+                    return true;
                 default:
                     return false;
             }
@@ -209,7 +187,7 @@ public class DynamicEmbedPageinator {
         return eb.build();
     }
 
-    public DynamicEmbedPageinator setPun(boolean bol) {
+    public DynamicEmbedPaginator setPun(boolean bol) {
         isPun = bol;
         return this;
     }

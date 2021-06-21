@@ -37,7 +37,7 @@ import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.database.GiveawayDao;
 import pl.kamil0024.core.database.config.GiveawayConfig;
 import pl.kamil0024.core.util.Duration;
-import pl.kamil0024.core.util.EmbedPageintaor;
+import pl.kamil0024.core.util.EmbedPaginator;
 import pl.kamil0024.core.util.EventWaiter;
 import pl.kamil0024.core.util.UsageException;
 import pl.kamil0024.moderation.listeners.ModLog;
@@ -80,7 +80,7 @@ public class GiveawayCommand extends Command {
             context.sendTranslate("giveaway.emptygive").queue();
             return false;
         }
-        new EmbedPageintaor(strony, context.getUser(), eventWaiter).create(context.getChannel(), context.getMessage());
+        new EmbedPaginator(strony, context.getUser(), eventWaiter).create(context.getChannel(), context.getMessage());
         return true;
     }
 

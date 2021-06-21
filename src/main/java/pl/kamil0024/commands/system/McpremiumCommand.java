@@ -20,15 +20,14 @@
 package pl.kamil0024.commands.system;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.MarkdownSanitizer;
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import pl.kamil0024.core.command.Command;
-import pl.kamil0024.core.command.CommandContext;
+import pl.kamil0024.core.command.SlashContext;
 import pl.kamil0024.core.util.NetworkUtil;
-import pl.kamil0024.core.util.UsageException;
 import pl.kamil0024.core.util.UserUtil;
 
 import java.io.IOException;
@@ -41,15 +40,15 @@ public class McpremiumCommand extends Command {
         name = "mcpremium";
         cooldown = 10;
         enabledInRekru = true;
+        commandData = getData()
+                .addOption(OptionType.STRING, "nick", "Nick użytkownika McPremium", true);
     }
 
     @Override
-    public boolean execute(@NotNull CommandContext context) {
-        String name = null, uuid = null;
-        String arg = context.getArgs().get(0);
-        byte[] avatar = null, body = null;
+    public boolean execute(SlashContext context) {
+        String name, uuid;
+        String arg = Objects.requireNonNull(context.getEvent().getOption("nick")).getAsString();
         List<String> listaNazw = new ArrayList<>();
-        if (arg == null) throw new UsageException();
         try {
             JSONObject jOb = NetworkUtil.getJson("https://api.mojang.com/users/profiles/minecraft/" + NetworkUtil.encodeURIComponent(arg));
             uuid = Objects.requireNonNull(jOb).getString("id");
@@ -81,16 +80,14 @@ public class McpremiumCommand extends Command {
                 }
             }
             listaNazw.add(0, "**" + tekstPierw + "** " + tekstDalej);
-            avatar = NetworkUtil.download("https://crafatar.com/avatars/" + formatUuid(uuid));
-            body = NetworkUtil.download(String.format("https://crafatar.com/renders/body/%s?overlay=true&scale=10&size=512", formatUuid(uuid)));
         } catch (JSONException | IOException e) {
             e.printStackTrace();
-            context.send(context.getTranslate("mcpremium.error", context.getMember().getAsMention())).queue();
+            context.send(context.getTranslate("mcpremium.error", context.getMember().getAsMention()));
             return false;
         }
 
-        if (name == null || uuid == null) {
-            context.send(context.getTranslate("mcpremium.alex", context.getMember().getAsMention())).queue();
+        if (name == null) {
+            context.send(context.getTranslate("mcpremium.alex", context.getMember().getAsMention()));
             return false;
         }
 
@@ -104,15 +101,9 @@ public class McpremiumCommand extends Command {
             eb.addField(context.getTranslate("mcpremium.nick"), String.join("\n", listaNazw),
                     false);
         }
-        if (avatar != null && body != null) {
-            eb.setThumbnail("attachment://avatar.png");
-            eb.setImage("attachment://body.png");
-            context.getChannel()
-                    .sendFile(avatar, "avatar.png")
-                    .addFile(body, "body.png")
-                    .embed(eb.build())
-                    .queue();
-        } else context.send(eb.build());
+        eb.setThumbnail("https://crafatar.com/avatars/" + formatUuid(uuid));
+        eb.setImage(String.format("https://crafatar.com/renders/body/%s?overlay=true&scale=10&size=512", formatUuid(uuid)));
+        context.getHook().sendMessageEmbeds(eb.build()).complete();
         return true;
     }
 

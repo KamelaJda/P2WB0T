@@ -27,8 +27,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class Dowod {
-    public Dowod() {
-    }
+    public Dowod() { }
 
     private int id;
     private String user;

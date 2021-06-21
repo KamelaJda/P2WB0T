@@ -24,14 +24,16 @@ import com.wrapper.spotify.model_objects.specification.*;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import org.jetbrains.annotations.NotNull;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
+import pl.kamil0024.core.command.SlashContext;
 import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.socket.SocketClient;
 import pl.kamil0024.core.socket.SocketManager;
-import pl.kamil0024.core.util.Error;
+import pl.kamil0024.core.util.Tlumaczenia;
 import pl.kamil0024.core.util.UserUtil;
 import pl.kamil0024.music.MusicModule;
 import pl.kamil0024.music.commands.PlayCommand;
@@ -52,22 +54,23 @@ public class PrivatePlayCommand extends Command {
         name = "pplay";
         aliases.add("privateplay");
         category = CommandCategory.PRIVATE_CHANNEL;
+        hideSlash = false;
+        commandData = getData()
+                .addOption(OptionType.STRING, "link", "Link do piosenki lub playlisty YouTube'a/Spotify", true);
         this.socketManager = socketManager;
         this.spotifyUtil = spotifyUtil;
         this.musicModule = musicModule;
     }
 
     @Override
-    public boolean execute(@NotNull CommandContext context) {
+    public boolean execute(SlashContext context) {
         if (!check(context)) return false;
 
-        String link = context.getArgs().get(0);
-        if (link == null) {
-            Error.usageError(context);
-            return false;
-        }
-
+        String link = Objects.requireNonNull(context.getEvent().getOption("link")).getAsString();
         List<String> linki = new ArrayList<>();
+
+        context.send(Objects.requireNonNull(context.getShardManager().getEmoteById(Ustawienia.instance.emote.load)).getAsMention() +
+                " Ładuje...");
 
         if (link.contains("https://open.spotify.com/")) {
             List<String> iteml = new ArrayList<>();
@@ -126,53 +129,41 @@ public class PrivatePlayCommand extends Command {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                context.send("Wystąpił błąd podczas pobierania piosenki!").queue();
+                context.send("Wystąpił błąd podczas pobierania piosenki!");
                 return false;
             }
 
         }
 
-        SocketClient client = socketManager.getClientFromChannel(context);
-
-        if (client != null) {
-            SocketManager.Action sm = socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId())
-                    .setSendMessage(false);
-            if (!linki.isEmpty()) {
-                context.send("Dodaje **" + linki.size() + "** piosenek do kolejki").queue();
-                for (String s : linki) {
-                    sm.play(s);
-                }
-                return true;
-            }
-            sm.setSendMessage(true).play(link);
-        } else {
-            boolean find = false;
+        SocketClient client = socketManager.getClientFromChannel(context.getMember());
+        SocketManager.Action sm = null;
+        if (client == null) {
             for (Map.Entry<Integer, SocketClient> entry : socketManager.getClients().entrySet()) {
                 Member mem = context.getGuild().getMemberById(entry.getValue().getBotId());
                 if (mem == null) continue;
                 if (mem.getVoiceState() == null || mem.getVoiceState().getChannel() == null) {
-                    find = true;
-                    SocketManager.Action sm = socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), entry.getKey())
+                    sm = socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), entry.getKey(), context.getHook())
                             .setSendMessage(false)
-                            .connect(PlayCommand.getVc(context.getMember()).getId());
-                    if (!linki.isEmpty()) {
-                        context.send("Dodaje **" + linki.size() + "** piosenek do kolejki").queue();
-                        for (String s : linki) {
-                            sm.play(s);
-                        }
-                        break;
-                    }
-                    sm.setSendMessage(true).play(link);
+                            .connect(PlayCommand.getVc(context.getMember()).getId())
+                            .setSendMessage(true);
+                    client = entry.getValue();
                     break;
                 }
             }
-            if (!find) {
-                context.sendTranslate("pplay.to.small.bot").queue();
-                return false;
-            }
-
         }
 
+        if (client == null) {
+            context.sendTranslate("pplay.to.small.bot");
+            return false;
+        }
+
+        if (sm == null) {
+            sm = socketManager.getAction(context.getMember().getId(), context.getChannel().getId(), client.getSocketId(), context.getHook())
+                    .setSendMessage(true);
+        }
+
+        if (!linki.isEmpty()) sm.play(linki);
+        else sm.play(link);
         return true;
     }
 
@@ -202,6 +193,32 @@ public class PrivatePlayCommand extends Command {
         return true;
     }
 
+    public static boolean check(SlashContext context) {
+        if (!PlayCommand.isVoice(context.getMember())) {
+            context.getHook().sendMessage(Tlumaczenia.get("pplay.no.channel")).queue();
+            return false;
+        }
+        VoiceChannel vc = PlayCommand.getVc(context.getMember());
+        if (vc.getParent() == null || !vc.getParent().getName().toLowerCase().contains("prywatne kanały")) {
+            context.getHook().sendMessage(Tlumaczenia.get("pplay.no.private")).queue();
+            return false;
+        }
+
+        if (!context.getMember().hasPermission(vc, Permission.MANAGE_CHANNEL)) {
+            context.getHook().sendMessage(Tlumaczenia.get("pplay.no.channel.owner")).queue();
+            return false;
+        }
+
+        if (UserUtil.getPermLevel(context.getMember()).getNumer() == PermLevel.MEMBER.getNumer()) {
+            if (leave(vc)) {
+                context.getHook().sendMessage(Tlumaczenia.get("pplay.min.members")).queue();
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public static boolean leave(VoiceChannel vc) {
         List<Member> members = vc.getMembers().stream()
                 .filter(m -> !m.getUser().isBot())
@@ -216,8 +233,7 @@ public class PrivatePlayCommand extends Command {
                     return false;
                 }
 
-            } catch (Exception ignored) {
-            }
+            } catch (Exception ignored) { }
         }
         return members.size() <= 1;
     }

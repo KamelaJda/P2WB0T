@@ -49,12 +49,10 @@ public class KaryJSON {
     @SneakyThrows
     public KaryJSON() {
         this.kary = new ArrayList<>();
-
         try {
             InputStream is = Main.class.getClassLoader().getResourceAsStream("kary.json");
             if (is == null) throw new NullPointerException("kary.json jest nullem");
             this.object = GsonUtil.GSON.fromJson(new InputStreamReader(is, StandardCharsets.UTF_8), JsonObject.class).getAsJsonObject("list");
-
             loadKary();
         } catch (Exception e) {
             Log.newError(e, getClass());
@@ -65,7 +63,7 @@ public class KaryJSON {
     private void loadKary() {
         if (object == null) throw new UnsupportedOperationException("object przy ladowaniu kar jest nullem");
 
-        for (int i = 1; i < object.size(); i++) {
+        for (int i = 1; i < object.size() + 1; i++) {
             JsonObject jsonKara = object.getAsJsonObject(String.valueOf(i));
             if (jsonKara == null) continue;
 
@@ -82,7 +80,6 @@ public class KaryJSON {
                 kara.getTiery().add(GsonUtil.GSON.fromJson(je, Tiery.class));
             }
             Log.debug("-----------------------------");
-
             getKary().add(kara);
         }
 
@@ -96,13 +93,11 @@ public class KaryJSON {
     @Data
     @AllArgsConstructor
     public static class Kara {
-        public Kara() {
-        }
+        public Kara() { }
 
         private Integer id;
         private String powod;
         private final List<Tiery> tiery = new ArrayList<>();
-
     }
 
     @Data

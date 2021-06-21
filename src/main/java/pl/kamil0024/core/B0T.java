@@ -31,6 +31,7 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
@@ -46,6 +47,7 @@ import pl.kamil0024.chat.ChatModule;
 import pl.kamil0024.commands.CommandsModule;
 import pl.kamil0024.commands.dews.RebootCommand;
 import pl.kamil0024.core.arguments.ArgumentManager;
+import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandExecute;
 import pl.kamil0024.core.command.CommandManager;
 import pl.kamil0024.core.database.*;
@@ -87,6 +89,7 @@ import java.lang.reflect.Method;
 import java.security.cert.X509Certificate;
 import java.util.*;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import static pl.kamil0024.core.util.Statyczne.WERSJA;
 
@@ -133,9 +136,8 @@ public class B0T {
         AsyncEventBus eventBus = new AsyncEventBus(Executors.newFixedThreadPool(16), EventBusErrorHandler.instance);
 
         modules = new HashMap<>();
-        Tlumaczenia tlumaczenia = new Tlumaczenia();
         ArgumentManager argumentManager = new ArgumentManager();
-        CommandManager commandManager = new CommandManager();
+        CommandManager commandManager = new CommandManager(api);
 
         argumentManager.registerAll();
         shutdownThread();
@@ -168,8 +170,8 @@ public class B0T {
             return; // super jestes idea
         }
 
-        tlumaczenia.setLang(Ustawienia.instance.language);
-        tlumaczenia.load();
+        Tlumaczenia.setLang(Ustawienia.instance.language);
+        Tlumaczenia.load();
 
         Sentry.init(option -> {
             option.setDsn(Ustawienia.instance.sentry.dns);
@@ -189,7 +191,7 @@ public class B0T {
             builder.setEnableShutdownHook(false);
             builder.setAutoReconnect(true);
             builder.setStatus(OnlineStatus.DO_NOT_DISTURB);
-            builder.setActivity(Activity.playing(tlumaczenia.get("status.starting")));
+            builder.setActivity(Activity.playing(Tlumaczenia.get("status.starting")));
             builder.addEventListeners(eventWaiter, new ExceptionListener());
             builder.setBulkDeleteSplittingEnabled(false);
             builder.setCallbackPool(Executors.newFixedThreadPool(30));
@@ -209,8 +211,7 @@ public class B0T {
             try {
                 //noinspection BusyWait
                 Thread.sleep(100);
-            } catch (InterruptedException ignored) {
-            }
+            } catch (InterruptedException ignored) { }
         }
 
         Optional<JDA> shard = api.getShards().stream().filter(s -> {
@@ -259,9 +260,10 @@ public class B0T {
         DeletedMessagesDao deletedMessagesDao = new DeletedMessagesDao(databaseManager);
         UserstatsDao userstatsDao = new UserstatsDao(databaseManager);
         SpotifyDao spotifyDao = new SpotifyDao(databaseManager);
+        TXTTicketDao txtTicketDao = new TXTTicketDao(databaseManager);
 
         ArrayList<Object> listeners = new ArrayList<>();
-        CommandExecute commandExecute = new CommandExecute(commandManager, tlumaczenia, argumentManager, userDao);
+        CommandExecute commandExecute = new CommandExecute(commandManager, argumentManager, userDao);
         listeners.add(commandExecute);
         listeners.forEach(api::addEventListener);
 
@@ -291,21 +293,21 @@ public class B0T {
         modulManager.getModules().add(statusModule);
         modulManager.getModules().add(new NieobecnosciModule(api, nieobecnosciDao, nieobecnosciManager));
         modulManager.getModules().add(new LiczydloModule(api));
-        modulManager.getModules().add(new CommandsModule(commandManager, tlumaczenia, api, eventWaiter, karyJSON, caseDao, modulManager, commandExecute, userDao, modLog, nieobecnosciDao, remindDao, giveawayDao, statsModule, musicModule, multiDao, ticketDao, apelacjeDao, ankietaDao, embedRedisManager, weryfikacjaDao, weryfikacjaModule, recordingDao, socketManager, deletedMessagesDao, acBanDao, userstatsManager, statusModule, apiModule, spotifyUtil));
+        modulManager.getModules().add(new CommandsModule(commandManager, api, eventWaiter, karyJSON, caseDao, modulManager, commandExecute, userDao, modLog, nieobecnosciDao, remindDao, giveawayDao, statsModule, musicModule, multiDao, ticketDao, apelacjeDao, ankietaDao, embedRedisManager, weryfikacjaDao, weryfikacjaModule, recordingDao, socketManager, deletedMessagesDao, acBanDao, userstatsManager, statusModule, apiModule, spotifyUtil));
         modulManager.getModules().add(new RekruModule(api, commandManager));
         modulManager.getModules().add(musicModule);
         modulManager.getModules().add(statsModule);
         modulManager.getModules().add(apiModule);
         modulManager.getModules().add(new EmbedGeneratorModule(commandManager, embedRedisManager));
         modulManager.getModules().add(weryfikacjaModule);
-        modulManager.getModules().add(new TicketModule(api, ticketDao, redisManager, eventWaiter));
+        modulManager.getModules().add(new TicketModule(api, ticketDao, redisManager, eventWaiter, txtTicketDao));
         modulManager.getModules().add(new AntiRaidModule(api, antiRaidDao, redisManager, caseDao, modLog));
         modulManager.getModules().add(new ModerationModule(commandManager, eventWaiter, caseDao, statsModule, nieobecnosciManager, nieobecnosciDao, modLog, karyJSON, multiDao));
 
         for (Modul modul : modulManager.getModules()) {
             try {
                 int commands = commandManager.getCommands().size();
-                logger.debug(tlumaczenia.get("module.loading", modul.getName()));
+                logger.debug(Tlumaczenia.get("module.loading", modul.getName()));
                 boolean bol = false;
                 try {
                     bol = modul.startUp();
@@ -315,19 +317,25 @@ public class B0T {
                 }
                 commands = commandManager.getCommands().size() - commands;
                 if (!bol) {
-                    logger.error(tlumaczenia.get("module.loading.fail"));
+                    logger.error(Tlumaczenia.get("module.loading.fail"));
                 } else {
-                    logger.debug(tlumaczenia.get("module.loading.success", modul.getName(), commands));
+                    logger.debug(Tlumaczenia.get("module.loading.success", modul.getName(), commands));
                 }
 
                 modules.put(modul.getName(), modul);
             } catch (Exception ignored) {
-                logger.error(tlumaczenia.get("module.loading.fail"));
+                logger.error(Tlumaczenia.get("module.loading.fail"));
             }
         }
 
+        List<CommandData> data = commandManager.getSlashCommands()
+                .stream().map(Command::getCommandData)
+                .collect(Collectors.toList());
+        logger.info("Ładuje {} slash komend", data.size());
+        primGuild.updateCommands().addCommands(data).queue();
+
         api.setStatus(OnlineStatus.ONLINE);
-        api.setActivity(Activity.playing(tlumaczenia.get("status.hi", WERSJA)));
+        api.setActivity(Activity.playing(Tlumaczenia.get("status.hi", WERSJA)));
         logger.info("Zalogowano jako {}", getshard.getSelfUser());
     }
 
@@ -346,7 +354,7 @@ public class B0T {
                     vsc.setQueue(new ArrayList<>(soc.getTracksList()));
                     voiceStateDao.save(vsc);
                 }
-                socketManager.getAction("0", Ustawienia.instance.channel.moddc, entry.getKey())
+                socketManager.getAction("0", Ustawienia.instance.channel.moddc, entry.getKey(), null)
                         .setSendMessage(false).shutdown();
             }
 

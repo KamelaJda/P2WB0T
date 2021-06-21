@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -35,6 +36,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.kamil0024.commands.dews.RebootCommand;
+import pl.kamil0024.commands.system.HelpCommand;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.arguments.ArgumentManager;
 import pl.kamil0024.core.command.enums.CommandCategory;
@@ -61,18 +63,16 @@ public class CommandExecute extends ListenerAdapter {
 
     private final ArgumentManager argumentManager;
     private final CommandManager commandManager;
-    private final Tlumaczenia tlumaczenia;
     private final UserDao userDao;
     private final ExecutorService executor = Executors.newFixedThreadPool(8);
 
     @Getter
-    HashMap<String, UserConfig> userConfig;
+    private HashMap<String, UserConfig> userConfig;
 
     private final Map<String, Instant> cooldowns = new HashMap<>();
 
-    public CommandExecute(CommandManager commandManager, Tlumaczenia tlumaczenia, ArgumentManager argumentManager, UserDao userDao) {
+    public CommandExecute(CommandManager commandManager, ArgumentManager argumentManager, UserDao userDao) {
         this.commandManager = commandManager;
-        this.tlumaczenia = tlumaczenia;
         this.argumentManager = argumentManager;
         this.userDao = userDao;
         reloadConfig();
@@ -84,8 +84,8 @@ public class CommandExecute extends ListenerAdapter {
                 e.getMessage().getContentRaw().isEmpty()) {
             return;
         }
-        boolean inRekru = e.getGuild().getId().equals(Ustawienia.instance.rekrutacyjny.guildId);
 
+        boolean inRekru = e.getGuild().getId().equals(Ustawienia.instance.rekrutacyjny.guildId);
         if (!inRekru && !e.getGuild().getId().equals(Ustawienia.instance.bot.guildId)) return;
 
         String prefix = Ustawienia.instance.prefix;
@@ -113,6 +113,13 @@ public class CommandExecute extends ListenerAdapter {
         }
 
         if (c == null) return;
+
+        if (c.getCommandData() != null) {
+            e.getChannel().sendMessage(e.getAuthor().getAsMention() +
+                    ", komendy można użyć tylko poprzez slash komendy").complete();
+            zareaguj(e.getMessage(), e.getAuthor(), false);
+            return;
+        }
 
         if (RebootCommand.reboot) {
             e.getChannel().sendMessage("Bot jest podczas restartowania...").queue();
@@ -160,12 +167,12 @@ public class CommandExecute extends ListenerAdapter {
         e.getChannel().sendTyping().queue();
 
         if (c.getPermLevel().getNumer() > jegoPerm.getNumer()) {
-            String wymaga = tlumaczenia.get(c.getPermLevel().getTranlsateKey());
-            String ma = tlumaczenia.get(jegoPerm.getTranlsateKey());
+            String wymaga = Tlumaczenia.get(c.getPermLevel().getTranlsateKey());
+            String ma = Tlumaczenia.get(jegoPerm.getTranlsateKey());
             String trans = "generic.noperm";
             if (c.getCategory() == CommandCategory.MUSIC) trans = "generic.ytnoperm";
 
-            e.getChannel().sendMessage(tlumaczenia.get(trans, wymaga, c.getPermLevel().getNumer(),
+            e.getChannel().sendMessage(Tlumaczenia.get(trans, wymaga, c.getPermLevel().getNumer(),
                     ma, jegoPerm.getNumer())).queue();
 
             zareaguj(e.getMessage(), e.getAuthor(), false);
@@ -173,7 +180,7 @@ public class CommandExecute extends ListenerAdapter {
         }
 
         if (haveCooldown(e.getAuthor(), c) != 0) {
-            e.getChannel().sendMessage(tlumaczenia.get("generic.cooldown", haveCooldown(e.getAuthor(), c))).queue();
+            e.getChannel().sendMessage(Tlumaczenia.get("generic.cooldown", haveCooldown(e.getAuthor(), c))).queue();
             zareaguj(e.getMessage(), e.getAuthor(), false);
             return;
         }
@@ -192,7 +199,7 @@ public class CommandExecute extends ListenerAdapter {
                 }
             }
 
-            CommandContext cmdc = new CommandContext(e, finalPrefix, parsedArgs, tlumaczenia, argumentManager, finalC);
+            CommandContext cmdc = new CommandContext(e, finalPrefix, parsedArgs, argumentManager, finalC);
 
             Thread.currentThread().setName(cmdc.getUser().getId() + "-" + cmdc.getCommand().getName() + "-" + cmdc.getGuild().getId());
 
@@ -233,6 +240,78 @@ public class CommandExecute extends ListenerAdapter {
         executor.execute(runnable);
     }
 
+    @Override
+    public void onSlashCommand(SlashCommandEvent e) {
+        if (e.getGuild() == null || !e.isFromGuild()) return;
+        Command c = commandManager.commands.get(e.getName());
+        if (c != null && c.getCommandData() != null) {
+            boolean inRekru = e.getGuild().getId().equals(Ustawienia.instance.rekrutacyjny.guildId);
+
+            if (RebootCommand.reboot) {
+                e.deferReply(true).queue();
+                e.getHook().sendMessage("Bot jest podczas restartowania...").complete();
+                return;
+            }
+
+            PermLevel jegoPerm = UserUtil.getPermLevel(e.getUser());
+
+            if (inRekru && !c.isEnabledInRekru()) {
+                e.deferReply(true).queue();
+                e.getHook().sendMessage("ta komenda nie jest dostępna na tym serwerze!").queue();
+                return;
+            }
+
+            if (!inRekru && c.isOnlyInRekru()) {
+                e.deferReply(true).queue();
+                e.getHook().sendMessage("Ta komenda jest dostępna tylko na serwerze rekrutacyjnym!").queue();
+                return;
+            }
+
+            if (c.getPermLevel().getNumer() > jegoPerm.getNumer()) {
+                String wymaga = Tlumaczenia.get(c.getPermLevel().getTranlsateKey());
+                String ma = Tlumaczenia.get(jegoPerm.getTranlsateKey());
+                String trans = "generic.noperm";
+                if (c.getCategory() == CommandCategory.MUSIC) trans = "generic.ytnoperm";
+
+                e.deferReply(true).queue();
+                e.getHook().sendMessage(Tlumaczenia.get(trans, wymaga, c.getPermLevel().getNumer(),
+                        ma, jegoPerm.getNumer())).queue();
+                return;
+            }
+
+            int i = haveCooldown(e.getUser(), c);
+            if (i != 0) {
+                e.deferReply(true).queue();
+                e.getHook().sendMessage(Tlumaczenia.get("generic.cooldown", i)).queue();
+                return;
+            }
+
+            SlashContext context = new SlashContext(e, "/", argumentManager, c);
+            e.deferReply(c.isHideSlash()).queue();
+            if (jegoPerm.getNumer() < PermLevel.DEVELOPER.getNumer()) setCooldown(e.getUser(), c);
+            try {
+                c.execute(context);
+            } catch (UsageException ex) {
+                context.getHook().sendMessageEmbeds(HelpCommand.getUsage(context, null).build()).complete();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Log.newError("`%s` uzyl komendy %s (%s) ale wystapil blad: %s", CommandExecute.class, e.getUser().getName(), c.getName(), c.getClass().getSimpleName(), ex);
+                Log.newError(ex, CommandExecute.class);
+
+                SentryEvent event = new SentryEvent();
+                io.sentry.protocol.User user = new io.sentry.protocol.User();
+                user.setId(e.getUser().getId());
+                user.setUsername(UserUtil.getName(e.getUser()));
+                event.setUser(user);
+                event.setLevel(SentryLevel.ERROR);
+                event.setLogger(getClass().getName());
+                event.setThrowable(ex);
+                Sentry.captureEvent(event);
+                e.getHook().sendMessage(String.format("Wystąpił błąd! `%s`.", ex)).queue();
+            }
+        }
+    }
+
     @NotNull
     public static Emote getReaction(User user, boolean bol) {
         try {
@@ -254,8 +333,7 @@ public class CommandExecute extends ListenerAdapter {
     private static void zareaguj(Message msg, User user, boolean bol) {
         try {
             msg.addReaction(getReaction(user, bol)).complete();
-        } catch (ErrorResponseException ignored) {
-        }
+        } catch (ErrorResponseException ignored) { }
     }
 
     private void setCooldown(User user, Command command) {
@@ -280,14 +358,9 @@ public class CommandExecute extends ListenerAdapter {
     public void onExecuteEvent(@Nullable CommandContext context) {
         if (context == null) return;
         String msg = "`%s` użył komendy %s(%s) na serwerze %s[%s]";
-        StringBuilder b = new StringBuilder(" ");
-
-        for (Map.Entry<Integer, String> m : context.getArgs().entrySet()) {
-            b.append(m.getValue()).append(",");
-        }
 
         msg = String.format(msg, UserUtil.getLogName(context.getUser()),
-                context.getCommand(), b.toString().replaceAll("@", "@\u200b$1"), context.getGuild(), context.getGuild().getId());
+                context.getCommand(), String.join(",", context.getArgs().values()).replaceAll("@", "@\u200b$1"), context.getGuild(), context.getGuild().getId());
 
         WebhookUtil web = new WebhookUtil();
         web.setMessage(msg);

@@ -31,8 +31,8 @@ import pl.kamil0024.core.database.config.StatsConfig;
 import pl.kamil0024.core.module.Modul;
 import pl.kamil0024.core.util.EventWaiter;
 import pl.kamil0024.music.MusicModule;
+import pl.kamil0024.music.commands.TekstCommand;
 import pl.kamil0024.stats.commands.ChatmodStatsCommand;
-import pl.kamil0024.stats.commands.TekstCommand;
 import pl.kamil0024.stats.commands.TopCommand;
 import pl.kamil0024.stats.entities.StatsCache;
 import pl.kamil0024.stats.entities.Statystyka;
@@ -43,6 +43,9 @@ import java.util.ArrayList;
 public class StatsModule implements Modul {
 
     private ArrayList<Command> cmd;
+
+    @Getter
+    private final String name = "stats";
 
     private final CommandManager commandManager;
     private final ShardManager api;
@@ -74,7 +77,6 @@ public class StatsModule implements Modul {
             if (s == null) continue;
             statsCache.save(statsConfig.getId(), s);
         }
-
     }
 
     @Override
@@ -98,11 +100,6 @@ public class StatsModule implements Modul {
         api.removeEventListener(statsListener);
         setStart(false);
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return "stats";
     }
 
 }

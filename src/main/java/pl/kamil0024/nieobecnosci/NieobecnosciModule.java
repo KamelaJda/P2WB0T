@@ -33,6 +33,9 @@ public class NieobecnosciModule implements Modul {
     private final NieobecnosciDao nieobecnosciDao;
 
     @Getter
+    private final String name = "nieobecnosci";
+
+    @Getter
     @Setter
     private boolean start = false;
 
@@ -58,11 +61,6 @@ public class NieobecnosciModule implements Modul {
         api.removeEventListener(nieobecnosciListener);
         setStart(false);
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return "nieobecnosci";
     }
 
 }

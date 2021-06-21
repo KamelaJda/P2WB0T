@@ -19,14 +19,15 @@
 
 package pl.kamil0024.core.util;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.concurrent.TimeUnit;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class DeleteMessageWaiter implements Waiter<MessageReceivedEvent> {
 
     private final String userId;
@@ -35,7 +36,6 @@ public class DeleteMessageWaiter implements Waiter<MessageReceivedEvent> {
     private final String bannedUser;
 
     private Message botMsg;
-    private final DowodWaiter dowodWaiter;
 
     public void start() {
         botMsg = channel.sendMessage(String.format("<@%s>, możesz wybrać usunięcie wiadomości użytkownika z okresu do 7 dni! Wpisz odpowiednią liczbę lub napisz **0** jeżeli nie chcesz usuwać wiadomości", userId)).complete();
@@ -62,7 +62,6 @@ public class DeleteMessageWaiter implements Waiter<MessageReceivedEvent> {
         try {
             botMsg.delete().complete();
         } catch (Exception ignored) { }
-        dowodWaiter.start();
     }
 
     @Override
@@ -76,11 +75,14 @@ public class DeleteMessageWaiter implements Waiter<MessageReceivedEvent> {
         }
 
         try {
+            Guild guild = channel.getGuild();
             int i = Math.max(Integer.parseInt(msg.getContentRaw()), 0);
-            if (i <= 7) channel.getGuild().ban(bannedUser, i).complete();
+            if (i <= 7) {
+                guild.unban(bannedUser).complete();
+                guild.ban(bannedUser, i).complete();
+            }
         } catch (Exception ex) {
-            e.getChannel().sendMessage("Nie udało się usunąć wiadomości! Error:" + ex.getLocalizedMessage())
-                    .queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
+            e.getChannel().sendMessage("Nie udało się zbanować! Error:" + ex.getLocalizedMessage()).complete();
         }
         clear();
         try {
