@@ -282,7 +282,7 @@ public class PunishCommand extends Command {
                     Log.newError("Typ " + jegoTier.getType().name() + " nie jest wpisany!", PunishCommand.class);
             }
             if (osoby.size() == 1 && eventWaiter != null && txt != null) {
-                Kara.put(caseDao, karaBuilder, modLog, eventWaiter, member.getId(), txt, caseDao, jegoTier.getType() == KaryEnum.TEMPBAN || jegoTier.getType() == KaryEnum.BAN);
+                Kara.put(caseDao, karaBuilder, modLog, eventWaiter, member.getId(), txt, jegoTier.getType() == KaryEnum.TEMPBAN || jegoTier.getType() == KaryEnum.BAN);
             } else Kara.put(caseDao, karaBuilder, modLog);
         }
     }

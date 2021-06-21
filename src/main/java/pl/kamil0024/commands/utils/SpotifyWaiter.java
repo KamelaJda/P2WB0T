@@ -52,22 +52,23 @@ public class SpotifyWaiter {
     private final EventWaiter eventWaiter;
     private final UserCredentials userCredentials;
 
-    private Message botMsg = null;
+    private Message botMsg;
 
     private Choose a1 = null;
     private Choose b2 = null;
 
-    public SpotifyWaiter(User user, TextChannel channel, EventWaiter eventWaiter, UserCredentials userCredentials) {
+    public SpotifyWaiter(User user, TextChannel channel, EventWaiter eventWaiter, UserCredentials userCredentials, Message msg) {
         this.user = user;
         this.channel = channel;
         this.eventWaiter = eventWaiter;
         this.userCredentials = userCredentials;
+        this.botMsg = msg;
     }
 
     public void create() {
-        botMsg = channel.sendMessage(String.format("%s, wybierz co chcesz sprawdzić! " +
+        botMsg.editMessage(String.format("%s, wybierz co chcesz sprawdzić! " +
                 "\n:one: Swoich ulubionych artystów" +
-                "\n:two: Najczęściej słuchane tracki", user.getAsMention())).complete();
+                "\n:two: Najczęściej słuchane tracki", user.getAsMention())).override(true).complete();
         botMsg.addReaction(ONE).complete();
         botMsg.addReaction(TWO).complete();
         waitForReaction();
@@ -79,20 +80,18 @@ public class SpotifyWaiter {
     }
 
     private void onMessageReactionAdd(MessageReactionAddEvent event) {
-        if (!event.getMessageId().equals(botMsg.getId()) || !event.getUser().getId().equals(user.getId())) return;
-        if (!event.getReactionEmote().isEmote()) {
-            switch (event.getReactionEmote().getName()) {
-                case ONE:
-                    if (a1 == null) a1 = Choose.ARTISTS;
-                    else if (b2 == null) b2 = Choose.SHORT;
-                    break;
-                case TWO:
-                    if (a1 == null) a1 = Choose.TRACK;
-                    else if (b2 == null) b2 = Choose.LONG;
-                    break;
-                case THREE:
-                    b2 = Choose.ALL;
-            }
+        if (event.getUser() == null || !event.getMessageId().equals(botMsg.getId()) || !event.getUser().getId().equals(user.getId()) || event.getReactionEmote().isEmoji()) return;
+        switch (event.getReactionEmote().getName()) {
+            case ONE:
+                if (a1 == null) a1 = Choose.ARTISTS;
+                else if (b2 == null) b2 = Choose.SHORT;
+                break;
+            case TWO:
+                if (a1 == null) a1 = Choose.TRACK;
+                else if (b2 == null) b2 = Choose.LONG;
+                break;
+            case THREE:
+                b2 = Choose.ALL;
         }
         try {
             event.getReaction().removeReaction(event.getUser()).queue();

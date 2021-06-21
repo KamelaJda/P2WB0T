@@ -19,16 +19,15 @@
 
 package pl.kamil0024.core.util;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import pl.kamil0024.core.logger.Log;
 
 import java.util.concurrent.TimeUnit;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class DeleteMessageWaiter implements Waiter<MessageReceivedEvent> {
 
     private final String userId;
@@ -37,7 +36,6 @@ public class DeleteMessageWaiter implements Waiter<MessageReceivedEvent> {
     private final String bannedUser;
 
     private Message botMsg;
-    private final DowodWaiter dowodWaiter;
 
     public void start() {
         botMsg = channel.sendMessage(String.format("<@%s>, możesz wybrać usunięcie wiadomości użytkownika z okresu do 7 dni! Wpisz odpowiednią liczbę lub napisz **0** jeżeli nie chcesz usuwać wiadomości", userId)).complete();
@@ -64,7 +62,6 @@ public class DeleteMessageWaiter implements Waiter<MessageReceivedEvent> {
         try {
             botMsg.delete().complete();
         } catch (Exception ignored) { }
-        dowodWaiter.start();
     }
 
     @Override

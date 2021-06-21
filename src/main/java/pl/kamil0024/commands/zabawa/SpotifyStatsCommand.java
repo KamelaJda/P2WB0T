@@ -20,6 +20,7 @@
 package pl.kamil0024.commands.zabawa;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import pl.kamil0024.commands.utils.SpotifyWaiter;
 import pl.kamil0024.core.command.Command;
@@ -69,12 +70,11 @@ public class SpotifyStatsCommand extends Command {
             eb.setDescription("Aby zobaczyć swoje statystyki Spotify musisz połączyć swoje konto Discord z kontem Spotify! " +
                     "Możesz to zrobić wchodząc " + String.format("[tutaj](%s)", link));
 
-            context.send(eb.build()).queue();
+            msg.editMessage(eb.build()).override(true).queue();
             return false;
         }
 
-        new SpotifyWaiter(context.getUser(), context.getChannel(), eventWaiter, user).create();
-        msg.delete().queue();
+        new SpotifyWaiter(context.getUser(), context.getChannel(), eventWaiter, user, msg).create();
         return true;
     }
 
