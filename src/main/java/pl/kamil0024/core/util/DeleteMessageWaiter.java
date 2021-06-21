@@ -85,9 +85,7 @@ public class DeleteMessageWaiter implements Waiter<MessageReceivedEvent> {
                 guild.ban(bannedUser, i).complete();
             }
         } catch (Exception ex) {
-            Log.newError(ex, getClass());
-            e.getChannel().sendMessage("Nie udało się zbanować! Error:" + ex.getLocalizedMessage())
-                    .queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
+            e.getChannel().sendMessage("Nie udało się zbanować! Error:" + ex.getLocalizedMessage()).complete();
         }
         clear();
         try {
