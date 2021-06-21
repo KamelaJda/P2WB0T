@@ -48,18 +48,15 @@ public class SpotifyWaiter {
     private static final String THREE = "\u0033\u20E3";
 
     private final User user;
-    private final TextChannel channel;
     private final EventWaiter eventWaiter;
     private final UserCredentials userCredentials;
-
-    private Message botMsg;
+    private final Message botMsg;
 
     private Choose a1 = null;
     private Choose b2 = null;
 
-    public SpotifyWaiter(User user, TextChannel channel, EventWaiter eventWaiter, UserCredentials userCredentials, Message msg) {
+    public SpotifyWaiter(User user, EventWaiter eventWaiter, UserCredentials userCredentials, Message msg) {
         this.user = user;
-        this.channel = channel;
         this.eventWaiter = eventWaiter;
         this.userCredentials = userCredentials;
         this.botMsg = msg;
