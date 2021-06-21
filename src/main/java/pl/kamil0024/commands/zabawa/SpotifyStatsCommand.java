@@ -21,7 +21,6 @@ package pl.kamil0024.commands.zabawa;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import pl.kamil0024.commands.utils.SpotifyWaiter;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.SlashContext;
