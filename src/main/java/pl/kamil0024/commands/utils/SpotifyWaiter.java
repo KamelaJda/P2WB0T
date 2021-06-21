@@ -23,11 +23,13 @@ import com.wrapper.spotify.model_objects.specification.Artist;
 import com.wrapper.spotify.model_objects.specification.Track;
 import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
-import net.dv8tion.jda.api.exceptions.PermissionException;
+import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.Button;
 import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.util.BetterStringBuilder;
 import pl.kamil0024.core.util.DynamicEmbedPaginator;
@@ -43,9 +45,9 @@ import java.util.concurrent.TimeUnit;
 
 public class SpotifyWaiter {
 
-    private static final String ONE = "\u0031\u20E3";
-    private static final String TWO = "\u0032\u20E3";
-    private static final String THREE = "\u0033\u20E3";
+    private static final Button ONEB = Button.primary("SPOTIFY-ONE", Emoji.fromMarkdown("\u0031\u20E3"));
+    private static final Button TWOB = Button.primary("SPOTIFY-TWO", Emoji.fromMarkdown("\u0032\u20E3"));
+    private static final Button THREEB = Button.primary("SPOTIFY-THREE", Emoji.fromMarkdown("\u0033\u20E3"));
 
     private final User user;
     private final EventWaiter eventWaiter;
@@ -65,34 +67,28 @@ public class SpotifyWaiter {
     public void create() {
         botMsg.editMessage(String.format("%s, wybierz co chcesz sprawdzić! " +
                 "\n:one: Swoich ulubionych artystów" +
-                "\n:two: Najczęściej słuchane tracki", user.getAsMention())).override(true).complete();
-        botMsg.addReaction(ONE).complete();
-        botMsg.addReaction(TWO).complete();
+                "\n:two: Najczęściej słuchane tracki", user.getAsMention())).setActionRows(ActionRow.of(ONEB, TWOB)).override(true).complete();
         waitForReaction();
     }
 
     private void waitForReaction() {
-        eventWaiter.waitForEvent(MessageReactionAddEvent.class, this::checkReaction,
+        eventWaiter.waitForEvent(ButtonClickEvent.class, this::checkReaction,
                 this::onMessageReactionAdd, 60, TimeUnit.SECONDS, this::clearReactions);
     }
 
-    private void onMessageReactionAdd(MessageReactionAddEvent event) {
-        if (event.getUser() == null || !event.getMessageId().equals(botMsg.getId()) || !event.getUser().getId().equals(user.getId()) || event.getReactionEmote().isEmoji()) return;
-        switch (event.getReactionEmote().getName()) {
-            case ONE:
+    private void onMessageReactionAdd(ButtonClickEvent event) {
+        switch (event.getComponentId()) {
+            case "SPOTIFY-ONE":
                 if (a1 == null) a1 = Choose.ARTISTS;
                 else if (b2 == null) b2 = Choose.SHORT;
                 break;
-            case TWO:
+            case "SPOTIFY-TWO":
                 if (a1 == null) a1 = Choose.TRACK;
                 else if (b2 == null) b2 = Choose.LONG;
                 break;
-            case THREE:
+            case "SPOTIFY-THREE":
                 b2 = Choose.ALL;
         }
-        try {
-            event.getReaction().removeReaction(event.getUser()).queue();
-        } catch (PermissionException ignored) { }
 
         if (a1 != null && b2 != null) {
             List<FutureTask<EmbedBuilder>> futurePages = new ArrayList<>();
@@ -144,22 +140,21 @@ public class SpotifyWaiter {
 
             new DynamicEmbedPaginator(futurePages, user, eventWaiter, 120).create(botMsg);
         } else {
-            botMsg.addReaction(THREE).complete();
             botMsg.editMessage(String.format("%s, wybierz z jakiego okresu chcesz uzyskać dane" +
                     "\n:one: 4 tygodni" +
                     "\n:two: 6 miesięcy" +
-                    "\n:three: kilku lat", user.getAsMention())).complete();
+                    "\n:three: kilku lat", user.getAsMention())).setActionRows(ActionRow.of(ONEB, TWOB, THREEB)).complete();
             waitForReaction();
         }
     }
 
-    private boolean checkReaction(MessageReactionAddEvent event) {
-        if (event.getMessageIdLong() == botMsg.getIdLong() && !event.getReactionEmote().isEmote() && !event.getUser().isBot()) {
-            switch (event.getReactionEmote().getName()) {
-                case ONE:
-                case TWO:
-                case THREE:
-                    return event.getUser().getId().equals(user.getId());
+    private boolean checkReaction(ButtonClickEvent event) {
+        if (event.getMessageIdLong() == botMsg.getIdLong() && !event.getUser().isBot() && event.getUser().getId().equals(user.getId())) {
+            switch (event.getComponentId()) {
+                case "SPOTIFY-ONE":
+                case "SPOTIFY-TWO":
+                case "SPOTIFY-THREE":
+                    return true;
                 default:
                     return false;
             }
@@ -168,7 +163,10 @@ public class SpotifyWaiter {
 
     private void clearReactions() {
         try {
-            botMsg.clearReactions().complete();
+            MessageBuilder mb = new MessageBuilder();
+            mb.setContent(botMsg.getContentRaw());
+            if (botMsg.getEmbeds().size() >= 1) mb.setEmbed(botMsg.getEmbeds().get(0));
+            botMsg.editMessage(mb.build()).override(true).complete();
         } catch (Exception ignored) {/*lul*/}
     }
 
