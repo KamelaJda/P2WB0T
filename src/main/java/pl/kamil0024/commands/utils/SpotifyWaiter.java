@@ -34,6 +34,7 @@ import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.util.BetterStringBuilder;
 import pl.kamil0024.core.util.DynamicEmbedPaginator;
 import pl.kamil0024.core.util.EventWaiter;
+import pl.kamil0024.core.util.Waiter;
 import pl.kamil0024.music.utils.UserCredentials;
 
 import java.awt.*;
@@ -43,7 +44,7 @@ import java.util.List;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
-public class SpotifyWaiter {
+public class SpotifyWaiter implements Waiter<ButtonClickEvent> {
 
     private static final Button ONEB = Button.primary("SPOTIFY-ONE", Emoji.fromMarkdown("\u0031\u20E3"));
     private static final Button TWOB = Button.primary("SPOTIFY-TWO", Emoji.fromMarkdown("\u0032\u20E3"));
@@ -64,19 +65,22 @@ public class SpotifyWaiter {
         this.botMsg = msg;
     }
 
-    public void create() {
+    @Override
+    public void start() {
         botMsg.editMessage(String.format("%s, wybierz co chcesz sprawdzić! " +
                 "\n:one: Swoich ulubionych artystów" +
                 "\n:two: Najczęściej słuchane tracki", user.getAsMention())).setActionRows(ActionRow.of(ONEB, TWOB)).override(true).complete();
-        waitForReaction();
+        waitForMessage();
     }
 
-    private void waitForReaction() {
-        eventWaiter.waitForEvent(ButtonClickEvent.class, this::checkReaction,
-                this::onMessageReactionAdd, 60, TimeUnit.SECONDS, this::clearReactions);
+    @Override
+    public void waitForMessage() {
+        eventWaiter.waitForEvent(ButtonClickEvent.class, this::checkMessage,
+                this::event, 60, TimeUnit.SECONDS, this::clearReactions);
     }
 
-    private void onMessageReactionAdd(ButtonClickEvent event) {
+    @Override
+    public void event(ButtonClickEvent event) {
         event.deferEdit().queue();
         switch (event.getComponentId()) {
             case "SPOTIFY-ONE":
@@ -145,11 +149,12 @@ public class SpotifyWaiter {
                     "\n:one: 4 tygodni" +
                     "\n:two: 6 miesięcy" +
                     "\n:three: kilku lat", user.getAsMention())).setActionRows(ActionRow.of(ONEB, TWOB, THREEB)).complete();
-            waitForReaction();
+            waitForMessage();
         }
     }
 
-    private boolean checkReaction(ButtonClickEvent event) {
+    @Override
+    public boolean checkMessage(ButtonClickEvent event) {
         if (event.getMessageIdLong() == botMsg.getIdLong() && !event.getUser().isBot() && event.getUser().getId().equals(user.getId())) {
             switch (event.getComponentId()) {
                 case "SPOTIFY-ONE":

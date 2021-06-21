@@ -71,7 +71,7 @@ public class SpotifyStatsCommand extends Command {
             return false;
         }
 
-        new SpotifyWaiter(context.getUser(), eventWaiter, user, msg).create();
+        new SpotifyWaiter(context.getUser(), eventWaiter, user, msg).start();
         return true;
     }
 
