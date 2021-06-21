@@ -77,6 +77,7 @@ public class SpotifyWaiter {
     }
 
     private void onMessageReactionAdd(ButtonClickEvent event) {
+        event.deferEdit().queue();
         switch (event.getComponentId()) {
             case "SPOTIFY-ONE":
                 if (a1 == null) a1 = Choose.ARTISTS;
