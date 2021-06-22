@@ -63,11 +63,6 @@ public class ComponentListener extends ListenerAdapter {
     public static final Button TICKET_CREATE_VC = Button.secondary("TICKET-CREATE_VC", "Utwórz kanał głosowy");
     public static final Button TICKET_CLOSE = Button.danger("TICKET-CLOSE", "Zamknij kanał pomocy");
 
-    /**
-     * TODO: Zmień na
-     * @see pl.kamil0024.core.Ustawienia Ustawienia
-     */
-    private static final String CATEGORY = "762345284457332787";
     private static final Random RANDOM = new Random();
 
     private static final long VC_RAW_PERMS = Permission.getRaw(
@@ -114,7 +109,7 @@ public class ComponentListener extends ListenerAdapter {
                 Member member = e.getMember();
                 if (member != null)
                     member.getRoles().stream()
-                            .filter(f -> f.getId().equals("762345077624274964")) // TODO: Ustawienia.instance.rangi.ekipa
+                            .filter(f -> f.getId().equals(Ustawienia.instance.rangi.ekipa))
                             .findAny()
                             .ifPresent(r -> channelAction(e));
         }
@@ -163,7 +158,7 @@ public class ComponentListener extends ListenerAdapter {
             futureMap.put(channel.getId(), ses.schedule(() -> {
                 daoCache.invalidate(channel.getId());
                 channel.delete().complete();
-            }, 10, TimeUnit.SECONDS)); // TODO: 3 minuty
+            }, 3, TimeUnit.MINUTES));
 
         } catch (Exception ex) {
             Log.newError(ex, getClass());
@@ -306,7 +301,7 @@ public class ComponentListener extends ListenerAdapter {
                     e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.deleteerror", e.getUser().getAsMention())).complete();
                 }
             };
-            ses.schedule(run, 5, TimeUnit.SECONDS); // TODO: 30 sekund
+            ses.schedule(run, 30, TimeUnit.SECONDS);
         }
     }
 
@@ -317,7 +312,7 @@ public class ComponentListener extends ListenerAdapter {
     @Nullable
     public Category getCategory(@Nullable Guild guild, TextChannel channel) {
         if (guild == null) return null;
-        Category id = guild.getCategoryById(CATEGORY);
+        Category id = guild.getCategoryById(Ustawienia.instance.ticket.createChannelCategory);
         if (id == null) {
             Log.newError("getCategory(Guild) == null", getClass());
             sendAndDelete(channel, Tlumaczenia.get("ticket.notfindcate"));

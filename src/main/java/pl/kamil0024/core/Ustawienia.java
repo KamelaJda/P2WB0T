@@ -108,6 +108,7 @@ public class Ustawienia {
         public Integer port;
         public List<String> tokens = Arrays.asList("343467373417857025");
         public List<String> whitelist = Arrays.asList("343467373417857025");
+        public String geniusToken = def;
     }
 
     public static class Rangi {

@@ -21,6 +21,7 @@ package pl.kamil0024.core.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
@@ -77,8 +78,7 @@ public class ButtonWaiter {
     private void handleEvent(ButtonClickEvent e) {
         if (e.getButton() == null || e.getButton().getId() == null) return;
         InteractionHook hook = e.getHook();
-
-        e.deferEdit().queue(); // potwierdza, że przycisk został kliknięty. Inaczej wywali "Żądanie nie zostało przetworzone"
+        e.deferEdit().queue();
 
         for (ButtonWaiterAction action : getButtonWaiterActionList()) {
             if (action.getButton().getId() == null) {
@@ -87,7 +87,7 @@ public class ButtonWaiter {
 
             if (action.getButton().getId().equals(e.getButton().getId())) {
                 action.getAction().accept(e);
-                if (isDisableComponentOnClick()) { // Wyłącza przyciski
+                if (isDisableComponentOnClick()) {
                     List<Button> collect = getButtonWaiterActionList().stream().map(m -> m.getButton().asDisabled()).collect(Collectors.toList());
                     hook.editOriginalComponents(ActionRow.of(collect)).complete();
                 }
@@ -96,7 +96,12 @@ public class ButtonWaiter {
     }
 
     private void clear() {
-        botMsg.delete().complete(); // nie ma opcji usunięcia/wyłączenia przycisków
+        MessageBuilder mb = new MessageBuilder();
+        mb.setContent(botMsg.getContentRaw());
+        mb.setActionRows(ActionRow.of(getButtonWaiterActionList().stream().map(m -> m.getButton().asDisabled()).collect(Collectors.toList())));
+        mb.setContent(botMsg.getContentRaw());
+        if (botMsg.getEmbeds().size() >= 1) mb.setEmbed(botMsg.getEmbeds().get(0));
+        botMsg.editMessage(mb.build()).override(true).complete();
     }
 
     @Data

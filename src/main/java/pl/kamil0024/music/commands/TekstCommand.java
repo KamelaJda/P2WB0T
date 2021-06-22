@@ -20,12 +20,21 @@
 package pl.kamil0024.music.commands;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
+import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.SlashContext;
 import pl.kamil0024.core.command.enums.CommandCategory;
@@ -33,10 +42,11 @@ import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.util.*;
 import pl.kamil0024.music.MusicModule;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.FutureTask;
 
 public class TekstCommand extends Command {
@@ -68,22 +78,21 @@ public class TekstCommand extends Command {
         }
 
         try {
-            JSONObject job = NetworkUtil.getJson("https://some-random-api.ml/lyrics?title=" + NetworkUtil.encodeURIComponent(arg));
+            Piosenka piosenka = requestGenius(NetworkUtil.encodeURIComponent(arg));
 
-            String tytul = Objects.requireNonNull(job).getString("title");
-            String author = Objects.requireNonNull(job).getString("author");
-            String lyrics = Objects.requireNonNull(job).getString("lyrics");
-            JSONObject thumbnail = job.getJSONObject("thumbnail");
-            JSONObject links = job.getJSONObject("links");
+            if (piosenka == null) {
+                context.send("Nie znaleziono piosenki o takim tytule!");
+                return false;
+            }
 
             List<FutureTask<EmbedBuilder>> pages = new ArrayList<>();
 
             EmbedBuilder eb = new EmbedBuilder();
             eb.setColor(UserUtil.getColor(context.getMember()));
-            eb.addField(context.getTranslate("tekst.autor"), author, true);
-            eb.addField(context.getTranslate("tekst.tytul"), String.format("[%s](%s)", tytul, links.getString("genius")), true);
+            eb.addField(context.getTranslate("tekst.autor"), piosenka.getAuthor(), true);
+            eb.addField(context.getTranslate("tekst.tytul"), String.format("[%s](%s)", piosenka.getTitle(), piosenka.getWebsite()), true);
             eb.setTimestamp(Instant.now());
-            eb.setImage(thumbnail.getString("genius"));
+            eb.setImage(piosenka.getImageLink());
 
             StringBuilder sb = new StringBuilder();
 
@@ -93,7 +102,7 @@ public class TekstCommand extends Command {
             tekst.setTimestamp(Instant.now());
             tekst.setColor(UserUtil.getColor(context.getMember()));
 
-            for (String s : lyrics.split("\n")) {
+            for (String s : piosenka.getSlowa().split("\n")) {
                 sb.append(s).append("\n");
                 if (sb.length() >= 900) {
                     tekst.addField(" ", sb.toString(), false);
@@ -128,6 +137,44 @@ public class TekstCommand extends Command {
         }
         context.sendTranslate("tekst.error");
         return false;
+    }
+
+    private Piosenka requestGenius(String q) throws IOException {
+        JSONObject xd = NetworkUtil.getJson("https://api.genius.com/search?q=" + NetworkUtil.encodeURIComponent(q),
+                "Bearer " + Ustawienia.instance.api.geniusToken);
+        if (xd == null) throw new IOException("resp == null");
+        JSONArray arr = xd.getJSONObject("response").getJSONArray("hits");
+        if (arr.isEmpty()) return null;
+        JSONObject song = arr.getJSONObject(0).getJSONObject("result");
+        String imageLink = song.getString("song_art_image_url");
+        String title = song.getString("full_title");
+        String lyricsPath = song.getString("path");
+        String author = song.getJSONObject("primary_artist").getString("name");
+        byte[] html = NetworkUtil.download("https://genius.com" + lyricsPath);
+        Document doc = Jsoup.parse(new String(html, StandardCharsets.UTF_8));
+        Element slowaElement = doc.select(".lyrics p").get(0);
+        StringBuilder slowa = new StringBuilder();
+        for (Node n : slowaElement.childNodes()) {
+            if (n instanceof TextNode) {
+                slowa.append(((TextNode) n).getWholeText());
+            } else if (n instanceof Element) {
+                if (((Element) n).tagName().equals("a")) slowa.append(((Element) n).wholeText());
+                if (((Element) n).tagName().equals("i"))
+                    slowa.append("_").append(((Element) n).wholeText()).append("_");
+                if (((Element) n).tagName().equals("b")) slowa.append(((Element) n).wholeText());
+            }
+        }
+        return new Piosenka(imageLink, title, "https://genius.com" + lyricsPath, slowa.toString(), author);
+    }
+
+    @AllArgsConstructor
+    @Data
+    private static class Piosenka {
+        private final String imageLink;
+        private final String title;
+        private final String website;
+        private final String slowa;
+        private final String author;
     }
 
 }

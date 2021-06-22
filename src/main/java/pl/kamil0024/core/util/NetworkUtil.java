@@ -21,6 +21,7 @@ import lombok.Getter;
 import okhttp3.Response;
 import okhttp3.*;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -44,6 +45,16 @@ public class NetworkUtil {
                 .build();
         Response res = client.newCall(req).execute();
         return res.body() == null ? null : new JSONResponse(res.body().string(), res.code());
+    }
+
+    public static JSONObject getJson(String url, String authorization) throws IOException {
+        Request req = new Request.Builder()
+                .header(UA, USER_AGENT)
+                .header(AUTH, authorization)
+                .url(url)
+                .build();
+        Response res = client.newCall(req).execute();
+        return res.body() == null ? null : new JSONObject(res.body().string());
     }
 
     public static JSONArray getJsonArray(String url) throws IOException {
