@@ -29,6 +29,7 @@ import pl.kamil0024.core.command.SubCommand;
 import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.database.config.DiscordInviteConfig;
+import pl.kamil0024.core.database.config.WeryfikacjaConfig;
 import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.util.UsageException;
 import pl.kamil0024.weryfikacja.WeryfikacjaModule;
@@ -113,6 +114,17 @@ public class WeryfikacjaCommand extends Command {
         if (user == null) throw new UsageException();
         weryfikacjaModule.weryfikacjaDao.bypass(user);
         context.send("Użytkownik <@" + user + "> może już wejść").queue();
+        return true;
+    }
+
+    @SubCommand(name = "disable")
+    public boolean disable(CommandContext context) {
+        String nick = context.getArgs().get(1);
+        if (nick == null) throw new UsageException();
+        WeryfikacjaConfig config = weryfikacjaModule.weryfikacjaDao.get(nick);
+        config.setDisabled(true);
+        weryfikacjaModule.weryfikacjaDao.save(config);
+        context.send("Można już wejść na tym nicku!").queue();
         return true;
     }
 

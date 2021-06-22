@@ -105,8 +105,8 @@ public class APIModule implements Modul {
         this.statusModule = statusModule;
         this.spotifyUtil = spotifyUtil;
 
-        this.dcCache = redisManager.new CacheRetriever<DiscordInviteConfig>(){}.getCache(3600);
-        this.newWery = redisManager.new CacheRetriever<DiscordInviteConfig>(){}.getCache(3600);
+        this.dcCache = redisManager.new CacheRetriever<DiscordInviteConfig>(){}.getCache(7200);
+        this.newWery = redisManager.new CacheRetriever<DiscordInviteConfig>(){}.getCache(7200);
     }
 
     @Override
