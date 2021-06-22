@@ -78,7 +78,7 @@ public class TekstCommand extends Command {
         }
 
         try {
-            Piosenka piosenka = requestGenius(NetworkUtil.encodeURIComponent(arg));
+            Piosenka piosenka = requestGenius(arg);
 
             if (piosenka == null) {
                 context.send("Nie znaleziono piosenki o takim tytule!");
@@ -140,11 +140,10 @@ public class TekstCommand extends Command {
     }
 
     private Piosenka requestGenius(String q) throws IOException {
-        JSONObject xd = NetworkUtil.getJson("https://api.genius.com/search?q=" + NetworkUtil.encodeURIComponent(q),
-                "Bearer " + Ustawienia.instance.api.geniusToken);
+        JSONObject xd = NetworkUtil.getJson("https://api.genius.com/search?q=" + NetworkUtil.encodeURIComponent(q), "Bearer " + Ustawienia.instance.api.geniusToken);
         if (xd == null) throw new IOException("resp == null");
         JSONArray arr = xd.getJSONObject("response").getJSONArray("hits");
-        if (arr.isEmpty()) return null;
+        if (arr.isEmpty()) throw new IOException("arr == empty");
         JSONObject song = arr.getJSONObject(0).getJSONObject("result");
         String imageLink = song.getString("song_art_image_url");
         String title = song.getString("full_title");
