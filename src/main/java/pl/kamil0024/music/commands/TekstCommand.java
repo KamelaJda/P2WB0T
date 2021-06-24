@@ -80,11 +80,6 @@ public class TekstCommand extends Command {
         try {
             Piosenka piosenka = requestGenius(arg);
 
-            if (piosenka == null) {
-                context.send("Nie znaleziono piosenki o takim tytule!");
-                return false;
-            }
-
             List<FutureTask<EmbedBuilder>> pages = new ArrayList<>();
 
             EmbedBuilder eb = new EmbedBuilder();
@@ -107,7 +102,6 @@ public class TekstCommand extends Command {
                 if (sb.length() >= 900) {
                     tekst.addField(" ", sb.toString(), false);
                     sb = new StringBuilder();
-
                     if (tekst.length() > 5600) {
                         teksty.add(tekst);
                         tekst = new EmbedBuilder();

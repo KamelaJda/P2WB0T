@@ -153,7 +153,11 @@ public class APIModule implements Modul {
         routes.get("api/history/get", new HistoryByIdHandler(api, caseDao));
 
         routes.get("api/recording/get", new RecordingHandler(recordingDao));
+
         routes.get("api/discord/{token}/{nick}/{ranga}/{kod}", new DiscordInvite(this));
+
+        routes.post("api/discord/{nick}", new NewDiscordInvite(this));
+
         routes.get("api/youtrack/reports", new YouTrackReport(api));
         routes.post("api/react/addmember/{id}", new AddMember(api));
 
