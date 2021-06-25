@@ -62,7 +62,6 @@ public class UserCredentials {
                 config.setAccessToken(cr.getAccessToken());
                 dao.save(config);
             }
-
         } catch (Exception e) {
             ses.schedule(this::refreshAccessToken, 60, TimeUnit.SECONDS);
             e.printStackTrace();

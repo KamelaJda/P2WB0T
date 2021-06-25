@@ -46,6 +46,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Getter
 public class SpotifyUtil {
 
     private static final Pattern TRACK_REGEX = Pattern.compile("^(https://open.spotify.com/track/)([a-zA-Z0-9]+)(.*)$");
@@ -55,13 +56,8 @@ public class SpotifyUtil {
 
     private final ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
 
-    @Getter
     private final SpotifyApi api;
-
-    @Getter
     private final SpotifyDao dao;
-
-    @Getter
     private final Map<String, UserCredentials> userCredentials = new HashMap<>();
 
     public SpotifyUtil(SpotifyApi api, SpotifyDao dao) {
@@ -122,10 +118,8 @@ public class SpotifyUtil {
     @Nullable
     public UserCredentials getUser(String user) {
         if (getUserCredentials().containsKey(user)) return getUserCredentials().get(user);
-
         SpotifyConfig conf = dao.get(user);
         if (conf == null) return null;
-
         UserCredentials cr = new UserCredentials(user, conf.getAccessToken(), conf.getRefreshToken(), dao);
         getUserCredentials().put(user, cr);
         return cr;
