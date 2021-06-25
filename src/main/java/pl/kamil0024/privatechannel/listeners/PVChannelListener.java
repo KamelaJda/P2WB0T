@@ -123,7 +123,7 @@ public class PVChannelListener extends ListenerAdapter {
                     .setParent(cate)
                     .addRolePermissionOverride(guild.getPublicRole().getIdLong(), Permission.getRaw(Permission.VOICE_CONNECT), 0)
                     .addRolePermissionOverride(Long.parseLong(pl.kamil0024.core.Ustawienia.instance.rangi.ekipa), Permission.getRaw(Permission.MANAGE_CHANNEL, Permission.VOICE_MOVE_OTHERS), 0)
-                    .addMemberPermissionOverride(member.getIdLong(), Permission.getRaw(Permission.MANAGE_CHANNEL), 0)
+                    .addMemberPermissionOverride(member.getIdLong(), Permission.getRaw(Permission.MANAGE_CHANNEL, Permission.VOICE_MOVE_OTHERS), 0)
                     .addMemberPermissionOverride(guild.getSelfMember().getIdLong(), Permission.getRaw(Permission.VOICE_MUTE_OTHERS), 0)
                     .complete();
         } catch (Exception e) {
