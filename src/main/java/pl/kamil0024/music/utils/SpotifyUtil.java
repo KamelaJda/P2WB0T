@@ -53,7 +53,7 @@ public class SpotifyUtil {
     private static final Pattern ALBUM_REGEX = Pattern.compile("^(https://open.spotify.com/album/)([a-zA-Z0-9]+)(.*)$");
     private static final Pattern ARTISTS_REGEX = Pattern.compile("^(https://open.spotify.com/artist/)([a-zA-Z0-9]+)(.*)$");
 
-    ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+    private final ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
 
     @Getter
     private final SpotifyApi api;
