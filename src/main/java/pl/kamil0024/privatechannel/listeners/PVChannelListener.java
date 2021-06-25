@@ -20,7 +20,10 @@
 package pl.kamil0024.privatechannel.listeners;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Category;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
@@ -105,9 +108,10 @@ public class PVChannelListener extends ListenerAdapter {
         try {
             created = guild.createVoiceChannel(member.getNickname() != null ? member.getNickname() : member.getUser().getName())
                     .setParent(cate)
-                    .addMemberPermissionOverride(Long.parseLong(pl.kamil0024.core.Ustawienia.instance.rangi.ekipa), Permission.getRaw(net.dv8tion.jda.api.Permission.MANAGE_CHANNEL), 0)
+                    .addRolePermissionOverride(guild.getPublicRole().getIdLong(), Permission.getRaw(Permission.VOICE_CONNECT), 0)
+                    .addRolePermissionOverride(Long.parseLong(pl.kamil0024.core.Ustawienia.instance.rangi.ekipa), Permission.getRaw(Permission.MANAGE_CHANNEL, Permission.VOICE_MOVE_OTHERS), 0)
                     .addMemberPermissionOverride(member.getIdLong(), Permission.getRaw(Permission.MANAGE_CHANNEL), 0)
-                    .addMemberPermissionOverride(member.getGuild().getSelfMember().getIdLong(), Permission.getRaw(Permission.VOICE_MUTE_OTHERS), 0)
+                    .addMemberPermissionOverride(guild.getSelfMember().getIdLong(), Permission.getRaw(Permission.VOICE_MUTE_OTHERS), 0)
                     .complete();
         } catch (Exception e) {
             e.printStackTrace();

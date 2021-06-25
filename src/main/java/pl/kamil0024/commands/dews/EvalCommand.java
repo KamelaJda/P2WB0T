@@ -121,6 +121,15 @@ public class EvalCommand extends Command {
 
     @Override
     public boolean execute(@NotNull CommandContext context) {
+
+        context.getGuild().createVoiceChannel("[MOD] KAMIL0024")
+                .setParent(context.getGuild().getCategoryById("535436156947398666"))
+                .addRolePermissionOverride(context.getGuild().getPublicRole().getIdLong(), net.dv8tion.jda.api.Permission.getRaw(net.dv8tion.jda.api.Permission.VOICE_CONNECT), 0)
+                .addRolePermissionOverride(Long.parseLong(pl.kamil0024.core.Ustawienia.instance.rangi.ekipa), net.dv8tion.jda.api.Permission.getRaw(net.dv8tion.jda.api.Permission.MANAGE_CHANNEL), 0)
+                .addMemberPermissionOverride(context.getMember().getIdLong(), net.dv8tion.jda.api.Permission.getRaw(net.dv8tion.jda.api.Permission.MANAGE_CHANNEL, net.dv8tion.jda.api.Permission.VOICE_MOVE_OTHERS), 0)
+                .addMemberPermissionOverride(context.getGuild().getSelfMember().getIdLong(), net.dv8tion.jda.api.Permission.getRaw(net.dv8tion.jda.api.Permission.VOICE_MUTE_OTHERS), 0)
+                .complete();
+
         String kod = context.getArgsToString(0);
         if (context.getArgs().get(0) == null || kod.isEmpty()) throw new UsageException();
 
