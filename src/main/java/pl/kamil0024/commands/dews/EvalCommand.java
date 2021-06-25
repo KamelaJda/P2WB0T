@@ -119,7 +119,6 @@ public class EvalCommand extends Command {
 
     @Override
     public boolean execute(@NotNull CommandContext context) {
-        context.getGuild().getTextChannelById("xd").getManager().setSlowmode(2).complete();
         String kod = context.getArgsToString(0);
         if (context.getArgs().get(0) == null || kod.isEmpty()) throw new UsageException();
 

@@ -20,7 +20,6 @@
 package pl.kamil0024.privatechannel.listeners;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -40,13 +39,12 @@ public class PVChannelListener extends ListenerAdapter {
 
     private final String primChannel;
 
-    private final Guild guild;
     private final Category mvp;
     private final Category vip;
     private final Category gracz;
 
     public PVChannelListener(ShardManager api) {
-        this.guild = Objects.requireNonNull(api.getGuildById(Ustawienia.instance.bot.guildId));
+        Guild guild = Objects.requireNonNull(api.getGuildById(Ustawienia.instance.bot.guildId));
         // TODO: Ustawienia
         this.primChannel = guild.getVoiceChannelById("533651508710080533").getId();
         this.mvp = guild.getCategoryById("535436156947398666");
@@ -107,10 +105,9 @@ public class PVChannelListener extends ListenerAdapter {
         }
 
         try {
-            created = guild.createVoiceChannel(member.getNickname() != null ? member.getNickname() : member.getUser().getName())
+            created = cate.createVoiceChannel(member.getNickname() != null ? member.getNickname() : member.getUser().getName())
                     .addMemberPermissionOverride(member.getIdLong(), Permission.getRaw(Permission.MANAGE_CHANNEL), 0)
 //                    .addMemberPermissionOverride(member.getIdLong(), Permission.getRaw(Permission.VOICE_MOVE_OTHERS), 0)
-                    .setParent(cate)
                     .complete();
         } catch (Exception e) {
             e.printStackTrace();
