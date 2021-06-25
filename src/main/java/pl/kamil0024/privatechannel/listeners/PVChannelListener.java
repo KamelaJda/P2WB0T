@@ -20,10 +20,7 @@
 package pl.kamil0024.privatechannel.listeners;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Category;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
@@ -39,12 +36,13 @@ public class PVChannelListener extends ListenerAdapter {
 
     private final String primChannel;
 
+    private final Guild guild;
     private final Category mvp;
     private final Category vip;
     private final Category gracz;
 
     public PVChannelListener(ShardManager api) {
-        Guild guild = Objects.requireNonNull(api.getGuildById(Ustawienia.instance.bot.guildId));
+        this.guild = Objects.requireNonNull(api.getGuildById(Ustawienia.instance.bot.guildId));
         // TODO: Ustawienia
         this.primChannel = guild.getVoiceChannelById("533651508710080533").getId();
         this.mvp = guild.getCategoryById("535436156947398666");
@@ -105,9 +103,11 @@ public class PVChannelListener extends ListenerAdapter {
         }
 
         try {
-            created = cate.createVoiceChannel(member.getNickname() != null ? member.getNickname() : member.getUser().getName())
+            created = guild.createVoiceChannel(member.getNickname() != null ? member.getNickname() : member.getUser().getName())
+                    .setParent(cate)
+                    .addMemberPermissionOverride(Long.parseLong(pl.kamil0024.core.Ustawienia.instance.rangi.ekipa), Permission.getRaw(net.dv8tion.jda.api.Permission.MANAGE_CHANNEL), 0)
                     .addMemberPermissionOverride(member.getIdLong(), Permission.getRaw(Permission.MANAGE_CHANNEL), 0)
-//                    .addMemberPermissionOverride(member.getIdLong(), Permission.getRaw(Permission.VOICE_MOVE_OTHERS), 0)
+                    .addMemberPermissionOverride(member.getGuild().getSelfMember().getIdLong(), Permission.getRaw(Permission.VOICE_MUTE_OTHERS), 0)
                     .complete();
         } catch (Exception e) {
             e.printStackTrace();
