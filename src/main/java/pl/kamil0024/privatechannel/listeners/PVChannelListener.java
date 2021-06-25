@@ -40,17 +40,18 @@ public class PVChannelListener extends ListenerAdapter {
 
     private final String primChannel;
 
+    private final Guild guild;
     private final Category mvp;
     private final Category vip;
     private final Category gracz;
 
     public PVChannelListener(ShardManager api) {
-        Guild g = Objects.requireNonNull(api.getGuildById(Ustawienia.instance.bot.guildId));
+        this.guild = Objects.requireNonNull(api.getGuildById(Ustawienia.instance.bot.guildId));
         // TODO: Ustawienia
-        this.primChannel = g.getVoiceChannelById("533651508710080533").getId();
-        this.mvp = g.getCategoryById("535436156947398666");
-        this.vip = g.getCategoryById("535442075274182666");
-        this.gracz = g.getCategoryById("535433287657717770");
+        this.primChannel = guild.getVoiceChannelById("533651508710080533").getId();
+        this.mvp = guild.getCategoryById("535436156947398666");
+        this.vip = guild.getCategoryById("535442075274182666");
+        this.gracz = guild.getCategoryById("535433287657717770");
     }
 
     @Override
@@ -106,9 +107,11 @@ public class PVChannelListener extends ListenerAdapter {
         }
 
         try {
-            created = cate.createVoiceChannel(member.getNickname() != null ? member.getNickname() : member.getUser().getName())
+            created = guild.createVoiceChannel(member.getNickname() != null ? member.getNickname() : member.getUser().getName())
                     .addMemberPermissionOverride(member.getIdLong(), Permission.getRaw(Permission.MANAGE_CHANNEL), 0)
-                    .addMemberPermissionOverride(member.getIdLong(), Permission.getRaw(Permission.VOICE_MOVE_OTHERS), 0).complete();
+                    .addMemberPermissionOverride(member.getIdLong(), Permission.getRaw(Permission.VOICE_MOVE_OTHERS), 0)
+                    .setParent(cate)
+                    .complete();
         } catch (Exception e) {
             e.printStackTrace();
             return;
