@@ -109,7 +109,7 @@ public class PVChannelListener extends ListenerAdapter {
         try {
             created = guild.createVoiceChannel(member.getNickname() != null ? member.getNickname() : member.getUser().getName())
                     .addMemberPermissionOverride(member.getIdLong(), Permission.getRaw(Permission.MANAGE_CHANNEL), 0)
-                    .addMemberPermissionOverride(member.getIdLong(), Permission.getRaw(Permission.VOICE_MOVE_OTHERS), 0)
+//                    .addMemberPermissionOverride(member.getIdLong(), Permission.getRaw(Permission.VOICE_MOVE_OTHERS), 0)
                     .setParent(cate)
                     .complete();
         } catch (Exception e) {
