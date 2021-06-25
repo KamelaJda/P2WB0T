@@ -33,7 +33,9 @@ import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.util.DiscordRank;
 import pl.kamil0024.core.util.UserUtil;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class PVChannelListener extends ListenerAdapter {
 
@@ -71,7 +73,7 @@ public class PVChannelListener extends ListenerAdapter {
 
     private void delete(VoiceChannel channelLeft) {
         Category parent = channelLeft.getParent();
-        if (parent == null) return;
+        if (parent == null || channelLeft.getMembers().size() != 0) return;
         if (parent.getId().equals(mvp.getId()) || parent.getId().equals(vip.getId()) || parent.getId().equals(gracz.getId())) {
             channelLeft.delete().queue();
         }
@@ -79,6 +81,16 @@ public class PVChannelListener extends ListenerAdapter {
 
     private void action(Member member, VoiceChannel vc) {
         if (!vc.getId().equals(primChannel)) return;
+
+        List<VoiceChannel> channels = member.getGuild().getVoiceChannelsByName(Optional.ofNullable(member.getNickname()).orElse(member.getUser().getName()), false);
+        if (channels.size() >= 1) {
+            try {
+                member.getGuild().moveVoiceMember(member, channels.get(0)).complete();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         DiscordRank rank = UserUtil.getRanks(member).get(0);
         Category cate;
         VoiceChannel created;
