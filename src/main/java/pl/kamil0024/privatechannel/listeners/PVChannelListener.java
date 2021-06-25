@@ -89,6 +89,7 @@ public class PVChannelListener extends ListenerAdapter {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            return;
         }
 
         DiscordRank rank = UserUtil.getRanks(member).get(0);
