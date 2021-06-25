@@ -19,8 +19,7 @@
 
 package pl.kamil0024.privatechannel.listeners;
 
-import com.google.common.eventbus.Subscribe;
-import lombok.AllArgsConstructor;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.Guild;

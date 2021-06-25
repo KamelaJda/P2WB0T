@@ -93,7 +93,7 @@ public class Action {
         ZACHOWANIE("Wszelkiej maści wyzwiska, obraza, wulgaryzmy, prowokacje, groźby i inne formy przemocy"),
         FLOOD("Nadmierny spam, flood lub caps lock wiadomościami lub emotikonami"),
         LINK("Reklama stron, serwisów lub serwerów gier/Discord niepowiązanych w żaden sposób z P2W.pl"),
-        PING("Znieważanie osoby zmrałej"),
+        PING("Znieważanie osoby zmarłej"),
         TEXT_SWEAR("Umieszczanie zdjęć zawierających wulgaryzmy");
 
         private final String powod;

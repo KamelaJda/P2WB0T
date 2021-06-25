@@ -75,6 +75,8 @@ import pl.kamil0024.music.MusicModule;
 import pl.kamil0024.music.utils.SpotifyUtil;
 import pl.kamil0024.nieobecnosci.NieobecnosciManager;
 import pl.kamil0024.nieobecnosci.NieobecnosciModule;
+import pl.kamil0024.privatechannel.PVChannelModule;
+import pl.kamil0024.privatechannel.listeners.PVChannelListener;
 import pl.kamil0024.rekrutacyjny.RekruModule;
 import pl.kamil0024.stats.StatsModule;
 import pl.kamil0024.status.StatusModule;
@@ -303,6 +305,7 @@ public class B0T {
         modulManager.getModules().add(new TicketModule(api, ticketDao, redisManager, eventWaiter, txtTicketDao));
         modulManager.getModules().add(new AntiRaidModule(api, antiRaidDao, redisManager, caseDao, modLog));
         modulManager.getModules().add(new ModerationModule(commandManager, eventWaiter, caseDao, statsModule, nieobecnosciManager, nieobecnosciDao, modLog, karyJSON, multiDao));
+        modulManager.getModules().add(new PVChannelModule(api));
 
         for (Modul modul : modulManager.getModules()) {
             try {
