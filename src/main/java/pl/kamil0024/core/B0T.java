@@ -305,7 +305,7 @@ public class B0T {
         modulManager.getModules().add(new TicketModule(api, ticketDao, redisManager, eventWaiter, txtTicketDao));
         modulManager.getModules().add(new AntiRaidModule(api, antiRaidDao, redisManager, caseDao, modLog));
         modulManager.getModules().add(new ModerationModule(commandManager, eventWaiter, caseDao, statsModule, nieobecnosciManager, nieobecnosciDao, modLog, karyJSON, multiDao));
-        modulManager.getModules().add(new PVChannelModule(api));
+        modulManager.getModules().add(new PVChannelModule(api, socketManager));
 
         for (Modul modul : modulManager.getModules()) {
             try {

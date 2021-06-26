@@ -28,8 +28,10 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import pl.kamil0024.core.Ustawienia;
+import pl.kamil0024.core.socket.SocketManager;
 import pl.kamil0024.core.util.DiscordRank;
 import pl.kamil0024.core.util.UserUtil;
 
@@ -37,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class PVChannelListener extends ListenerAdapter {
 
@@ -47,12 +50,15 @@ public class PVChannelListener extends ListenerAdapter {
     private final Category vip;
     private final Category gracz;
 
-    public PVChannelListener(ShardManager api) {
+    private final SocketManager socketManager;
+
+    public PVChannelListener(ShardManager api, SocketManager socketManager) {
         this.guild = Objects.requireNonNull(api.getGuildById(Ustawienia.instance.bot.guildId));
         this.primChannel = Ustawienia.instance.pv.primChannel;
         this.mvp = Objects.requireNonNull(guild.getCategoryById(Ustawienia.instance.pv.mvp));
         this.vip = Objects.requireNonNull(guild.getCategoryById(Ustawienia.instance.pv.vip));
         this.gracz = Objects.requireNonNull(guild.getCategoryById(Ustawienia.instance.pv.gracz));
+        this.socketManager = socketManager;
 
         VoiceChannel vc = guild.getVoiceChannelById(primChannel);
         if (vc != null) vc.getMembers().forEach(m -> action(m, vc));
@@ -126,13 +132,16 @@ public class PVChannelListener extends ListenerAdapter {
         }
 
         try {
-            created = guild.createVoiceChannel(member.getNickname() != null ? member.getNickname() : member.getUser().getName())
+            ChannelAction<VoiceChannel> action = guild.createVoiceChannel(member.getNickname() != null ? member.getNickname() : member.getUser().getName())
                     .setParent(cate)
                     .addRolePermissionOverride(guild.getPublicRole().getIdLong(), Permission.getRaw(Permission.VOICE_CONNECT), 0)
-                    .addRolePermissionOverride(Long.parseLong(pl.kamil0024.core.Ustawienia.instance.rangi.ekipa), Permission.getRaw(Permission.MANAGE_CHANNEL, Permission.VOICE_MOVE_OTHERS), 0)
+                    .addRolePermissionOverride(Long.parseLong(Ustawienia.instance.rangi.ekipa), Permission.getRaw(Permission.MANAGE_CHANNEL, Permission.VOICE_MOVE_OTHERS), 0)
                     .addMemberPermissionOverride(member.getIdLong(), Permission.getRaw(Permission.MANAGE_CHANNEL, Permission.VOICE_MOVE_OTHERS), 0)
-                    .addMemberPermissionOverride(guild.getSelfMember().getIdLong(), Permission.getRaw(Permission.VOICE_MUTE_OTHERS), 0)
-                    .complete();
+                    .addMemberPermissionOverride(guild.getSelfMember().getIdLong(), Permission.getRaw(Permission.VOICE_MUTE_OTHERS), 0);
+            for (Long musicbots : socketManager.getClients().values().stream().map(m -> Long.parseLong(m.getBotId())).collect(Collectors.toList())) {
+                action = action.addRolePermissionOverride(musicbots, Permission.getRaw(Permission.VOICE_CONNECT, Permission.VOICE_SPEAK), 0);
+            }
+            created = action.complete();
         } catch (Exception e) {
             e.printStackTrace();
             return;
