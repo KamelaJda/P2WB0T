@@ -33,6 +33,7 @@ import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.util.DiscordRank;
 import pl.kamil0024.core.util.UserUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -48,11 +49,19 @@ public class PVChannelListener extends ListenerAdapter {
 
     public PVChannelListener(ShardManager api) {
         this.guild = Objects.requireNonNull(api.getGuildById(Ustawienia.instance.bot.guildId));
-        // TODO: Ustawienia
-        this.primChannel = guild.getVoiceChannelById("533651508710080533").getId();
-        this.mvp = guild.getCategoryById("535436156947398666");
-        this.vip = guild.getCategoryById("535442075274182666");
-        this.gracz = guild.getCategoryById("535433287657717770");
+        this.primChannel = Ustawienia.instance.pv.primChannel;
+        this.mvp = Objects.requireNonNull(guild.getCategoryById(Ustawienia.instance.pv.mvp));
+        this.vip = Objects.requireNonNull(guild.getCategoryById(Ustawienia.instance.pv.vip));
+        this.gracz = Objects.requireNonNull(guild.getCategoryById(Ustawienia.instance.pv.gracz));
+
+        VoiceChannel vc = guild.getVoiceChannelById(primChannel);
+        if (vc != null) vc.getMembers().forEach(m -> action(m, vc));
+
+        List<VoiceChannel> channels = new ArrayList<>();
+        channels.addAll(Objects.requireNonNull(mvp).getVoiceChannels());
+        channels.addAll(vip.getVoiceChannels());
+        channels.addAll(gracz.getVoiceChannels());
+        channels.forEach(this::delete);
     }
 
     @Override
@@ -86,10 +95,8 @@ public class PVChannelListener extends ListenerAdapter {
         if (channels.size() >= 1) {
             try {
                 member.getGuild().moveVoiceMember(member, channels.get(0)).complete();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return;
+                return;
+            } catch (Exception ignored) { }
         }
 
         DiscordRank rank = UserUtil.getRanks(member).get(0);

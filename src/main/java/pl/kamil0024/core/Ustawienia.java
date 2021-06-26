@@ -51,6 +51,7 @@ public class Ustawienia {
     public Rekrutacyjny rekrutacyjny = new Rekrutacyjny();
     public Zespoly zespoly = new Zespoly();
     public Sentry sentry = new Sentry();
+    public PrivateChannels pv = new PrivateChannels();
 
     public static class Roles {
         public String helperRole = def;
@@ -225,6 +226,13 @@ public class Ustawienia {
 
     public static class Sentry {
         public String dns = def;
+    }
+
+    public static class PrivateChannels {
+        public String primChannel = def;
+        public String mvp = def;
+        public String vip = def;
+        public String gracz = def;
     }
 
 }
