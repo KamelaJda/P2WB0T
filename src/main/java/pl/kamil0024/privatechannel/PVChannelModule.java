@@ -10,7 +10,7 @@ import pl.kamil0024.privatechannel.listeners.PVChannelListener;
 public class PVChannelModule implements Modul {
 
     @Getter
-    private final String name = "ticket";
+    private final String name = "pvchannels";
 
     @Getter @Setter
     private boolean start = false;

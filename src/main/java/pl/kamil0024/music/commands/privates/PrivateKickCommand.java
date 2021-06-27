@@ -68,7 +68,7 @@ public class PrivateKickCommand extends Command {
         }
 
         if (!memVc.getId().equals(argVc.getId())) {
-            context.send("Tego użytkownika na ma na Twoim kanale!");
+            context.send("Tego użytkownika nie ma na Twoim kanale!");
             return false;
         }
 
