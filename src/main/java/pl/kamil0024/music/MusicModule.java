@@ -139,6 +139,7 @@ public class MusicModule implements Modul {
         cmd.add(new PrivateQueueCommand(socketManager));
         cmd.add(new PrivateSkipCommand(socketManager));
         cmd.add(new PrivateYouTubeCommand(socketManager, eventWaiter, this));
+        cmd.add(new PrivateKickCommand());
         //#endregion Prywatne
 
         cmd.forEach(commandManager::registerCommand);

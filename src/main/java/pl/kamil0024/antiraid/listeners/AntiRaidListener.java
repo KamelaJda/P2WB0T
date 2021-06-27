@@ -52,7 +52,8 @@ public class AntiRaidListener extends ListenerAdapter {
         if (!event.isFromGuild() || event.getAuthor().isBot()
                 || UserUtil.getPermLevel(event.getMember()).getNumer() > PermLevel.MEMBER.getNumer()
                 || event.getMessage().getContentRaw().isEmpty()
-                || event.getChannel().getId().equals("426864003562864641"))
+                || event.getChannel().getId().equals("426864003562864641")
+                || event.getChannel().getId().equals("652927860943880224"))
             return;
         try {
             antiRaidManager.saveMessage(event.getAuthor().getId(), event.getMessage());
