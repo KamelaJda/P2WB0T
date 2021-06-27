@@ -22,6 +22,7 @@ package pl.kamil0024.core.module;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class ModulManager {
 
@@ -45,9 +46,7 @@ public class ModulManager {
     }
 
     public void start(Modul modul) {
-        if (!modul.isStart()) {
-            modul.startUp();
-        }
+        if (!modul.isStart()) modul.startUp();
     }
 
     public void reload(Modul modul) {

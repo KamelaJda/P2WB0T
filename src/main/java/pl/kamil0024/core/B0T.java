@@ -319,11 +319,8 @@ public class B0T {
                     e.printStackTrace();
                 }
                 commands = commandManager.getCommands().size() - commands;
-                if (!bol) {
-                    logger.error(Tlumaczenia.get("module.loading.fail"));
-                } else {
-                    logger.debug(Tlumaczenia.get("module.loading.success", modul.getName(), commands));
-                }
+                if (!bol) logger.error(Tlumaczenia.get("module.loading.fail"));
+                else logger.debug(Tlumaczenia.get("module.loading.success", modul.getName(), commands));
 
                 modules.put(modul.getName(), modul);
             } catch (Exception ignored) {

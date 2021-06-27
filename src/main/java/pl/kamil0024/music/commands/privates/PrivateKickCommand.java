@@ -37,7 +37,7 @@ public class PrivateKickCommand extends Command {
         category = CommandCategory.MUSIC;
         permLevel = PermLevel.MEMBER;
         hideSlash = true;
-        commandData = getCommandData()
+        commandData = getData()
                 .addOption(OptionType.USER, "user", "Użytkownik, który ma być wyrzucony", true);
     }
 
