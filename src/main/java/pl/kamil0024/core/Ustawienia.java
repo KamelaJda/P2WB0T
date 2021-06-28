@@ -129,7 +129,7 @@ public class Ustawienia {
         public String moderator = def;
         public String administrator = def;
         public String korona = def;
-        public String moderatorforum;
+        public String moderatorforum = def;
     }
 
     public static class YouTrack {

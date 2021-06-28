@@ -182,7 +182,7 @@ public class GiveawayListener {
                     for (String winner : wygrani) {
                         sb.append(String.format(f, winner)).append("`,` ");
                     }
-                    msg.getChannel().sendMessage(TADA + " Gratulacje dla tych osób: " + sb.toString() +
+                    msg.getChannel().sendMessage(TADA + " Gratulacje dla tych osób: " + sb +
                             "\nWygrali: " + config.getNagroda() +
                             "\n\n" + link).allowedMentions(Collections.singleton(Message.MentionType.USER)).queue();
                     giveawayDao.save(config);

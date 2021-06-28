@@ -37,8 +37,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static pl.kamil0024.stats.commands.TopCommand.sortByValue;
-
 @AllArgsConstructor
 public class ChatmodStats implements HttpHandler {
 
@@ -72,7 +70,7 @@ public class ChatmodStats implements HttpHandler {
 
             Map<String, TopCommand.Suma> finalStats = new HashMap<>();
             Guild g = api.getGuildById(Ustawienia.instance.bot.guildId);
-            for (Map.Entry<String, Integer> entry : sortByValue(top).entrySet()) {
+            for (Map.Entry<String, Integer> entry : TopCommand.sortByValue(top).entrySet()) {
                 try {
                     finalStats.put(UserUtil.getMcNick(g.getMemberById(entry.getKey())), mapa.get(entry.getKey()));
                 } catch (Exception ignored) {

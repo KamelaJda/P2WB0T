@@ -50,8 +50,7 @@ public class AntiRaidManager {
 
     public AntiRaidManager(AntiRaidDao dao, RedisManager redis) {
         this.dao = dao;
-        this.cache = redis.new CacheRetriever<List<FakeAntiRaidMessage>>() {
-        }.getCache(21600);
+        this.cache = redis.new CacheRetriever<List<FakeAntiRaidMessage>>(){}.getCache(21600);
     }
 
     public List<FakeAntiRaidMessage> getMessages(String userId) {

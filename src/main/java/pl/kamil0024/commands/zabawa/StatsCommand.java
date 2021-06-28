@@ -31,6 +31,7 @@ import pl.kamil0024.core.database.config.UserstatsConfig;
 import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.util.BetterStringBuilder;
 import pl.kamil0024.core.util.UserUtil;
+import pl.kamil0024.stats.commands.TopCommand;
 
 import java.time.Instant;
 import java.util.*;
@@ -60,7 +61,7 @@ public class StatsCommand extends Command {
             try {
                 long wszystkieWiadomosci = 0, cztery = 0, siedem = 0, dwadziescia = 0;
 
-                Map<String, Long> kanaly = new HashMap<>();
+                HashMap<String, Long> kanaly = new HashMap<>();
 
                 List<UserstatsConfig> conf = userstatsDao.getFromMember(context.getUser().getId(), 30);
                 if (conf.isEmpty()) {
@@ -99,8 +100,9 @@ public class StatsCommand extends Command {
                 eb.addField("Wiadomości", sb.toString(), false);
 
                 sb = new BetterStringBuilder();
+
                 int i = 1;
-                for (Map.Entry<String, Long> entry : sortByValue(kanaly).entrySet()) {
+                for (Map.Entry<String, Long> entry : TopCommand.sortByValue(kanaly).entrySet()) {
                     sb.appendLine(String.format("%s. <#%s>: `%s wiadomości`", i, entry.getKey(), entry.getValue()));
                     if (i == 3) break;
                     i++;
@@ -110,7 +112,7 @@ public class StatsCommand extends Command {
                 MessageBuilder mb = new MessageBuilder();
                 mb.setEmbed(eb.build());
                 msg.delete().queue();
-                context.getHook().sendMessageEmbeds(eb.build()).queue();
+                context.getEvent().getHook().sendMessageEmbeds(eb.build()).queue();
             } catch (Exception e) {
                 Log.newError(e, getClass());
                 msg.editMessage("Nie masz żadnych statystyk! Spróbuj ponownie później.").queue();
@@ -118,18 +120,6 @@ public class StatsCommand extends Command {
         };
         ses.execute(run);
         return true;
-    }
-
-    private static HashMap<String, Long> sortByValue(Map<String, Long> hm) {
-        List<Map.Entry<String, Long>> list =
-                new LinkedList<>(hm.entrySet());
-        list.sort(Map.Entry.comparingByValue());
-        Collections.reverse(list);
-        HashMap<String, Long> temp = new LinkedHashMap<>();
-        for (Map.Entry<String, Long> aa : list) {
-            temp.put(aa.getKey(), aa.getValue());
-        }
-        return temp;
     }
 
     private long getRawDate(int minusDays) {
