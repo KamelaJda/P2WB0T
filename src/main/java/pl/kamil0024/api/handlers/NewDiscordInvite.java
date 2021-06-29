@@ -21,8 +21,6 @@ package pl.kamil0024.api.handlers;
 
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.json.JSONObject;
 import pl.kamil0024.api.APIModule;
 import pl.kamil0024.api.Response;
