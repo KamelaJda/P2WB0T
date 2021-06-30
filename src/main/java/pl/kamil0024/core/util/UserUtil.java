@@ -60,7 +60,9 @@ public class UserUtil {
         if (member.getId().equals(Ustawienia.instance.bot.botId)) return PermLevel.ADMINISTRATOR;
         List<Integer> permLevels = member.getRoles().stream()
                 .map(f -> PermLevel.getPermLevel(f.getId())).filter(Objects::nonNull)
-                .map(PermLevel::getNumer).sorted().collect(Collectors.toList());
+                .map(PermLevel::getNumer).collect(Collectors.toList());
+        Collections.sort(permLevels);
+        Collections.reverse(permLevels);
         return PermLevel.getPermLevel(permLevels.get(permLevels.size() - 1));
     }
 
