@@ -63,6 +63,7 @@ public class UserUtil {
                 .map(PermLevel::getNumer).collect(Collectors.toList());
         Collections.sort(permLevels);
         Collections.reverse(permLevels);
+        if (permLevels.size() == 0) return PermLevel.MEMBER;
         return PermLevel.getPermLevel(permLevels.get(permLevels.size() - 1));
     }
 

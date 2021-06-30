@@ -43,12 +43,10 @@ public enum PermLevel {
     private final String roleId;
 
     public static PermLevel getPermLevel(int numer) {
-        if (numer == 0) return MEMBER;
-        if (numer == 1) return HELPER;
-        if (numer == 2) return MODERATOR;
-        if (numer == 3) return ADMINISTRATOR;
-        if (numer == 10) return DEVELOPER;
-        throw new IllegalArgumentException("Nieprawidłowy poziom!");
+        for (PermLevel level : PermLevel.values()) {
+            if (level.getNumer() == numer) return level;
+        }
+        throw new IllegalArgumentException("Nieprawidłowy poziom! " + numer);
     }
 
     @Nullable
