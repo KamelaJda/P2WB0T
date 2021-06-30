@@ -53,7 +53,9 @@ public enum PermLevel {
 
     @Nullable
     public static PermLevel getPermLevel(String roleId) {
-        return Arrays.stream(PermLevel.values()).filter(f -> f.getRoleId().equals(roleId)).findAny().orElse(null);
+        return Arrays.stream(PermLevel.values())
+                .filter(f -> f.getRoleId() != null && f.getRoleId().equals(roleId))
+                .findAny().orElse(null);
     }
 
 }
