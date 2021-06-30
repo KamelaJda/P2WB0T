@@ -36,11 +36,7 @@ import java.util.stream.Collectors;
 public class UserUtil {
 
     public static boolean isOwner(User user) {
-        List<String> xd = Ustawienia.instance.devs;
-        for (String id : xd) {
-            if (user.getId().equals(id)) return true;
-        }
-        return false;
+        return Ustawienia.instance.devs.contains(user.getId());
     }
 
     public static PermLevel getPermLevel(User user) {
