@@ -29,7 +29,9 @@ import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.enums.PermLevel;
 
 import java.awt.*;
+import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class UserUtil {
 
@@ -56,31 +58,14 @@ public class UserUtil {
         if (member == null) return PermLevel.MEMBER;
         if (isOwner(member.getUser())) return PermLevel.DEVELOPER;
         if (member.getId().equals(Ustawienia.instance.bot.botId)) return PermLevel.ADMINISTRATOR;
-        PermLevel lvl = PermLevel.MEMBER;
-        for (Role rol : member.getRoles()) {
-            if (rol.getId().equals(Ustawienia.instance.roles.adminRole)) return PermLevel.ADMINISTRATOR;
-
-            if (rol.getId().equals(Ustawienia.instance.roles.moderatorRole)) {
-                if (PermLevel.MODERATOR.getNumer() > lvl.getNumer()) lvl = PermLevel.MODERATOR;
-            }
-            if (rol.getId().equals(Ustawienia.instance.roles.helperRole)) {
-                if (PermLevel.HELPER.getNumer() > lvl.getNumer()) lvl = PermLevel.HELPER;
-            }
-            if (rol.getId().equals(Ustawienia.instance.roles.chatMod)) {
-                if (PermLevel.CHATMOD.getNumer() > lvl.getNumer()) lvl = PermLevel.CHATMOD;
-            }
-            if (rol.getId().equals(Ustawienia.instance.rangi.stazysta)) {
-                if (PermLevel.STAZYSTA.getNumer() > lvl.getNumer()) lvl = PermLevel.STAZYSTA;
-            }
-        }
-        return lvl;
+        List<Integer> permLevels = member.getRoles().stream()
+                .map(f -> PermLevel.getPermLevel(f.getId())).filter(Objects::nonNull)
+                .map(PermLevel::getNumer).sorted().collect(Collectors.toList());
+        return PermLevel.getPermLevel(permLevels.get(permLevels.size() - 1));
     }
 
     public static Color getColor(Member member) {
-        for (Role r : member.getRoles()) {
-            if (r.getColor() != null) return r.getColor();
-        }
-        return Color.GREEN;
+        return member.getRoles().stream().map(Role::getColor).filter(Objects::nonNull).findAny().orElse(Color.green);
     }
 
     public static String getName(User u) {

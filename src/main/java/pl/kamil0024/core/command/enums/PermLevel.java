@@ -21,21 +21,26 @@ package pl.kamil0024.core.command.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.jetbrains.annotations.Nullable;
+import pl.kamil0024.core.Ustawienia;
+
+import java.util.Arrays;
 
 @Getter
 @AllArgsConstructor
 public enum PermLevel {
 
-    MEMBER(0, "permlvl.member"),
-    STAZYSTA(1, "permlvl.staz"),
-    CHATMOD(2, "permlvl.chatmod"),
-    HELPER(3, "permlvl.helper"),
-    MODERATOR(4, "permlvl.mod"),
-    ADMINISTRATOR(5, "permlvl.adm"),
-    DEVELOPER(10, "permlvl.dev");
+    MEMBER(0, "permlvl.member", null),
+    STAZYSTA(1, "permlvl.staz", Ustawienia.instance.rangi.stazysta),
+    CHATMOD(2, "permlvl.chatmod", Ustawienia.instance.roles.chatMod),
+    HELPER(3, "permlvl.helper", Ustawienia.instance.rangi.pomocnik),
+    MODERATOR(4, "permlvl.mod", Ustawienia.instance.rangi.moderator),
+    ADMINISTRATOR(5, "permlvl.adm", Ustawienia.instance.rangi.administrator),
+    DEVELOPER(10, "permlvl.dev", null);
 
     private final int numer;
     private final String tranlsateKey;
+    private final String roleId;
 
     public static PermLevel getPermLevel(int numer) {
         if (numer == 0) return MEMBER;
@@ -44,6 +49,11 @@ public enum PermLevel {
         if (numer == 3) return ADMINISTRATOR;
         if (numer == 10) return DEVELOPER;
         throw new IllegalArgumentException("Nieprawidłowy poziom!");
+    }
+
+    @Nullable
+    public static PermLevel getPermLevel(String roleId) {
+        return Arrays.stream(PermLevel.values()).filter(f -> f.getRoleId().equals(roleId)).findAny().orElse(null);
     }
 
 }
