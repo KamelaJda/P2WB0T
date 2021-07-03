@@ -32,6 +32,7 @@ import pl.kamil0024.core.database.config.CaseConfig;
 import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.util.DynamicEmbedPaginator;
 import pl.kamil0024.core.util.EventWaiter;
+import pl.kamil0024.core.util.UsageException;
 import pl.kamil0024.core.util.UserUtil;
 import pl.kamil0024.core.util.kary.KaryEnum;
 import pl.kamil0024.moderation.listeners.ModLog;
@@ -54,17 +55,18 @@ public class HistoryCommand extends Command {
 
     @Override
     public boolean execute(@NotNull CommandContext context) {
-        User u = context.getParsed().getUser(context.getArgs().get(0));
-        if (u == null) {
-            context.send("Nie ma takiego użytkownika!").queue();
-            return false;
-        }
+        String arg = context.getArgs().get(0);
+        if (arg == null) throw new UsageException();
+        User u = context.getParsed().getUser(arg);
 
         Message msg = context.sendTranslate("generic.loading").complete();
+        context.getChannel().sendTyping().queue();
 
         new Thread(() -> {
             try {
-                List<CaseConfig> cc = caseDao.getAllDesc(u.getId(), null);
+                List<CaseConfig> cc = u != null ?
+                        caseDao.getAllDesc(u.getId(), null) :
+                        caseDao.getAllDescByNick(arg);
 
                 Map<KaryEnum, Integer> liczbaKar = new HashMap<>();
                 for (CaseConfig k : cc) {
@@ -74,9 +76,9 @@ public class HistoryCommand extends Command {
                 List<FutureTask<EmbedBuilder>> pages = new ArrayList<>();
 
                 EmbedBuilder eb = new EmbedBuilder();
-                eb.setThumbnail(u.getAvatarUrl());
+                eb.setThumbnail(u != null ? u.getAvatarUrl() : context.getUser().getAvatarUrl());
 
-                eb.setDescription(context.getTranslate("history.history", UserUtil.getLogName(u)));
+                eb.setDescription(context.getTranslate("history.history", u != null ? UserUtil.getLogName(u) : arg));
                 eb.setColor(UserUtil.getColor(context.getMember()));
 
                 for (KaryEnum v : KaryEnum.values()) {
