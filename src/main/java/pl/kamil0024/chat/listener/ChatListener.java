@@ -194,6 +194,7 @@ public class ChatListener extends ListenerAdapter {
             }
 
             if (containsLink(msgRaw.split(" ")) && !msg.getChannel().getId().equals("426864003562864641")) {
+                if (msgRaw.contains("stearncomminuty.ru")) msg.delete().queue();
                 action.setKara(Action.ListaKar.LINK);
                 action.send(karyListener, msg.getGuild());
                 return;
