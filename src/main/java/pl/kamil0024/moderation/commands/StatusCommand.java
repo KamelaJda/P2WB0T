@@ -184,6 +184,7 @@ public class StatusCommand extends Command {
         @Override
         public void onButtonClick(ButtonClickEvent e) {
             try {
+                e.deferReply(true).queue();
                 if (!e.getComponentId().startsWith(BUTTON_COMPONENT_ID)) return;
                 String id = e.getComponentId().split("=")[1];
                 List<String> strings = serversMap.get(e.getUser().getId());
