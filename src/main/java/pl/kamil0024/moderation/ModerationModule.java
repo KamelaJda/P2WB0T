@@ -78,7 +78,7 @@ public class ModerationModule implements Modul {
     public boolean startUp() {
         cmd = new ArrayList<>();
 
-        cmd.add(new StatusCommand(eventWaiter));
+        cmd.add(new StatusCommand());
         cmd.add(new KarainfoCommand(caseDao, eventWaiter));
         cmd.add(new UnmuteCommand(caseDao, modLog));
         cmd.add(new TempmuteCommand(caseDao, modLog, statsModule));
