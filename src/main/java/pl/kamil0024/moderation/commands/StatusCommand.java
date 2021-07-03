@@ -72,7 +72,6 @@ public class StatusCommand extends Command {
 
     @Override
     public boolean execute(@NotNull CommandContext context) {
-        if (context.getArgs().get(0) == null) throw new UsageException();
         TextChannel txt = context.getJDA().getTextChannelById(Ustawienia.instance.channel.status);
         if (txt == null) throw new NullPointerException("Kanal do statusu jest nullem");
 
@@ -187,7 +186,15 @@ public class StatusCommand extends Command {
                 e.deferReply(true).queue();
                 if (!e.getComponentId().startsWith(BUTTON_COMPONENT_ID)) return;
                 String id = e.getComponentId().split("=")[1];
+                Emote emote = Emote.valueOf(id);
                 List<String> strings = serversMap.get(e.getUser().getId());
+
+                Logger logger = LoggerFactory.getLogger(getClass());
+
+                logger.debug("Id: {}", id);
+                logger.debug("Emote: {}", emote);
+                logger.debug("serwery: {}", strings);
+
                 serversMap.remove(e.getUser().getId());
 
                 TextChannel txt = Objects.requireNonNull(e.getGuild().getTextChannelById(Ustawienia.instance.channel.status));
@@ -208,15 +215,15 @@ public class StatusCommand extends Command {
 
                 if (botMsg == null) throw new NullPointerException("Nie udało się znaleźć wiadomości bota");
 
-                Emote emote = Emote.valueOf(id);
                 botMsg.editMessage(
                         getMsg(
-                                strings.contains("derp") ? null : emote,
-                                strings.contains("feerko") ? null : emote,
-                                strings.contains("roizy") ? null : emote,
+                                strings.contains("derp") ? emote : null,
+                                strings.contains("feerko") ? emote : null,
+                                strings.contains("roizy") ? emote : null,
                                 botMsg.getContentRaw()
                         )
                 ).queue();
+                e.getHook().sendMessage("Zmieniono!").queue();
             } catch (Exception ex) {
                 ex.printStackTrace();
                 Sentry.captureException(ex);
