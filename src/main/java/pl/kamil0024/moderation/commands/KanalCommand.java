@@ -42,12 +42,10 @@ public class KanalCommand extends Command {
         PermissionOverride override = kanal.getMemberPermissionOverrides().stream()
                 .filter(f -> !f.getMember().getId().equals(context.getGuild().getSelfMember().getId())).
                         findFirst().orElse(null);
-
         if (override == null) {
             context.send("Nikt nie jest właścicielem kanału??");
             return true;
         }
-
         context.send("Właścicielem kanału jest " + UserUtil.getLogName(override.getMember()));
         return true;
     }

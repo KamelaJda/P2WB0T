@@ -139,6 +139,7 @@ public class PVChannelListener extends ListenerAdapter {
                     .addMemberPermissionOverride(member.getIdLong(), Permission.getRaw(Permission.MANAGE_CHANNEL), 0)
                     .addRolePermissionOverride(499558483675578368L, 0, Permission.getRaw(Permission.VOICE_CONNECT, Permission.VOICE_SPEAK))
                     .addMemberPermissionOverride(252128902418268161L, 0, Permission.getRaw(Permission.VOICE_CONNECT, Permission.VOICE_SPEAK))
+                    .addRolePermissionOverride(Long.parseLong(Ustawienia.instance.muteRole), 0, Permission.getRaw(Permission.VOICE_CONNECT, Permission.VOICE_SPEAK, Permission.VIEW_CHANNEL))
                     .addMemberPermissionOverride(member.getGuild().getSelfMember().getIdLong(), Permission.getRaw(Permission.VOICE_CONNECT, Permission.VOICE_SPEAK, Permission.MANAGE_CHANNEL, Permission.VIEW_CHANNEL), 0)
                     .addMemberPermissionOverride(guild.getSelfMember().getIdLong(), Permission.getRaw(Permission.VOICE_MUTE_OTHERS), 0);
             for (Long musicbots : socketManager.getClients().values().stream().map(m -> Long.parseLong(m.getBotId())).collect(Collectors.toList())) {
