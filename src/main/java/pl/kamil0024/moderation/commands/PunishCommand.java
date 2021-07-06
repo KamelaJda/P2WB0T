@@ -97,8 +97,8 @@ public class PunishCommand extends Command {
         if (arg.contains(",")) {
             for (String s : arg.split(",")) {
                 Member tak = context.getParsed().getMember(s);
-                if (check(context, tak)) {
-                    if (!osoby.contains(tak)) osoby.add(tak);
+                if (check(context, tak) && !osoby.contains(tak)) {
+                    osoby.add(tak);
                 }
             }
 
@@ -353,7 +353,6 @@ public class PunishCommand extends Command {
             }
             size++;
         }
-
         return pages;
     }
 

@@ -90,7 +90,7 @@ public class Kara {
         CaseConfig cc = put(caseDao, kara, modLog);
         if (eventWaiter != null && channel != null) {
             DowodWaiter dowod = new DowodWaiter(userId, cc, caseDao, channel, eventWaiter,null);
-            if (deleteWaiter) dowod = new DowodWaiter(userId, cc, caseDao, channel, eventWaiter, new DeleteMessageWaiter(userId, channel, eventWaiter, kara.getKaranyId()));
+            if (deleteWaiter) dowod = new DowodWaiter(userId, cc, caseDao, channel, eventWaiter, new DeleteMessageWaiter(userId, channel, eventWaiter, kara.getKaranyId(), false));
             dowod.start();
         }
     }
