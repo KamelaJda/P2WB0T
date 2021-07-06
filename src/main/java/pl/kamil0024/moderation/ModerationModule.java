@@ -94,6 +94,7 @@ public class ModerationModule implements Modul {
         cmd.add(new ClearCommand(statsModule));
         cmd.add(new CheckCommand(caseDao, eventWaiter));
         cmd.add(new MultiCommand(multiDao, eventWaiter));
+        cmd.add(new KanalCommand());
 
         cmd.forEach(commandManager::registerCommand);
 
