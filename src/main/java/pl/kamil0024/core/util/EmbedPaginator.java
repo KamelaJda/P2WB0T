@@ -133,7 +133,7 @@ public class EmbedPaginator {
     private void clear() {
         try {
             MessageBuilder mb = new net.dv8tion.jda.api.MessageBuilder();
-            mb.setEmbed(botMsg.getEmbeds().get(0));
+            mb.setEmbeds(botMsg.getEmbeds().get(0));
             mb.setContent(botMsg.getContentRaw());
             mb.setActionRows(Collections.emptyList());
             botMsg.editMessage(mb.build()).complete();

@@ -67,7 +67,7 @@ public class SpotifyStatsCommand extends Command {
             eb.setDescription("Aby zobaczyć swoje statystyki Spotify musisz połączyć swoje konto Discord z kontem Spotify! " +
                     "Możesz to zrobić wchodząc " + String.format("[tutaj](%s)", link));
 
-            msg.editMessage(eb.build()).override(true).queue();
+            msg.editMessageEmbeds(eb.build()).override(true).queue();
             return false;
         }
 

@@ -188,7 +188,7 @@ public class GiveawayListener {
                     giveawayDao.save(config);
                 }
 
-                msg.editMessage(createEmbed(config).build()).queue();
+                msg.editMessageEmbeds(createEmbed(config).build()).queue();
             } catch (Exception e) {
                 e.printStackTrace();
             }

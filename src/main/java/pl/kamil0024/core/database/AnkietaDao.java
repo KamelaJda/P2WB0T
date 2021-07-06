@@ -172,7 +172,7 @@ public class AnkietaDao extends ListenerAdapter implements Dao<AnkietaConfig> {
                     save(ac);
                 }
 
-                msg.editMessage(generateEmbed(ac).build()).queue();
+                msg.editMessageEmbeds(generateEmbed(ac).build()).queue();
 
             } catch (Exception e) {
                 Log.newError(e, getClass());

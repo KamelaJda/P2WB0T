@@ -97,7 +97,7 @@ public class YouTrackReport implements HttpHandler {
         eb.addField("Topka testowanych issuesów", getPodium(testerzyMap), false);
         //#endregion Top testowanych issuesów
 
-        mb.setEmbed(eb.build());
+        mb.setEmbeds(eb.build());
         Objects.requireNonNull(txt).sendMessage(mb.build()).queue();
     }
 

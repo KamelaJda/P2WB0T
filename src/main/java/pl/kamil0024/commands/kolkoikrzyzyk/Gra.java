@@ -73,7 +73,7 @@ public class Gra {
 
         MessageBuilder mb = new MessageBuilder();
         mb.setContent(" ");
-        mb.setEmbed(getEmbed().build());
+        mb.setEmbeds(getEmbed().build());
 
         msg.editMessage(mb.build()).complete();
         setBotMsg(msg);
@@ -139,7 +139,7 @@ public class Gra {
 
     private void ruch(GuildMessageReceivedEvent event) {
         setKogoRuch(getKogoRuch().getId().equals(osoba1.getId()) ? osoba2 : osoba1);
-        getBotMsg().editMessage(getEmbed().build()).complete();
+        getBotMsg().editMessageEmbeds(getEmbed().build()).complete();
         waitForRuch();
     }
 
@@ -179,7 +179,7 @@ public class Gra {
             eb.addField("Runda się zakończyła", getKogoRuch().getAsMention() + " jest ślimakiem i się nie ruszył na czas!", false);
         }
 
-        getBotMsg().editMessage(eb.build()).queue();
+        getBotMsg().editMessageEmbeds(eb.build()).queue();
         setKoniec(true);
         KolkoIKrzyzykManager.graja.remove(osoba1.getId());
         KolkoIKrzyzykManager.graja.remove(osoba2.getId());

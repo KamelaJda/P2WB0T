@@ -100,7 +100,7 @@ public class ButtonWaiter {
         mb.setContent(botMsg.getContentRaw());
         mb.setActionRows(ActionRow.of(getButtonWaiterActionList().stream().map(m -> m.getButton().asDisabled()).collect(Collectors.toList())));
         mb.setContent(botMsg.getContentRaw());
-        if (botMsg.getEmbeds().size() >= 1) mb.setEmbed(botMsg.getEmbeds().get(0));
+        if (botMsg.getEmbeds().size() >= 1) mb.setEmbeds(botMsg.getEmbeds().get(0));
         botMsg.editMessage(mb.build()).override(true).complete();
     }
 

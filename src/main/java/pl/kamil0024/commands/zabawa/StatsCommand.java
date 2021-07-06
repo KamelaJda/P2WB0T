@@ -110,9 +110,8 @@ public class StatsCommand extends Command {
                 eb.addField("Najbardziej aktywne kanały", sb.build(), false);
 
                 MessageBuilder mb = new MessageBuilder();
-                mb.setEmbed(eb.build());
-                msg.delete().queue();
-                context.getEvent().getHook().sendMessageEmbeds(eb.build()).queue();
+                mb.setEmbeds(eb.build());
+                msg.editMessage(mb.build()).queue();
             } catch (Exception e) {
                 Log.newError(e, getClass());
                 msg.editMessage("Nie masz żadnych statystyk! Spróbuj ponownie później.").queue();

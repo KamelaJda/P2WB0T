@@ -128,20 +128,20 @@ public class ModulesCommand extends Command {
         String green = CommandExecute.getReaction(context.getUser(), true).getAsMention();
         String load = Objects.requireNonNull(context.getJDA().getEmoteById(Ustawienia.instance.emote.load)).getAsMention();
         Message msg = context.send(getReloadEmbed(0, green, red, load)).complete();
-        msg.editMessage(getReloadEmbed(2, green, red, load)).complete();
+        msg.editMessageEmbeds(getReloadEmbed(2, green, red, load)).complete();
         try {
             modul.shutDown();
-            msg.editMessage(getReloadEmbed(4, green, red, load)).complete();
+            msg.editMessageEmbeds(getReloadEmbed(4, green, red, load)).complete();
         } catch (Exception e) {
-            msg.editMessage(getReloadEmbed(3, green, red, load, "Nie udało się zatrzymać modułu!")).queue();
+            msg.editMessageEmbeds(getReloadEmbed(3, green, red, load, "Nie udało się zatrzymać modułu!")).queue();
             return false;
         }
         try {
             modul.startUp();
-            msg.editMessage(getReloadEmbed(6, green, red, load)).complete();
+            msg.editMessageEmbeds(getReloadEmbed(6, green, red, load)).complete();
             return true;
         } catch (Exception e) {
-            msg.editMessage(getReloadEmbed(5, green, red, load, "Nie znaleziono modułu")).complete();
+            msg.editMessageEmbeds(getReloadEmbed(5, green, red, load, "Nie znaleziono modułu")).complete();
             return false;
         }
     }
