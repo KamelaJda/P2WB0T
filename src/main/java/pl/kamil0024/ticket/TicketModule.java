@@ -66,9 +66,10 @@ public class TicketModule implements Modul {
 
     @Override
     public boolean startUp() {
-        listeners.add(new VoiceChatListener(ticketDao, ticketRedisManager, eventWaiter, redisManager));
+//        listeners.add(new VoiceChatListener(ticketDao, ticketRedisManager, eventWaiter, redisManager));
         listeners.add(new ComponentListener(txtTicketDao, redisManager));
         listeners.forEach(api::addEventListener);
+        setStart(true);
         return true;
     }
 
@@ -76,6 +77,7 @@ public class TicketModule implements Modul {
     public boolean shutDown() {
         listeners.forEach(api::removeEventListener);
         listeners.clear();
+        setStart(false);
         return true;
     }
 

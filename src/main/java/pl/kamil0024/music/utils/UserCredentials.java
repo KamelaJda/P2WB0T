@@ -52,7 +52,6 @@ public class UserCredentials {
 
     public void refreshAccessToken() {
         try {
-            Log.debug("Aktyalizuje token dla usera!");
             AuthorizationCodeCredentials cr = api.authorizationCodeRefresh(Ustawienia.instance.spotify.id, Ustawienia.instance.spotify.secret, api.getRefreshToken()).build().execute();
             api.setAccessToken(cr.getAccessToken());
             ses.schedule(this::refreshAccessToken, cr.getExpiresIn() - 120, TimeUnit.SECONDS);
@@ -64,7 +63,6 @@ public class UserCredentials {
             }
         } catch (Exception e) {
             ses.schedule(this::refreshAccessToken, 60, TimeUnit.SECONDS);
-            e.printStackTrace();
         }
     }
 
