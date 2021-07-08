@@ -250,6 +250,11 @@ public class ComponentListener extends ListenerAdapter {
                     .addMemberPermissionOverride(e.getGuild().getSelfMember().getIdLong(), Permission.getRaw(Permission.VOICE_CONNECT, Permission.VOICE_SPEAK, Permission.VIEW_CHANNEL, Permission.MANAGE_CHANNEL), 0)
                     .addRolePermissionOverride(e.getGuild().getPublicRole().getIdLong(), 0, VC_RAW_PERMS);
 
+            TXTTicketConfig config = daoCache.getIfPresent(e.getTextChannel().getId());
+            if (config != null) {
+                action = action.addMemberPermissionOverride(Long.parseLong(config.getUserId()), VC_RAW_PERMS, 0);
+            }
+
             VoiceChannel channel = action.complete();
             e.getHook().sendMessage(Tlumaczenia.get("ticket.createvc", e.getUser().getAsMention(), channel.getAsMention())).queue();
             return;
@@ -351,7 +356,6 @@ public class ComponentListener extends ListenerAdapter {
     @Getter
     @AllArgsConstructor
     private enum TicketCategory {
-
         APELACJE("Odwołanie od bana"),
         FORUM("Pomoc dotycząca forum"),
         DISCORD("Pomoc dotycząca Discorda"),
