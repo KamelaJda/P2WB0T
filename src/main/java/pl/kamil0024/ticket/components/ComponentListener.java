@@ -207,7 +207,6 @@ public class ComponentListener extends ListenerAdapter {
 
     private void channelAction(ButtonClickEvent e) {
         if (e.getGuild() == null) return;
-        e.deferReply().queue();
 
         if (e.getComponentId().equals("TICKET-TAKE")) {
             try {
@@ -218,7 +217,7 @@ public class ComponentListener extends ListenerAdapter {
                 Objects.requireNonNull(e.getMessage()).editMessage(e.getMessage().getContentRaw())
                         .setActionRows(ActionRow.of(TICKET_TAKE.asDisabled(), TICKET_CREATE_VC, TICKET_CLOSE))
                         .complete();
-                e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.admjoin", e.getUser().getAsMention())).complete();
+                e.getHook().sendMessage(Tlumaczenia.get("ticket.admjoin", e.getUser().getAsMention())).complete();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
