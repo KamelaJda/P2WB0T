@@ -126,6 +126,10 @@ public class CommandContext {
     }
 
     public MessageAction send(MessageEmbed message) {
+        return event.getChannel().sendMessageEmbeds(message).reference(getMessage());
+    }
+
+    public MessageAction send(Message message) {
         return event.getChannel().sendMessage(message).reference(getMessage());
     }
 

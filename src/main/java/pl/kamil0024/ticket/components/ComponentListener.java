@@ -24,9 +24,11 @@ import lombok.Getter;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.SelectionMenuEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -53,10 +55,14 @@ public class ComponentListener extends ListenerAdapter {
     public static final String CHANNEL_FORMAT = "pomoc-%s";
 
     public static final ActionRow categoryRow = ActionRow.of(
-            Button.primary("TICKET-APELACJE", "Odwołania od bana"),
-            Button.secondary("TICKET-MINECRAFT", "Pomoc serwera Minecraft"),
-            Button.secondary("TICKET-FORUM", "Pomoc forum P2W.PL"),
-            Button.primary("TICKET-DISCORD", "Pomoc Discorda")
+            SelectionMenu.create("TICKET-CHOOSE-CATEGORY")
+                    .setPlaceholder("Wybierz kategorię")
+                    .addOption("Odwołania od bana", "TICKET-APELACJE")
+                    .addOption("Pomoc serwera Minecraft", "TICKET-MINECRAFT")
+                    .addOption("Pomoc forum P2W.PL", "TICKET-FORUM")
+                    .addOption("Pomoc Discorda", "TICKET-DISCORD")
+                    .setRequiredRange(1, 1)
+                    .build()
     );
 
     public static final Button TICKET_TAKE = Button.success("TICKET-TAKE", "Przydziel siebie do pomocy");
@@ -92,20 +98,28 @@ public class ComponentListener extends ListenerAdapter {
     }
 
     @Override
-    public void onButtonClick(@NotNull ButtonClickEvent e) {
-        switch (e.getComponentId()) {
+    public void onSelectionMenu(@NotNull SelectionMenuEvent e) {
+        if (!e.getComponentId().equals("TICKET-CHOOSE-CATEGORY")) return;
+        switch (e.getValues().get(0)) {
             case "TICKET-APELACJE":
             case "TICKET-MINECRAFT":
             case "TICKET-FORUM":
             case "TICKET-DISCORD":
+                e.deferEdit().queue();
                 chooseCategory(e);
-                break;
+        }
+    }
+
+    @Override
+    public void onButtonClick(ButtonClickEvent e) {
+        switch (e.getComponentId()) {
             case BUTTON_NAME:
                 createChannel(e);
                 break;
             case "TICKET-CREATE_VC":
             case "TICKET-TAKE":
             case "TICKET-CLOSE":
+                e.deferReply(false).queue();
                 Member member = e.getMember();
                 if (member != null)
                     member.getRoles().stream()
@@ -118,18 +132,18 @@ public class ComponentListener extends ListenerAdapter {
     private void createChannel(ButtonClickEvent e) {
         Guild guild = e.getGuild();
         if (guild == null) return;
-        e.deferEdit().queue();
+        e.deferReply(true).queue();
 
         Category category = getCategory(guild, e.getTextChannel());
         if (category == null) return;
 
         if (category.getChannels().size() >= MAX_CHANNELS) {
-            sendAndDelete(e.getTextChannel(), Tlumaczenia.get("ticket.toomuchchannels", e.getUser().getAsMention()));
+            e.getHook().sendMessage(Tlumaczenia.get("ticket.toomuchchannels", e.getUser().getAsMention())).queue();
             return;
         }
 
         if (getTicketChannel(ChannelType.TEXT, guild, e.getUser().getId()) != null) {
-            sendAndDelete(e.getTextChannel(), Tlumaczenia.get("ticket.lastt", e.getUser().getAsMention()));
+            e.getHook().sendMessage(Tlumaczenia.get("ticket.lastt", e.getUser().getAsMention())).queue();
             return;
         }
 
@@ -138,12 +152,12 @@ public class ComponentListener extends ListenerAdapter {
                     .setParent(category)
                     .addMemberPermissionOverride(e.getUser().getIdLong(), TXT_RAW_PERMS, 0)
                     .addRolePermissionOverride(Long.parseLong(Ustawienia.instance.rangi.ekipa), TXT_RAW_PERMS, 0)
-                    .addMemberPermissionOverride(e.getGuild().getSelfMember().getIdLong(), Permission.getRaw(Permission.VOICE_CONNECT, Permission.VOICE_SPEAK, Permission.VIEW_CHANNEL, Permission.MANAGE_CHANNEL), 0)
+                    .addMemberPermissionOverride(e.getGuild().getSelfMember().getIdLong(), Permission.getRaw(Permission.VOICE_CONNECT, Permission.VOICE_SPEAK, Permission.VIEW_CHANNEL, Permission.MANAGE_CHANNEL, Permission.MESSAGE_WRITE, Permission.MESSAGE_HISTORY, Permission.MESSAGE_READ), 0)
                     .addRolePermissionOverride(e.getGuild().getPublicRole().getIdLong(), 0, TXT_RAW_PERMS)
                     .setTopic(Tlumaczenia.get("ticket.channeltopic", e.getUser().getAsMention()));
 
             TextChannel channel = action.complete();
-            sendAndDelete(e.getTextChannel(), Tlumaczenia.get("ticket.create", e.getUser().getAsMention(), channel.getAsMention()));
+            e.getHook().sendMessage(Tlumaczenia.get("ticket.create", e.getUser().getAsMention(), channel.getAsMention())).queue();
             channel.sendMessage(Tlumaczenia.get("ticket.choosecategory", e.getUser().getAsMention()))
                     .allowedMentions(Collections.singleton(Message.MentionType.USER))
                     .setActionRows(categoryRow)
@@ -166,25 +180,23 @@ public class ComponentListener extends ListenerAdapter {
         }
     }
 
-    private void chooseCategory(ButtonClickEvent e) {
+    private void chooseCategory(SelectionMenuEvent e) {
         if (e.getMessage() != null) e.getMessage().delete().queue();
 
         ScheduledFuture<?> future = futureMap.get(e.getChannel().getId());
         future.cancel(true);
         futureMap.remove(e.getChannel().getId());
 
-        e.deferEdit().queue();
-
         String category = e.getComponentId();
 
         try {
-            category = TicketCategory.valueOf(e.getComponentId().split("-")[1]).getName();
+            category = TicketCategory.valueOf(e.getValues().get(0).split("-")[1]).getName();
         } catch (Exception ignored) { }
 
         String extraContext = "";
         if (e.getComponentId().equals("TICKET-APELACJE")) extraContext = Tlumaczenia.get("ticket.extrahelp") + "\n\n";
 
-        e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.info", category, extraContext))
+        e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.info", category, e.getUser().getAsMention(), extraContext))
                 .setActionRows(ActionRow.of(TICKET_TAKE, TICKET_CREATE_VC, TICKET_CLOSE))
                 .complete();
 
@@ -195,7 +207,6 @@ public class ComponentListener extends ListenerAdapter {
 
     private void channelAction(ButtonClickEvent e) {
         if (e.getGuild() == null) return;
-        e.deferEdit().queue();
 
         if (e.getComponentId().equals("TICKET-TAKE")) {
             try {
@@ -206,7 +217,7 @@ public class ComponentListener extends ListenerAdapter {
                 Objects.requireNonNull(e.getMessage()).editMessage(e.getMessage().getContentRaw())
                         .setActionRows(ActionRow.of(TICKET_TAKE.asDisabled(), TICKET_CREATE_VC, TICKET_CLOSE))
                         .complete();
-                e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.admjoin", e.getUser().getAsMention())).complete();
+                e.getHook().sendMessage(Tlumaczenia.get("ticket.admjoin", e.getUser().getAsMention())).complete();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -215,15 +226,14 @@ public class ComponentListener extends ListenerAdapter {
 
         if (e.getComponentId().equals("TICKET-CREATE_VC")) {
             if (getTicketChannel(ChannelType.VOICE, e.getGuild(), e.getUser().getId()) != null) {
-                e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.vcalreadycreated", e.getUser().getAsMention()))
-                        .complete();
+                e.getHook().sendMessage((Tlumaczenia.get("ticket.vcalreadycreated", e.getUser().getAsMention()))).queue();
                 return;
             }
             Category category = getCategory(e.getGuild(), e.getTextChannel());
             if (category == null) return;
 
             if (category.getChannels().size() >= MAX_CHANNELS) {
-                sendAndDelete(e.getTextChannel(), Tlumaczenia.get("ticket.toomuchchannels", e.getUser().getAsMention()));
+                e.getHook().sendMessage(Tlumaczenia.get("ticket.toomuchchannels", e.getUser().getAsMention())).queue();
                 return;
             }
 
@@ -235,8 +245,7 @@ public class ComponentListener extends ListenerAdapter {
                     .addRolePermissionOverride(e.getGuild().getPublicRole().getIdLong(), 0, VC_RAW_PERMS);
 
             VoiceChannel channel = action.complete();
-            e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.createvc", e.getUser().getAsMention(), channel.getAsMention()))
-                    .complete();
+            e.getHook().sendMessage(Tlumaczenia.get("ticket.createvc", e.getUser().getAsMention(), channel.getAsMention())).queue();
             return;
         }
 
@@ -244,9 +253,7 @@ public class ComponentListener extends ListenerAdapter {
             if (toDelete.contains(e.getChannel().getId())) return;
 
             toDelete.add(e.getChannel().getId());
-            e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.close", e.getUser().getAsMention()))
-                    .complete();
-
+            e.getHook().sendMessage(Tlumaczenia.get("ticket.close", e.getUser().getAsMention())).queue();
             Runnable run = () -> {
                 try {
                     GuildChannel channel = getTicketChannel(ChannelType.VOICE, e.getGuild(), e.getUser().getId());
@@ -294,11 +301,10 @@ public class ComponentListener extends ListenerAdapter {
                         ex.printStackTrace();
                     }
                     e.getTextChannel().delete().complete();
-
                 } catch (Exception exception) {
                     Log.newError(exception, getClass());
                     toDelete.remove(e.getChannel().getId());
-                    e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.deleteerror", e.getUser().getAsMention())).complete();
+                    e.getHook().sendMessage(Tlumaczenia.get("ticket.deleteerror", e.getUser().getAsMention())).queue();
                 }
             };
             ses.schedule(run, 30, TimeUnit.SECONDS);
@@ -341,8 +347,8 @@ public class ComponentListener extends ListenerAdapter {
     private enum TicketCategory {
 
         APELACJE("Odwołanie od bana"),
-        FORUM("Pomod dotycząca forum"),
-        DISCORD("Pomod dotycząca Discorda"),
+        FORUM("Pomoc dotycząca forum"),
+        DISCORD("Pomoc dotycząca Discorda"),
         MINECRAFT("Pomoc serwera Minecraft");
 
         String name;

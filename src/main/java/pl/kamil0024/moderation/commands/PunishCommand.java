@@ -31,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.core.Ustawienia;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
+import pl.kamil0024.core.command.SubCommand;
 import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.database.CaseDao;
@@ -82,52 +83,6 @@ public class PunishCommand extends Command {
             Error.usageError(context);
             return false;
         }
-        if (arg.equalsIgnoreCase("info")) {
-            String arg1 = context.getArgs().get(1);
-            if (arg1 == null) {
-                List<FutureTask<EmbedBuilder>> pages = new ArrayList<>();
-                for (EmbedBuilder embedBuilder : getKaraList(karyJSON, context.getMember())) {
-                    pages.add(new FutureTask<>(() -> embedBuilder));
-                }
-                new DynamicEmbedPaginator(pages, context.getUser(), eventWaiter, 500).create(context.getChannel(), context.getMessage());
-            } else {
-                Integer liczba = context.getParsed().getNumber(context.getArgs().get(1));
-                if (liczba == null || liczba > karyJSON.getKary().size() || liczba <= 0) {
-                    boolean powod = false;
-                    for (KaryJSON.Kara kara : karyJSON.getKary()) {
-                        if (kara.getPowod().toLowerCase().contains(context.getArgs().get(1).toLowerCase())) {
-                            liczba = kara.getId();
-                            powod = true;
-                            break;
-                        }
-                    }
-                    if (!powod) {
-                        context.send("Nie ma takiego numeru!", false).queue();
-                        return false;
-                    }
-                }
-                KaryJSON.Kara kara = karyJSON.getKary().get(liczba - 1);
-                EmbedBuilder eb = new EmbedBuilder();
-                eb.setColor(UserUtil.getColor(context.getMember()));
-                eb.setDescription("Ilość tierów związanych z `" + kara.getPowod() + "`: " + kara.getTiery().size());
-
-                BetterStringBuilder sb = new BetterStringBuilder();
-                sb.appendLine("```md");
-                sb.appendLine("Nr. | Ilość warnów | Typ kary | Czas kary");
-                int a = 1;
-                for (KaryJSON.Tiery tiery : kara.getTiery()) {
-                    sb.append(appendLine(a + "", 3).append(" | "));
-                    sb.append(appendLine("    " + tiery.getMaxWarns(), 12).append(" | "));
-                    sb.append(appendLine(KaryEnum.getName(tiery.getType()), 8).append(" | "));
-                    sb.appendLine(new StringBuilder(tiery.getDuration()));
-                    a++;
-                }
-                sb.append("```");
-                eb.addField(" ", sb.build(), false);
-                context.send(eb.build()).queue();
-            }
-            return true;
-        }
 
         Integer numer = context.getParsed().getNumber(context.getArgs().get(1));
 
@@ -142,8 +97,8 @@ public class PunishCommand extends Command {
         if (arg.contains(",")) {
             for (String s : arg.split(",")) {
                 Member tak = context.getParsed().getMember(s);
-                if (check(context, tak)) {
-                    if (!osoby.contains(tak)) osoby.add(tak);
+                if (check(context, tak) && !osoby.contains(tak)) {
+                    osoby.add(tak);
                 }
             }
 
@@ -193,12 +148,59 @@ public class PunishCommand extends Command {
             } catch (Exception ignored) { }
         }));
 
-        list.add(new ButtonWaiter.ButtonWaiterAction(Button.danger("2", context.getTranslate("generic.no")), (e) -> {
-            e.getHook().deleteOriginal().queue();
-        }));
+        list.add(new ButtonWaiter.ButtonWaiterAction(Button.danger("2", context.getTranslate("generic.no")), (e) -> e.getHook().deleteOriginal().queue()));
 
         ButtonWaiter buttonWaiter = new ButtonWaiter(eventWaiter, context.getUser(), messageAction, list);
         buttonWaiter.create();
+        return true;
+    }
+
+    @SubCommand(name = "info")
+    public boolean info(CommandContext context) {
+        String arg1 = context.getArgs().get(1);
+        if (arg1 == null) {
+            List<FutureTask<EmbedBuilder>> pages = new ArrayList<>();
+            for (EmbedBuilder embedBuilder : getKaraList(karyJSON, context.getMember())) {
+                pages.add(new FutureTask<>(() -> embedBuilder));
+            }
+            new DynamicEmbedPaginator(pages, context.getUser(), eventWaiter, 500).create(context.getChannel(), context.getMessage());
+        } else {
+            Integer liczba = context.getParsed().getNumber(context.getArgs().get(1));
+            if (liczba == null || liczba > karyJSON.getKary().size() || liczba <= 0) {
+                boolean powod = false;
+                for (KaryJSON.Kara kara : karyJSON.getKary()) {
+                    if (kara.getPowod().toLowerCase().contains(context.getArgs().get(1).toLowerCase())) {
+                        liczba = kara.getId();
+                        powod = true;
+                        break;
+                    }
+                }
+                if (!powod) {
+                    context.send("Nie ma takiego numeru!", false).queue();
+                    return false;
+                }
+            }
+            KaryJSON.Kara kara = karyJSON.getKary().get(liczba - 1);
+            EmbedBuilder eb = new EmbedBuilder();
+            eb.setColor(UserUtil.getColor(context.getMember()));
+            eb.setDescription("Ilość tierów związanych z `" + kara.getPowod() + "`: " + kara.getTiery().size());
+            eb.addField("Numer w punie", kara.getId() + "", false);
+
+            BetterStringBuilder sb = new BetterStringBuilder();
+            sb.appendLine("```md");
+            sb.appendLine("Nr. | Ilość warnów | Typ kary | Czas kary");
+            int a = 1;
+            for (KaryJSON.Tiery tiery : kara.getTiery()) {
+                sb.append(appendLine(a + "", 3).append(" | "));
+                sb.append(appendLine("    " + tiery.getMaxWarns(), 12).append(" | "));
+                sb.append(appendLine(KaryEnum.getName(tiery.getType()), 8).append(" | "));
+                sb.appendLine(new StringBuilder(tiery.getDuration()));
+                a++;
+            }
+            sb.append("```");
+            eb.addField(" ", sb.build(), false);
+            context.send(eb.build()).queue();
+        }
         return true;
     }
 
@@ -351,7 +353,6 @@ public class PunishCommand extends Command {
             }
             size++;
         }
-
         return pages;
     }
 

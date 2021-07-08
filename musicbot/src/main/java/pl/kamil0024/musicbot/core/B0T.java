@@ -141,10 +141,8 @@ public class B0T {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if (!bol)
-                    Log.error(tlumaczenia.get("module.loading.fail"));
-                else
-                    Log.debug(tlumaczenia.get("module.loading.success", modul.getName()));
+                if (!bol) Log.error(tlumaczenia.get("module.loading.fail"));
+                else Log.debug(tlumaczenia.get("module.loading.success", modul.getName()));
 
                 moduls.put(modul.getName(), modul);
             } catch (Exception ignored) {

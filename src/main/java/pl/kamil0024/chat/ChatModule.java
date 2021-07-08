@@ -44,8 +44,7 @@ public class ChatModule implements Modul {
     @Getter
     private final String name = "chat";
 
-    @Getter
-    @Setter
+    @Getter @Setter
     private boolean start = false;
     private ChatListener chatListener;
     private KaryListener karyListener;

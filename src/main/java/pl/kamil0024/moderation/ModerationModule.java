@@ -21,6 +21,7 @@ package pl.kamil0024.moderation;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandManager;
 import pl.kamil0024.core.database.CaseDao;
@@ -47,6 +48,7 @@ public class ModerationModule implements Modul {
     private final ModLog modLog;
     private final KaryJSON karyJSON;
     private final MultiDao multiDao;
+    private final ShardManager api;
 
     @Getter
     private final String name = "moderation";
@@ -57,7 +59,9 @@ public class ModerationModule implements Modul {
     @Setter
     private boolean start = false;
 
-    public ModerationModule(CommandManager commandManager, EventWaiter eventWaiter, CaseDao caseDao, StatsModule statsModule, NieobecnosciManager nieobecnosciManager, NieobecnosciDao nieobecnosciDao, ModLog modLog, KaryJSON karyJSON, MultiDao multiDao) {
+    private StatusCommand.StatusListener statusListener;
+
+    public ModerationModule(CommandManager commandManager, EventWaiter eventWaiter, CaseDao caseDao, StatsModule statsModule, NieobecnosciManager nieobecnosciManager, NieobecnosciDao nieobecnosciDao, ModLog modLog, KaryJSON karyJSON, MultiDao multiDao, ShardManager api) {
         this.commandManager = commandManager;
         this.eventWaiter = eventWaiter;
         this.caseDao = caseDao;
@@ -67,13 +71,14 @@ public class ModerationModule implements Modul {
         this.modLog = modLog;
         this.karyJSON = karyJSON;
         this.multiDao = multiDao;
+        this.api = api;
     }
 
     @Override
     public boolean startUp() {
         cmd = new ArrayList<>();
 
-        cmd.add(new StatusCommand(eventWaiter));
+        cmd.add(new StatusCommand());
         cmd.add(new KarainfoCommand(caseDao, eventWaiter));
         cmd.add(new UnmuteCommand(caseDao, modLog));
         cmd.add(new TempmuteCommand(caseDao, modLog, statsModule));
@@ -89,14 +94,20 @@ public class ModerationModule implements Modul {
         cmd.add(new ClearCommand(statsModule));
         cmd.add(new CheckCommand(caseDao, eventWaiter));
         cmd.add(new MultiCommand(multiDao, eventWaiter));
+        cmd.add(new KanalCommand());
 
         cmd.forEach(commandManager::registerCommand);
+
+        statusListener = new StatusCommand.StatusListener();
+        api.addEventListener(statusListener);
+
         setStart(true);
         return true;
     }
 
     @Override
     public boolean shutDown() {
+        api.removeEventListener(statusListener);
         commandManager.unregisterCommands(cmd);
         setStart(false);
         return true;

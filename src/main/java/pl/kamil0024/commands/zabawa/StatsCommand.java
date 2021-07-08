@@ -24,42 +24,44 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import org.joda.time.DateTime;
 import pl.kamil0024.core.command.Command;
-import pl.kamil0024.core.command.CommandContext;
+import pl.kamil0024.core.command.SlashContext;
 import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.database.UserstatsDao;
 import pl.kamil0024.core.database.config.UserstatsConfig;
 import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.util.BetterStringBuilder;
 import pl.kamil0024.core.util.UserUtil;
+import pl.kamil0024.stats.commands.TopCommand;
 
 import java.time.Instant;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class StatsCommand extends Command {
 
     private static final String DATE = "27.02.2021";
 
     private final UserstatsDao userstatsDao;
+    private final ExecutorService ses = Executors.newSingleThreadExecutor();
 
     public StatsCommand(UserstatsDao userstatsDao) {
         name = "stats";
         cooldown = 60;
         category = CommandCategory.ZABAWA;
         enabledInRekru = true;
+        commandData = getData();
         this.userstatsDao = userstatsDao;
     }
 
     @Override
-    public boolean execute(CommandContext context) {
-
-        final Message msg = context.sendTranslate("generic.loading").complete();
-
-        new Thread(() -> {
+    public boolean execute(SlashContext context) {
+        final Message msg = context.sendTranslate("generic.loading");
+        Runnable run = () -> {
             try {
                 long wszystkieWiadomosci = 0, cztery = 0, siedem = 0, dwadziescia = 0;
 
-                Map<String, Long> kanaly = new HashMap<>();
+                HashMap<String, Long> kanaly = new HashMap<>();
 
                 List<UserstatsConfig> conf = userstatsDao.getFromMember(context.getUser().getId(), 30);
                 if (conf.isEmpty()) {
@@ -71,21 +73,14 @@ public class StatsCommand extends Command {
                     UserstatsConfig.Config memStat = entry.getMembers().get(context.getUser().getId());
                     if (memStat == null) continue;
                     wszystkieWiadomosci += memStat.getMessageCount();
-                    if (Long.parseLong(entry.getDate()) >= getRawDate(1)) {
-                        dwadziescia += memStat.getMessageCount();
-                    }
-                    if (Long.parseLong(entry.getDate()) >= getRawDate(7)) {
-                        siedem += memStat.getMessageCount();
-                    }
-                    if (Long.parseLong(entry.getDate()) >= getRawDate(14)) {
-                        cztery += memStat.getMessageCount();
-                    }
+                    if (Long.parseLong(entry.getDate()) >= getRawDate(1)) dwadziescia += memStat.getMessageCount();
+                    if (Long.parseLong(entry.getDate()) >= getRawDate(7)) siedem += memStat.getMessageCount();
+                    if (Long.parseLong(entry.getDate()) >= getRawDate(14)) cztery += memStat.getMessageCount();
 
                     for (Map.Entry<String, Long> channelEntry : memStat.getChannels().entrySet()) {
                         long suma = kanaly.getOrDefault(channelEntry.getKey(), 0L);
                         kanaly.put(channelEntry.getKey(), suma + channelEntry.getValue());
                     }
-
                 }
 
                 EmbedBuilder eb = new EmbedBuilder();
@@ -98,7 +93,6 @@ public class StatsCommand extends Command {
                 BetterStringBuilder sb = new BetterStringBuilder();
 
                 String s = "%s: `%s wiadomości`";
-                String vs = "%s: `%s`";
                 sb.appendLine(String.format(s, "__30 dni__", wszystkieWiadomosci));
                 sb.appendLine(String.format(s, "14 dni", cztery));
                 sb.appendLine(String.format(s, "7 dni", siedem));
@@ -106,8 +100,9 @@ public class StatsCommand extends Command {
                 eb.addField("Wiadomości", sb.toString(), false);
 
                 sb = new BetterStringBuilder();
+
                 int i = 1;
-                for (Map.Entry<String, Long> entry : sortByValue(kanaly).entrySet()) {
+                for (Map.Entry<String, Long> entry : TopCommand.sortByValue(kanaly).entrySet()) {
                     sb.appendLine(String.format("%s. <#%s>: `%s wiadomości`", i, entry.getKey(), entry.getValue()));
                     if (i == 3) break;
                     i++;
@@ -115,27 +110,15 @@ public class StatsCommand extends Command {
                 eb.addField("Najbardziej aktywne kanały", sb.build(), false);
 
                 MessageBuilder mb = new MessageBuilder();
-                mb.setEmbed(eb.build());
-                msg.delete().queue();
-                context.send(eb.build()).queue();
+                mb.setEmbeds(eb.build());
+                msg.editMessage(mb.build()).queue();
             } catch (Exception e) {
                 Log.newError(e, getClass());
                 msg.editMessage("Nie masz żadnych statystyk! Spróbuj ponownie później.").queue();
             }
-        }).start();
+        };
+        ses.execute(run);
         return true;
-    }
-
-    private static HashMap<String, Long> sortByValue(Map<String, Long> hm) {
-        List<Map.Entry<String, Long>> list =
-                new LinkedList<>(hm.entrySet());
-        list.sort(Map.Entry.comparingByValue());
-        Collections.reverse(list);
-        HashMap<String, Long> temp = new LinkedHashMap<>();
-        for (Map.Entry<String, Long> aa : list) {
-            temp.put(aa.getKey(), aa.getValue());
-        }
-        return temp;
     }
 
     private long getRawDate(int minusDays) {
@@ -145,15 +128,6 @@ public class StatsCommand extends Command {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         return cal.getTimeInMillis();
-    }
-
-    private String format(long l) {
-        long millis = new Date().getTime() + l;
-        return String.format("%02d min, %02d sec",
-                TimeUnit.MILLISECONDS.toMinutes(millis),
-                TimeUnit.MILLISECONDS.toSeconds(millis) -
-                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
-        );
     }
 
 }

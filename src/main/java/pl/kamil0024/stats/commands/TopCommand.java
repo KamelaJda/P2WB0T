@@ -141,13 +141,12 @@ public class TopCommand extends Command {
         private Statystyka statystyka;
     }
 
-    public static HashMap<String, Integer> sortByValue(HashMap<String, Integer> hm) {
-        List<Map.Entry<String, Integer>> list =
-                new LinkedList<>(hm.entrySet());
+    public static <T, E extends Comparable<E>> Map<T, E> sortByValue(HashMap<T, E> hm) {
+        List<Map.Entry<T, E>> list = new LinkedList<>(hm.entrySet());
         list.sort(Map.Entry.comparingByValue());
         Collections.reverse(list);
-        HashMap<String, Integer> temp = new LinkedHashMap<>();
-        for (Map.Entry<String, Integer> aa : list) {
+        Map<T, E> temp = new LinkedHashMap<>();
+        for (Map.Entry<T, E> aa : list) {
             temp.put(aa.getKey(), aa.getValue());
         }
         return temp;

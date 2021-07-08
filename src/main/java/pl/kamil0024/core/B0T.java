@@ -75,6 +75,8 @@ import pl.kamil0024.music.MusicModule;
 import pl.kamil0024.music.utils.SpotifyUtil;
 import pl.kamil0024.nieobecnosci.NieobecnosciManager;
 import pl.kamil0024.nieobecnosci.NieobecnosciModule;
+import pl.kamil0024.privatechannel.PVChannelModule;
+import pl.kamil0024.privatechannel.listeners.PVChannelListener;
 import pl.kamil0024.rekrutacyjny.RekruModule;
 import pl.kamil0024.stats.StatsModule;
 import pl.kamil0024.status.StatusModule;
@@ -302,7 +304,8 @@ public class B0T {
         modulManager.getModules().add(weryfikacjaModule);
         modulManager.getModules().add(new TicketModule(api, ticketDao, redisManager, eventWaiter, txtTicketDao));
         modulManager.getModules().add(new AntiRaidModule(api, antiRaidDao, redisManager, caseDao, modLog));
-        modulManager.getModules().add(new ModerationModule(commandManager, eventWaiter, caseDao, statsModule, nieobecnosciManager, nieobecnosciDao, modLog, karyJSON, multiDao));
+        modulManager.getModules().add(new ModerationModule(commandManager, eventWaiter, caseDao, statsModule, nieobecnosciManager, nieobecnosciDao, modLog, karyJSON, multiDao, api));
+        modulManager.getModules().add(new PVChannelModule(api, socketManager));
 
         for (Modul modul : modulManager.getModules()) {
             try {
@@ -316,11 +319,8 @@ public class B0T {
                     e.printStackTrace();
                 }
                 commands = commandManager.getCommands().size() - commands;
-                if (!bol) {
-                    logger.error(Tlumaczenia.get("module.loading.fail"));
-                } else {
-                    logger.debug(Tlumaczenia.get("module.loading.success", modul.getName(), commands));
-                }
+                if (!bol) logger.error(Tlumaczenia.get("module.loading.fail"));
+                else logger.debug(Tlumaczenia.get("module.loading.success", modul.getName(), commands));
 
                 modules.put(modul.getName(), modul);
             } catch (Exception ignored) {

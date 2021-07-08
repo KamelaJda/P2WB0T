@@ -66,16 +66,18 @@ public class TicketModule implements Modul {
 
     @Override
     public boolean startUp() {
-        listeners.add(new VoiceChatListener(ticketDao, ticketRedisManager, eventWaiter, redisManager));
+//        listeners.add(new VoiceChatListener(ticketDao, ticketRedisManager, eventWaiter, redisManager));
         listeners.add(new ComponentListener(txtTicketDao, redisManager));
-        api.addEventListener(listeners);
+        listeners.forEach(api::addEventListener);
+        setStart(true);
         return true;
     }
 
     @Override
     public boolean shutDown() {
-        api.removeEventListener(listeners);
+        listeners.forEach(api::removeEventListener);
         listeners.clear();
+        setStart(false);
         return true;
     }
 

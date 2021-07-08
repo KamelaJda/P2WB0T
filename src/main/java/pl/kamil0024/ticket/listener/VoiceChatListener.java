@@ -94,6 +94,7 @@ public class VoiceChatListener extends ListenerAdapter {
                         .setParent(cate)
                         .addMemberPermissionOverride(event.getMember().getIdLong(), RAW_PERMS, 0)
                         .addRolePermissionOverride(EKIPA_ID, RAW_PERMS, 0)
+                        .addRolePermissionOverride(Long.parseLong(Ustawienia.instance.muteRole), 0, RAW_PERMS)
                         .addMemberPermissionOverride(event.getJDA().getSelfUser().getIdLong(), Permission.getRaw(Permission.VOICE_CONNECT, Permission.VOICE_SPEAK, Permission.VIEW_CHANNEL, Permission.MANAGE_CHANNEL), 0)
                         .addRolePermissionOverride(event.getGuild().getPublicRole().getIdLong(), 0, RAW_PERMS);
 

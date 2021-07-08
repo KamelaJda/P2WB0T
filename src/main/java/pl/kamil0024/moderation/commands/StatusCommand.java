@@ -19,12 +19,20 @@
 
 package pl.kamil0024.moderation.commands;
 
+import io.sentry.Sentry;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
+import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.SelectionMenuEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
@@ -36,31 +44,26 @@ import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.util.BetterStringBuilder;
-import pl.kamil0024.core.util.EventWaiter;
 import pl.kamil0024.core.util.NetworkUtil;
-import pl.kamil0024.core.util.UsageException;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
 
 public class StatusCommand extends Command {
 
+    public final static String MENU_COMPONENT_ID = "statuscommand-selectServer-m";
+    public final static String BUTTON_COMPONENT_ID = "statuscommand-selectServer-b";
+
     private final static Logger logger = LoggerFactory.getLogger(StatusCommand.class);
     private final static SimpleDateFormat DF = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-    private final EventWaiter eventWaiter;
 
-    public StatusCommand(EventWaiter eventWaiter) {
+    public StatusCommand() {
         name = "status";
         permLevel = PermLevel.ADMINISTRATOR;
-        this.eventWaiter = eventWaiter;
     }
 
     @Override
     public boolean execute(@NotNull CommandContext context) {
-        if (context.getArgs().get(0) == null) throw new UsageException();
         TextChannel txt = context.getJDA().getTextChannelById(Ustawienia.instance.channel.status);
         if (txt == null) throw new NullPointerException("Kanal do statusu jest nullem");
 
@@ -69,69 +72,87 @@ public class StatusCommand extends Command {
             return false;
         }
 
-        Boolean feerko = null, roizy = null, derp = null;
-        String[] serwery = context.getArgs().get(0).split(",");
-        for (String s : serwery) {
-            String tak = s.toLowerCase();
-            if (tak.equals("feerko")) feerko = true;
-            if (tak.equals("roizy")) roizy = true;
-            if (tak.equals("derpmc")) derp = true;
+        SelectionMenu sm = SelectionMenu.create(MENU_COMPONENT_ID)
+                .addOption("DerpMC", "derpmc")
+                .addOption("Feerko", "feerko")
+                .addOption("RoiZy", "roizy")
+                .setPlaceholder("Wybierz serwer(-y)")
+                .setRequiredRange(1, 3)
+                .build();
+
+        MessageBuilder mb = new MessageBuilder();
+        mb.setActionRows(ActionRow.of(sm));
+        mb.setContent("Wybierz na których serwerach chcesz mieć zmieniony status...");
+        context.send(mb.build()).complete();
+        return true;
+    }
+
+    public static class StatusListener extends ListenerAdapter {
+
+        private final Map<String, List<String>> serversMap = new HashMap<>();
+
+        @Override
+        public void onSelectionMenu(SelectionMenuEvent e) {
+            if (!e.getComponentId().equals(MENU_COMPONENT_ID)) return;
+
+            ActionRow ar = ActionRow.of(
+                    Button.success(BUTTON_COMPONENT_ID + "=ONLINE", Emoji.fromUnicode(Emote.ONLINE.getUnicode())),
+                    Button.primary(BUTTON_COMPONENT_ID + "=WARN", Emoji.fromUnicode(Emote.WARN.getUnicode())),
+                    Button.danger(BUTTON_COMPONENT_ID + "=OFF", Emoji.fromUnicode(Emote.OFF.getUnicode())),
+                    Button.danger(BUTTON_COMPONENT_ID + "=PRZERWA", Emoji.fromUnicode(Emote.PRZERWA.getUnicode())),
+                    Button.danger(BUTTON_COMPONENT_ID + "=RESTART", Emoji.fromUnicode(Emote.RESTART.getUnicode()))
+            );
+            serversMap.put(e.getUser().getId(), e.getValues());
+            e.deferReply(true).queue();
+            e.getHook().sendMessage("Wybierz na jaki status chcesz zmienić serwery " + String.join(",", e.getValues()))
+                    .addActionRows(ar)
+                    .queue();
         }
 
-        if (feerko == null && roizy == null && derp == null) {
-            context.sendTranslate("status.badservers").queue();
-            return false;
-        }
+        @Override
+        public void onButtonClick(ButtonClickEvent e) {
+            try {
+                if (!e.getComponentId().startsWith(BUTTON_COMPONENT_ID)) return;
+                e.deferEdit().queue();
+                String id = e.getComponentId().split("=")[1];
+                Emote emote = Emote.valueOf(id);
+                List<String> strings = serversMap.get(e.getUser().getId());
 
-        Message botMsg = null;
-        MessageHistory history = txt.getHistoryFromBeginning(15).complete();
-        if (history.isEmpty()) {
-            botMsg = txt.sendMessage(getMsg(Emote.ONLINE, Emote.ONLINE, Emote.ONLINE, null)).complete();
-        }
+                serversMap.remove(e.getUser().getId());
 
-        if (botMsg == null) {
-            for (Message message : history.getRetrievedHistory()) {
-                if (message.getAuthor().getId().equals(Ustawienia.instance.bot.botId)) {
-                    botMsg = message;
-                    break;
+                TextChannel txt = Objects.requireNonNull(e.getGuild().getTextChannelById(Ustawienia.instance.channel.status));
+                Message botMsg = null;
+                MessageHistory history = txt.getHistoryFromBeginning(15).complete();
+                if (history.isEmpty()) {
+                    botMsg = txt.sendMessage(getMsg(Emote.ONLINE, Emote.ONLINE, Emote.ONLINE, null)).complete();
                 }
+
+                if (botMsg == null) {
+                    for (Message message : history.getRetrievedHistory()) {
+                        if (message.getAuthor().getId().equals(Ustawienia.instance.bot.botId)) {
+                            botMsg = message;
+                            break;
+                        }
+                    }
+                }
+
+                if (botMsg == null) throw new NullPointerException("Nie udało się znaleźć wiadomości bota");
+
+                botMsg.editMessage(
+                        getMsg(
+                                strings.contains("derp") ? emote : null,
+                                strings.contains("feerko") ? emote : null,
+                                strings.contains("roizy") ? emote : null,
+                                botMsg.getContentRaw()
+                        )
+                ).queue();
+                e.getHook().editOriginal("Zmieniono!").queue();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Sentry.captureException(ex);
             }
         }
 
-        if (botMsg == null) throw new NullPointerException("Nie udało się znaleźć wiadomości bota");
-
-        StringBuilder sb = new StringBuilder();
-        if (derp != null) sb.append("derpmc, ");
-        if (feerko != null) sb.append("feerko, ");
-        if (roizy != null) sb.append("roizy, ");
-
-        final Message waitMsg = context.sendTranslate("status.stats", sb.toString()).complete();
-        for (Emote value : Emote.values()) {
-            waitMsg.addReaction(value.getUnicode()).queue();
-        }
-
-        Boolean finalDerp = derp;
-        Boolean finalRoizy = roizy;
-        Boolean finalFeerko = feerko;
-        Message finalBotMsg = botMsg;
-        eventWaiter.waitForEvent(GuildMessageReactionAddEvent.class,
-                (event) -> event.getUser().getId().equals(context.getUser().getId()) && event.getMessageId().equals(waitMsg.getId()),
-                (event) -> {
-                    waitMsg.clearReactions().queue();
-                    if (event.getReactionEmote().isEmote()) return;
-
-                    Emote e = Emote.byUnicode(event.getReaction().getReactionEmote().getEmoji());
-                    if (e == null) return;
-
-                    finalBotMsg.editMessage(getMsg(finalDerp == null ? null : e,
-                            finalFeerko == null ? null : e,
-                            finalRoizy == null ? null : e, finalBotMsg.getContentRaw())).queue();
-
-                    waitMsg.editMessage(context.getTranslate("status.succes")).queue();
-                    waitMsg.clearReactions().queue();
-                }, 30, TimeUnit.SECONDS, () -> waitMsg.clearReactions().queue());
-
-        return true;
     }
 
     @Getter
@@ -224,9 +245,7 @@ public class StatusCommand extends Command {
             }
 
         } catch (Exception e) {
-            StringWriter er = new StringWriter();
-            e.printStackTrace(new PrintWriter(er));
-            logger.error(er.toString());
+            logger.error("JSON przy mojangu się zwalił", e);
             sb.appendLine("❗ Nie udało się uzyskać statusów od Mojangu ❗");
         }
 

@@ -31,6 +31,7 @@ version = "$versionObj".toString()
 mainClassName = 'pl.kamil0024.core.Main'
 
 def jdaVersion = '4.3.0_277'
+def alphaTest = '1b6677e'
 
 repositories {
     maven { url = uri("https://dl.bintray.com/sedmelluq/com.sedmelluq") }
@@ -43,7 +44,8 @@ repositories {
 }
 
 dependencies {
-    compile 'net.dv8tion:JDA:' + jdaVersion
+    if (alphaTest != null) compile 'com.github.dv8fromtheworld:jda:' + alphaTest
+    else compile 'net.dv8tion:JDA:' + jdaVersion
     compile 'com.intellij:annotations:+@jar'
     compile 'com.github.queer:async-postgres-jsonb-orm:e348e109f8'
     compile 'org.json:json:20090211'
@@ -63,7 +65,7 @@ dependencies {
     compile 'info.debatty:java-string-similarity:1.2.1'
     compile 'com.vdurmont:emoji-java:5.1.1'
 
-    compile 'io.undertow:undertow-core:2.0.28.Final'
+    compile 'io.undertow:undertow-core:2.1.0.Final'
 
     implementation 'se.michaelthelin.spotify:spotify-web-api-java:6.5.3'
     implementation 'io.sentry:sentry:5.0.1'

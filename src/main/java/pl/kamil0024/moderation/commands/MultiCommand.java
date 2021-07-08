@@ -72,7 +72,7 @@ public class MultiCommand extends Command {
         }
 
         if (mc.isEmpty() || mc.get(0).getNicki().isEmpty()) {
-            context.send("Taki użytkownik Discorda oraz taki nick w Minecraft nie posiadają żadnych wspólnych kont na Discordzie!").queue();
+            msg.editMessage("Taki użytkownik Discorda oraz taki nick w Minecraft nie posiadają żadnych wspólnych kont na Discordzie!").queue();
             return false;
         }
 

@@ -104,9 +104,10 @@ public class CommandsModule implements Modul {
     private final ModLog modLog;
 
     // Listeners
-    KolkoIKrzyzykManager kolkoIKrzyzykManager;
-    GuildListener guildListener;
-    GiveawayListener giveawayListener;
+    private KolkoIKrzyzykManager kolkoIKrzyzykManager;
+
+
+    private GuildListener guildListener;
 
     private ArrayList<Command> cmd;
 
@@ -154,7 +155,7 @@ public class CommandsModule implements Modul {
 
     @Override
     public boolean startUp() {
-        giveawayListener = new GiveawayListener(giveawayDao, api);
+        GiveawayListener giveawayListener = new GiveawayListener(giveawayDao, api);
         kolkoIKrzyzykManager = new KolkoIKrzyzykManager(api, eventWaiter);
         guildListener = new GuildListener();
 

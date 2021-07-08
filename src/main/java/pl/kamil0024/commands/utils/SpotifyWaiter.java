@@ -171,7 +171,7 @@ public class SpotifyWaiter implements Waiter<ButtonClickEvent> {
         try {
             MessageBuilder mb = new MessageBuilder();
             mb.setContent(botMsg.getContentRaw());
-            if (botMsg.getEmbeds().size() >= 1) mb.setEmbed(botMsg.getEmbeds().get(0));
+            if (botMsg.getEmbeds().size() >= 1) mb.setEmbeds(botMsg.getEmbeds().get(0));
             botMsg.editMessage(mb.build()).override(true).complete();
         } catch (Exception ignored) {/*lul*/}
     }

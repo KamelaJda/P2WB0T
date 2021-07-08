@@ -183,7 +183,7 @@ public class SocketManager {
                     EmbedBuilder track = new PrivateQueueCommand.DecodeTrack(t, false).create();
                     MessageBuilder mb = new MessageBuilder();
                     mb.setContent(ping + ", dodano do kolejki!");
-                    mb.setEmbed(track.build());
+                    mb.setEmbeds(track.build());
 
                     if (hook != null) {
                         if (original != null) original.editMessage(mb.build()).override(true).complete();

@@ -140,6 +140,6 @@ public class WebhookUtil {
 
         private final String slownie;
         private final String url;
-
     }
+
 }

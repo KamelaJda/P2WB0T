@@ -100,21 +100,20 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
     }
 
     public void executeCode(String userId, DiscordInviteConfig config, MessageChannel channel, Guild g, boolean bypass) {
-
         Member member = g.getMemberById(userId);
         if (member == null || config == null) return;
 
         if (!bypass) {
             WeryfikacjaConfig wc = weryfikacjaDao.get(config.getNick());
             if (wc != null && !wc.isDisabled() && !wc.getDiscordId().equals(userId)) {
-                channel.sendMessage(member.getAsMention() + " nick, na którym próbujesz wejść ma już przypisane konto Discord. Jedno konto Minecraft może być przypisane **tylko** do jednego konta Discord! Jeżeli straciłeś/aś dostęp do starego konta, napisz do nas!")
+                channel.sendMessage(member.getAsMention() + " nick, na którym próbujesz wejść ma już przypisane konto Discord. Jedno konto Minecraft może być przypisane **tylko** do jednego konta Discord! Jeżeli straciłeś/aś dostęp do starego konta, napisz do nas! W wiadomości podaj kod błędu `WER_1`")
                         .queue(m -> m.delete().queueAfter(30, TimeUnit.SECONDS));
                 return;
             }
 
             WeryfikacjaConfig werc = weryfikacjaDao.getByDiscordId(userId);
             if (werc != null && !werc.isDisabled() && !werc.getMcnick().equals(config.getNick())) {
-                channel.sendMessage(member.getAsMention() + ", powinieneś zweryfikować się z nicku `" + werc.getMcnick() + "`, a nie `" + config.getNick() + "`. Zmieniłeś konto? Napisz do nas!")
+                channel.sendMessage(member.getAsMention() + ", powinieneś zweryfikować się z nicku `" + werc.getMcnick() + "`, a nie `" + config.getNick() + "`. Zmieniłeś konto? Napisz do kogoś z administracji. W wiadomości podaj ten kod błędu `WER_2`")
                         .queue(m -> m.delete().queueAfter(20, TimeUnit.SECONDS));
                 return;
             }
@@ -168,7 +167,7 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
         }
 
         if (ranga == null) {
-            channel.sendMessage(member.getAsMention() + ", twoja ranga została źle wpisana! Skontaktuj się z kimś z administracji")
+            channel.sendMessage(member.getAsMention() + ", twoja ranga została źle wpisana! Skontaktuj się z kimś z administracji podając ten kod błędu `WER_3`")
                     .queue(m -> m.delete().queueAfter(8, TimeUnit.SECONDS));
             return;
         }
@@ -178,7 +177,7 @@ public class WeryfikacjaModule extends ListenerAdapter implements Modul {
         try {
             g.addRoleToMember(member, ranga).complete();
         } catch (Exception e) {
-            channel.sendMessage(member.getAsMention() + ", nie udało się nadać rangi. Spróbuj ponownie! Jeżeli błąd będzie się powtarzał, powiadom administracje")
+            channel.sendMessage(member.getAsMention() + ", nie udało się nadać rangi. Spróbuj ponownie! Jeżeli błąd będzie się powtarzał, powiadom administracje podając ten kod błędu `WER_4`")
                     .queue(m -> m.delete().queueAfter(8, TimeUnit.SECONDS));
             return;
         }

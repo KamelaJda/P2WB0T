@@ -57,7 +57,7 @@ public class BotinfoCommand extends Command {
         this.modulManager = modulManager;
         this.socketManager = socketManager;
         hideSlash = true;
-        commandData = new CommandData(name, Tlumaczenia.get(name + ".opis"));
+        commandData = getData();
     }
 
     @Override
