@@ -113,7 +113,6 @@ public class ComponentListener extends ListenerAdapter {
     public void onButtonClick(ButtonClickEvent e) {
         switch (e.getComponentId()) {
             case BUTTON_NAME:
-                e.deferReply(true).queue();
                 createChannel(e);
                 break;
             case "TICKET-CREATE_VC":
