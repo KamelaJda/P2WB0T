@@ -207,7 +207,7 @@ public class ComponentListener extends ListenerAdapter {
 
     private void channelAction(ButtonClickEvent e) {
         if (e.getGuild() == null) return;
-        e.deferEdit().queue();
+        e.deferReply().queue();
 
         if (e.getComponentId().equals("TICKET-TAKE")) {
             try {
@@ -227,15 +227,14 @@ public class ComponentListener extends ListenerAdapter {
 
         if (e.getComponentId().equals("TICKET-CREATE_VC")) {
             if (getTicketChannel(ChannelType.VOICE, e.getGuild(), e.getUser().getId()) != null) {
-                e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.vcalreadycreated", e.getUser().getAsMention()))
-                        .complete();
+                e.getHook().sendMessage((Tlumaczenia.get("ticket.vcalreadycreated", e.getUser().getAsMention()))).queue();
                 return;
             }
             Category category = getCategory(e.getGuild(), e.getTextChannel());
             if (category == null) return;
 
             if (category.getChannels().size() >= MAX_CHANNELS) {
-                sendAndDelete(e.getTextChannel(), Tlumaczenia.get("ticket.toomuchchannels", e.getUser().getAsMention()));
+                e.getHook().sendMessage(Tlumaczenia.get("ticket.toomuchchannels", e.getUser().getAsMention())).queue();
                 return;
             }
 
@@ -247,8 +246,7 @@ public class ComponentListener extends ListenerAdapter {
                     .addRolePermissionOverride(e.getGuild().getPublicRole().getIdLong(), 0, VC_RAW_PERMS);
 
             VoiceChannel channel = action.complete();
-            e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.createvc", e.getUser().getAsMention(), channel.getAsMention()))
-                    .complete();
+            e.getHook().sendMessage(Tlumaczenia.get("ticket.createvc", e.getUser().getAsMention(), channel.getAsMention())).queue();
             return;
         }
 
@@ -256,9 +254,7 @@ public class ComponentListener extends ListenerAdapter {
             if (toDelete.contains(e.getChannel().getId())) return;
 
             toDelete.add(e.getChannel().getId());
-            e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.close", e.getUser().getAsMention()))
-                    .complete();
-
+            e.getHook().sendMessage(Tlumaczenia.get("ticket.close", e.getUser().getAsMention())).queue();
             Runnable run = () -> {
                 try {
                     GuildChannel channel = getTicketChannel(ChannelType.VOICE, e.getGuild(), e.getUser().getId());
@@ -306,11 +302,10 @@ public class ComponentListener extends ListenerAdapter {
                         ex.printStackTrace();
                     }
                     e.getTextChannel().delete().complete();
-
                 } catch (Exception exception) {
                     Log.newError(exception, getClass());
                     toDelete.remove(e.getChannel().getId());
-                    e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.deleteerror", e.getUser().getAsMention())).complete();
+                    e.getHook().sendMessage(Tlumaczenia.get("ticket.deleteerror", e.getUser().getAsMention())).queue();
                 }
             };
             ses.schedule(run, 30, TimeUnit.SECONDS);
