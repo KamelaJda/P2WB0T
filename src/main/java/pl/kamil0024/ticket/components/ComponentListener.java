@@ -129,7 +129,6 @@ public class ComponentListener extends ListenerAdapter {
         }
     }
 
-
     private void createChannel(ButtonClickEvent e) {
         Guild guild = e.getGuild();
         if (guild == null) return;
@@ -188,18 +187,16 @@ public class ComponentListener extends ListenerAdapter {
         future.cancel(true);
         futureMap.remove(e.getChannel().getId());
 
-        e.deferEdit().queue();
-
         String category = e.getComponentId();
 
         try {
-            category = TicketCategory.valueOf(e.getComponentId().split("-")[1]).getName();
+            category = TicketCategory.valueOf(e.getValues().get(0).split("-")[1]).getName();
         } catch (Exception ignored) { }
 
         String extraContext = "";
         if (e.getComponentId().equals("TICKET-APELACJE")) extraContext = Tlumaczenia.get("ticket.extrahelp") + "\n\n";
 
-        e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.info", category, e.getUser().getAsMention(),extraContext))
+        e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.info", category, e.getUser().getAsMention(), extraContext))
                 .setActionRows(ActionRow.of(TICKET_TAKE, TICKET_CREATE_VC, TICKET_CLOSE))
                 .complete();
 
