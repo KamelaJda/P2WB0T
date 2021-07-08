@@ -119,13 +119,19 @@ public class ComponentListener extends ListenerAdapter {
             case "TICKET-CREATE_VC":
             case "TICKET-TAKE":
             case "TICKET-CLOSE":
-                e.deferReply(false).queue();
                 Member member = e.getMember();
-                if (member != null)
-                    member.getRoles().stream()
+                if (member != null) {
+                    Role role = member.getRoles().stream()
                             .filter(f -> f.getId().equals(Ustawienia.instance.rangi.ekipa))
-                            .findAny()
-                            .ifPresent(r -> channelAction(e));
+                            .findAny().orElse(null);
+                    if (role != null) {
+                        e.deferReply(false).queue();
+                        channelAction(e);
+                    } else {
+                        e.deferReply(true).queue();
+                        e.getHook().sendMessage("Nie możesz wykonać tej akcji!").queue();
+                    }
+                }
         }
     }
 
