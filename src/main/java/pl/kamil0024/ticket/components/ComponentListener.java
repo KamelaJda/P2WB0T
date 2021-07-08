@@ -24,9 +24,11 @@ import lombok.Getter;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.SelectionMenuEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -53,10 +55,14 @@ public class ComponentListener extends ListenerAdapter {
     public static final String CHANNEL_FORMAT = "pomoc-%s";
 
     public static final ActionRow categoryRow = ActionRow.of(
-            Button.primary("TICKET-APELACJE", "Odwołania od bana"),
-            Button.secondary("TICKET-MINECRAFT", "Pomoc serwera Minecraft"),
-            Button.secondary("TICKET-FORUM", "Pomoc forum P2W.PL"),
-            Button.primary("TICKET-DISCORD", "Pomoc Discorda")
+            SelectionMenu.create("TICKET-CHOOSE-CATEGORY")
+                    .setPlaceholder("Wybierz kategorię")
+                    .addOption("Odwołania od bana", "TICKET-APELACJE")
+                    .addOption("Pomoc serwera Minecraft", "TICKET-MINECRAFT")
+                    .addOption("Pomoc forum P2W.PL", "TICKET-FORUM")
+                    .addOption("Pomoc Discorda", "TICKET-DISCORD")
+                    .setRequiredRange(1, 1)
+                    .build()
     );
 
     public static final Button TICKET_TAKE = Button.success("TICKET-TAKE", "Przydziel siebie do pomocy");
@@ -92,20 +98,27 @@ public class ComponentListener extends ListenerAdapter {
     }
 
     @Override
-    public void onButtonClick(@NotNull ButtonClickEvent e) {
+    public void onSelectionMenu(@NotNull SelectionMenuEvent e) {
         switch (e.getComponentId()) {
             case "TICKET-APELACJE":
             case "TICKET-MINECRAFT":
             case "TICKET-FORUM":
             case "TICKET-DISCORD":
-                chooseCategory(e);
-                break;
+                e.deferReply(false).queue();
+        }
+    }
+
+    @Override
+    public void onButtonClick(ButtonClickEvent e) {
+        switch (e.getComponentId()) {
             case BUTTON_NAME:
+                e.deferReply(false).queue();
                 createChannel(e);
                 break;
             case "TICKET-CREATE_VC":
             case "TICKET-TAKE":
             case "TICKET-CLOSE":
+                e.deferReply(false).queue();
                 Member member = e.getMember();
                 if (member != null)
                     member.getRoles().stream()
@@ -114,6 +127,7 @@ public class ComponentListener extends ListenerAdapter {
                             .ifPresent(r -> channelAction(e));
         }
     }
+
 
     private void createChannel(ButtonClickEvent e) {
         Guild guild = e.getGuild();
@@ -166,7 +180,7 @@ public class ComponentListener extends ListenerAdapter {
         }
     }
 
-    private void chooseCategory(ButtonClickEvent e) {
+    private void chooseCategory(SelectionMenuEvent e) {
         if (e.getMessage() != null) e.getMessage().delete().queue();
 
         ScheduledFuture<?> future = futureMap.get(e.getChannel().getId());
@@ -184,7 +198,7 @@ public class ComponentListener extends ListenerAdapter {
         String extraContext = "";
         if (e.getComponentId().equals("TICKET-APELACJE")) extraContext = Tlumaczenia.get("ticket.extrahelp") + "\n\n";
 
-        e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.info", category, extraContext))
+        e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.info", category, e.getUser().getAsMention(),extraContext))
                 .setActionRows(ActionRow.of(TICKET_TAKE, TICKET_CREATE_VC, TICKET_CLOSE))
                 .complete();
 
@@ -341,8 +355,8 @@ public class ComponentListener extends ListenerAdapter {
     private enum TicketCategory {
 
         APELACJE("Odwołanie od bana"),
-        FORUM("Pomod dotycząca forum"),
-        DISCORD("Pomod dotycząca Discorda"),
+        FORUM("Pomoc dotycząca forum"),
+        DISCORD("Pomoc dotycząca Discorda"),
         MINECRAFT("Pomoc serwera Minecraft");
 
         String name;

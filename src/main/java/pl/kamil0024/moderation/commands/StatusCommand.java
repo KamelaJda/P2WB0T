@@ -112,8 +112,8 @@ public class StatusCommand extends Command {
         @Override
         public void onButtonClick(ButtonClickEvent e) {
             try {
-                e.deferEdit().queue();
                 if (!e.getComponentId().startsWith(BUTTON_COMPONENT_ID)) return;
+                e.deferEdit().queue();
                 String id = e.getComponentId().split("=")[1];
                 Emote emote = Emote.valueOf(id);
                 List<String> strings = serversMap.get(e.getUser().getId());
