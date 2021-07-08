@@ -104,7 +104,8 @@ public class ComponentListener extends ListenerAdapter {
             case "TICKET-MINECRAFT":
             case "TICKET-FORUM":
             case "TICKET-DISCORD":
-                e.deferReply(false).queue();
+                e.deferEdit().queue();
+                chooseCategory(e);
         }
     }
 
@@ -112,7 +113,7 @@ public class ComponentListener extends ListenerAdapter {
     public void onButtonClick(ButtonClickEvent e) {
         switch (e.getComponentId()) {
             case BUTTON_NAME:
-                e.deferReply(false).queue();
+                e.deferReply(true).queue();
                 createChannel(e);
                 break;
             case "TICKET-CREATE_VC":
@@ -138,12 +139,12 @@ public class ComponentListener extends ListenerAdapter {
         if (category == null) return;
 
         if (category.getChannels().size() >= MAX_CHANNELS) {
-            sendAndDelete(e.getTextChannel(), Tlumaczenia.get("ticket.toomuchchannels", e.getUser().getAsMention()));
+            e.getHook().sendMessage(Tlumaczenia.get("ticket.toomuchchannels", e.getUser().getAsMention())).queue();
             return;
         }
 
         if (getTicketChannel(ChannelType.TEXT, guild, e.getUser().getId()) != null) {
-            sendAndDelete(e.getTextChannel(), Tlumaczenia.get("ticket.lastt", e.getUser().getAsMention()));
+            e.getHook().sendMessage(Tlumaczenia.get("ticket.lastt", e.getUser().getAsMention())).queue();
             return;
         }
 
@@ -157,7 +158,7 @@ public class ComponentListener extends ListenerAdapter {
                     .setTopic(Tlumaczenia.get("ticket.channeltopic", e.getUser().getAsMention()));
 
             TextChannel channel = action.complete();
-            sendAndDelete(e.getTextChannel(), Tlumaczenia.get("ticket.create", e.getUser().getAsMention(), channel.getAsMention()));
+            e.getHook().sendMessage(Tlumaczenia.get("ticket.create", e.getUser().getAsMention(), channel.getAsMention())).queue();
             channel.sendMessage(Tlumaczenia.get("ticket.choosecategory", e.getUser().getAsMention()))
                     .allowedMentions(Collections.singleton(Message.MentionType.USER))
                     .setActionRows(categoryRow)
