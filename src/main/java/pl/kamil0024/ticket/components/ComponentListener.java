@@ -207,7 +207,7 @@ public class ComponentListener extends ListenerAdapter {
                 .complete();
 
         TXTTicketConfig config = daoCache.getIfPresent(e.getTextChannel().getId());
-        config.setCategory(e.getComponentId());
+        config.setCategory(category);
         daoCache.put(e.getTextChannel().getId(), config);
     }
 
