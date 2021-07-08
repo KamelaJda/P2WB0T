@@ -99,7 +99,8 @@ public class ComponentListener extends ListenerAdapter {
 
     @Override
     public void onSelectionMenu(@NotNull SelectionMenuEvent e) {
-        switch (e.getComponentId()) {
+        if (!e.getComponentId().equals("TICKET-CHOOSE-CATEGORY")) return;
+        switch (e.getValues().get(0)) {
             case "TICKET-APELACJE":
             case "TICKET-MINECRAFT":
             case "TICKET-FORUM":
@@ -132,7 +133,7 @@ public class ComponentListener extends ListenerAdapter {
     private void createChannel(ButtonClickEvent e) {
         Guild guild = e.getGuild();
         if (guild == null) return;
-        e.deferEdit().queue();
+        e.deferReply(true).queue();
 
         Category category = getCategory(guild, e.getTextChannel());
         if (category == null) return;
