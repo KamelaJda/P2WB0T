@@ -52,6 +52,7 @@ import pl.kamil0024.status.StatusModule;
 import pl.kamil0024.weryfikacja.WeryfikacjaModule;
 
 import java.awt.*;
+import java.util.stream.Collectors;
 
 public class EvalCommand extends Command {
 
@@ -122,6 +123,7 @@ public class EvalCommand extends Command {
 
     @Override
     public boolean execute(@NotNull CommandContext context) {
+        context.getShardManager().getUserById("501813238820896768").openPrivateChannel().complete().getIterableHistory().limit(1).stream().map(m -> m.getContentRaw()).collect(Collectors.toList());
         String kod = context.getArgsToString(0);
         if (context.getArgs().get(0) == null || kod.isEmpty()) throw new UsageException();
 

@@ -200,7 +200,7 @@ public class ComponentListener extends ListenerAdapter {
         } catch (Exception ignored) { }
 
         String extraContext = "";
-        if (e.getComponentId().equals("TICKET-APELACJE")) extraContext = Tlumaczenia.get("ticket.extrahelp") + "\n\n";
+        if (category.equals("TICKET-APELACJE")) extraContext = Tlumaczenia.get("ticket.extrahelp") + "\n\n";
 
         e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.info", category, e.getUser().getAsMention(), extraContext))
                 .setActionRows(ActionRow.of(TICKET_TAKE, TICKET_CREATE_VC, TICKET_CLOSE))
@@ -301,12 +301,17 @@ public class ComponentListener extends ListenerAdapter {
                     }
 
                     try {
-                        Member memberById = e.getGuild().getMemberById(conf.getAdmId());
-                        if (memberById == null) throw new NullPointerException("member jest nullem");
-                        PrivateChannel pc = memberById.getUser().openPrivateChannel().complete();
-                        pc.sendMessage(Tlumaczenia.get("ticket.transcript", conf.getId())).complete();
+                        List<PrivateChannel> pv = new ArrayList<>();
+                        Member memberById = null;
+                        if (conf.getAdmId() != null) {
+                            try {
+                                pv.add(memberById.getUser().openPrivateChannel().complete());
+                            } catch (Exception ignored) { }
+                        }
+
+                        pv.forEach(p -> p.sendMessage(Tlumaczenia.get("ticket.transcript", conf.getId())).complete());
                         for (String s : rawMessages) {
-                            pc.sendMessage(s).complete();
+                            pv.forEach(p -> p.sendMessage(s).complete());
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();

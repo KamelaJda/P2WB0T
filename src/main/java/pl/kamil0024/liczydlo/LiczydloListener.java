@@ -72,7 +72,7 @@ public class LiczydloListener extends ListenerAdapter {
 
     private List<Message> getHistoryList(TextChannel txt) {
         List<Message> msgs = new ArrayList<>();
-        for (Message msg : txt.getIterableHistory().stream().limit(3).collect(Collectors.toList())) {
+        for (Message msg : txt.getIterableHistory().limit(3).stream().collect(Collectors.toList())) {
             if (!msg.isEdited()) {
                 msgs.add(msg);
                 if (msgs.size() == 2) break;
