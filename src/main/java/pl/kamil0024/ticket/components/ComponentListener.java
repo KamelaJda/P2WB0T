@@ -266,6 +266,7 @@ public class ComponentListener extends ListenerAdapter {
             toDelete.add(e.getChannel().getId());
             e.getHook().sendMessage(Tlumaczenia.get("ticket.close", e.getUser().getAsMention())).queue();
             Runnable run = () -> {
+                toDelete.remove(e.getChannel().getId());
                 try {
                     GuildChannel channel = getTicketChannel(ChannelType.VOICE, e.getGuild(), e.getUser().getId());
                     if (channel != null) channel.delete().complete();
@@ -302,12 +303,15 @@ public class ComponentListener extends ListenerAdapter {
 
                     try {
                         List<PrivateChannel> pv = new ArrayList<>();
-                        Member memberById = null;
                         if (conf.getAdmId() != null) {
                             try {
-                                pv.add(memberById.getUser().openPrivateChannel().complete());
+                                pv.add(e.getGuild().getMemberById(conf.getAdmId()).getUser().openPrivateChannel().complete());
                             } catch (Exception ignored) { }
                         }
+
+                        try {
+                            pv.add(e.getGuild().getMemberById(conf.getUserId()).getUser().openPrivateChannel().complete());
+                        } catch (Exception ignored) { }
 
                         pv.forEach(p -> p.sendMessage(Tlumaczenia.get("ticket.transcript", conf.getId())).complete());
                         for (String s : rawMessages) {
