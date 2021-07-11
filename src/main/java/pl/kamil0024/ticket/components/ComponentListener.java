@@ -202,7 +202,7 @@ public class ComponentListener extends ListenerAdapter {
         String c = category != null ? category.getName() : e.getComponentId();
 
         String extraContext = "";
-        if (e.getComponentId().equals("TICKET-APELACJE")) extraContext = Tlumaczenia.get("ticket.extrahelp") + "\n\n";
+        if (e.getValues().get(0).equals("TICKET-APELACJE")) extraContext = Tlumaczenia.get("ticket.extrahelp") + "\n\n";
 
         e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.info", c, e.getUser().getAsMention(), extraContext))
                 .setActionRows(ActionRow.of(TICKET_TAKE, TICKET_CREATE_VC, TICKET_CLOSE))
