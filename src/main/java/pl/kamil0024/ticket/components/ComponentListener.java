@@ -193,21 +193,23 @@ public class ComponentListener extends ListenerAdapter {
         future.cancel(true);
         futureMap.remove(e.getChannel().getId());
 
-        String category = e.getComponentId();
+        TicketCategory category = null;
 
         try {
-            category = TicketCategory.valueOf(e.getValues().get(0).split("-")[1]).getName();
+            category = TicketCategory.valueOf(e.getValues().get(0).split("-")[1]);
         } catch (Exception ignored) { }
 
-        String extraContext = "";
-        if (category.equals("TICKET-APELACJE")) extraContext = Tlumaczenia.get("ticket.extrahelp") + "\n\n";
+        String c = category != null ? category.getName() : e.getComponentId();
 
-        e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.info", category, e.getUser().getAsMention(), extraContext))
+        String extraContext = "";
+        if (e.getComponentId().equals("TICKET-APELACJE")) extraContext = Tlumaczenia.get("ticket.extrahelp") + "\n\n";
+
+        e.getTextChannel().sendMessage(Tlumaczenia.get("ticket.info", c, e.getUser().getAsMention(), extraContext))
                 .setActionRows(ActionRow.of(TICKET_TAKE, TICKET_CREATE_VC, TICKET_CLOSE))
                 .complete();
 
         TXTTicketConfig config = daoCache.getIfPresent(e.getTextChannel().getId());
-        config.setCategory(category);
+        config.setCategory(c);
         daoCache.put(e.getTextChannel().getId(), config);
     }
 
