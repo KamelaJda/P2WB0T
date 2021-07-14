@@ -20,6 +20,7 @@
 package pl.kamil0024.moderation.commands;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -331,9 +332,7 @@ public class PunishCommand extends Command {
 
         if (osoby != null && !osoby.isEmpty()) {
             sb.append("Chcesz ukarać: ");
-            for (Member member : osoby) {
-                sb.append(member.getAsMention()).append("`,` ");
-            }
+            sb.appendLine(osoby.stream().map(IMentionable::getAsMention).collect(Collectors.joining("`,`")));
             sb.append("\n");
         }
 

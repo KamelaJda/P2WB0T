@@ -20,14 +20,15 @@
 package pl.kamil0024.music.commands;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.core.command.Command;
 import pl.kamil0024.core.command.CommandContext;
 import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.music.MusicModule;
+import pl.kamil0024.musicmanager.MusicManager;
 import pl.kamil0024.musicmanager.entity.GuildMusicManager;
 
-@SuppressWarnings("DuplicatedCode")
 public class SkipCommand extends Command {
 
     private final MusicModule musicModule;
@@ -43,17 +44,8 @@ public class SkipCommand extends Command {
 
     @Override
     public boolean execute(@NotNull CommandContext context) {
-        if (!PlayCommand.isVoice(context.getGuild().getSelfMember())) {
-            context.sendTranslate("leave.nochannel").queue();
-            return false;
-        }
-
-        if (!PlayCommand.isSameChannel(context.getGuild().getSelfMember(), context.getMember())) {
-            context.sendTranslate("leave.samechannel").queue();
-            return false;
-        }
-
-        GuildMusicManager musicManager = musicModule.getGuildAudioPlayer(context.getGuild());
+        GuildMusicManager musicManager = getMusicManager(context, musicModule);
+        if (musicManager == null) return false;
 
         if (musicManager.getScheduler().getLoop()) {
             context.sendTranslate("skip.looped").queue();
@@ -67,6 +59,20 @@ public class SkipCommand extends Command {
         context.sendTranslate("skip.next").queue();
         musicManager.getScheduler().nextTrack();
         return true;
+    }
+
+    @Nullable
+    public static GuildMusicManager getMusicManager(CommandContext context, MusicModule musicModule) {
+        if (!PlayCommand.isVoice(context.getGuild().getSelfMember())) {
+            context.sendTranslate("leave.nochannel").queue();
+            return null;
+        }
+
+        if (!PlayCommand.isSameChannel(context.getGuild().getSelfMember(), context.getMember())) {
+            context.sendTranslate("leave.samechannel").queue();
+            return null;
+        }
+        return musicModule.getGuildAudioPlayer(context.getGuild());
     }
 
 }

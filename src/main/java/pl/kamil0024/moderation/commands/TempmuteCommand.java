@@ -41,7 +41,6 @@ import java.util.Objects;
 
 import static pl.kamil0024.core.util.kary.Kara.check;
 
-@SuppressWarnings("DuplicatedCode")
 public class TempmuteCommand extends Command {
 
     private final CaseDao caseDao;
@@ -65,25 +64,20 @@ public class TempmuteCommand extends Command {
             return false;
         }
 
-        String duration = context.getArgs().get(1);
-        String powod = context.getArgsToString(2);
-        if (duration == null) {
-            context.send(context.getTranslate("tempban.badtime")).queue();
-            return false;
-        }
-        if (powod == null) powod = context.getTranslate("modlog.none");
+        String[] basic = TempbanCommand.getBasic(context);
+        if (basic == null) return false;
 
         String check = check(context, mem.getUser());
         if (check != null) {
             context.send(check).queue();
             return false;
         }
-        String error = tempmute(mem, context.getUser(), powod, duration, caseDao, modLog, false);
+        String error = tempmute(mem, context.getUser(), basic[1], basic[0], caseDao, modLog, false);
         if (error != null) {
             context.send("Wysąpił błąd! " + error).queue();
             return false;
         }
-        context.sendTranslate("tempmute.succes", UserUtil.getLogName(mem), powod, duration).queue();
+        context.sendTranslate("tempmute.succes", UserUtil.getLogName(mem), basic[1], basic[0]).queue();
         statsModule.getStatsCache().addZmutowanych(context.getUser().getId(), 1);
         return true;
     }

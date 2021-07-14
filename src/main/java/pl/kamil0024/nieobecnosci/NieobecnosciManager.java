@@ -76,7 +76,7 @@ public class NieobecnosciManager {
 
         MessageEmbed eb = getEmbed(nb, msg.getMember()).build();
 
-        Message botmsg = txt.sendMessage(eb).complete();
+        Message botmsg = txt.sendMessageEmbeds(eb).complete();
         botmsg.addReaction(Objects.requireNonNull(CommandExecute.getReaction(msg.getAuthor(), false))).queue();
 
         nb.setMsgId(botmsg.getId());
@@ -118,10 +118,8 @@ public class NieobecnosciManager {
         update();
     }
 
-    @SuppressWarnings("DuplicatedCode")
     public synchronized void update() {
         TextChannel txt = api.getTextChannelById(Ustawienia.instance.channel.nieobecnosci);
-
         if (txt == null) {
             Log.newError("Kanał do nieobecnosci jest nullem", NieobecnosciManager.class);
             return;
@@ -160,7 +158,7 @@ public class NieobecnosciManager {
                     }
                     continue;
                 }
-                msg.editMessage(getEmbed(nb, mem).build()).queue();
+                msg.editMessageEmbeds(getEmbed(nb, mem).build()).queue();
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.newError(e, getClass());

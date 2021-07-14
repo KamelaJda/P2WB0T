@@ -26,7 +26,6 @@ import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.jetbrains.annotations.Nullable;
 import pl.kamil0024.core.command.CommandContext;
 
-@SuppressWarnings("DuplicatedCode")
 public class MemberArgument extends Args {
 
     public MemberArgument() {
@@ -38,7 +37,6 @@ public class MemberArgument extends Args {
         if (jda == null) throw new UnsupportedOperationException("jda==null");
         String prawieUser = String.valueOf(s);
         if (prawieUser == null) return null;
-
         try {
             Member member;
             try {
@@ -55,7 +53,6 @@ public class MemberArgument extends Args {
             if (!context.getEvent().getMessage().getMentionedMembers().isEmpty() && context.getEvent().getMessage().getMentionedMembers().get(0) != null)
                 return context.getEvent().getMessage().getMentionedMembers().get(0);
         }
-
         return null;
     }
 

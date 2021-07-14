@@ -28,13 +28,13 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 
-@SuppressWarnings("DuplicatedCode")
 public class DynamicEmbedPaginator {
 
     private static final ExecutorService mainExecutor = Executors.newFixedThreadPool(8);
@@ -84,11 +84,11 @@ public class DynamicEmbedPaginator {
 
     private void setLoading(boolean loading) {
         this.loading = loading;
-        if (botMsg != null) botMsg.editMessage(render(thisPage)).override(true).queue();
+        if (botMsg != null) botMsg.editMessageEmbeds(render(thisPage)).override(true).queue();
     }
 
     public DynamicEmbedPaginator create(MessageChannel channel, Message mess) {
-        MessageAction action = channel.sendMessage(render(1)).reference(mess);
+        MessageAction action = channel.sendMessageEmbeds(render(1)).reference(mess);
         action.setActionRows(EmbedPaginator.getActionRow(1, pages)).queue(msg -> {
             botMsg = msg;
             botMsgId = msg.getIdLong();
@@ -98,7 +98,7 @@ public class DynamicEmbedPaginator {
     }
 
     public DynamicEmbedPaginator create(Message message) {
-        MessageAction action = message.editMessage(render(1));
+        MessageAction action = message.editMessageEmbeds(render(1));
         action.setActionRows(EmbedPaginator.getActionRow(1, pages)).override(true).queue(msg -> {
             botMsg = msg;
             botMsgId = msg.getIdLong();
@@ -131,7 +131,7 @@ public class DynamicEmbedPaginator {
                 clear();
                 return;
         }
-        botMsg.editMessage(render(thisPage)).setActionRows(EmbedPaginator.getActionRow(thisPage, pages)).complete();
+        botMsg.editMessageEmbeds(render(thisPage)).setActionRows(EmbedPaginator.getActionRow(thisPage, pages)).override(true).complete();
         waitForReaction();
     }
 
@@ -146,7 +146,11 @@ public class DynamicEmbedPaginator {
         }
     }
 
-    private boolean check(ButtonClickEvent event) {
+    public boolean check(ButtonClickEvent event) {
+        return check(event, botMsg, userId);
+    }
+
+    public static boolean check(ButtonClickEvent event, Message botMsg, long userId) {
         if (event.getMessageId().equals(botMsg.getId()) && event.getUser().getIdLong() == userId) {
             switch (event.getComponentId()) {
                 case "FIRST":

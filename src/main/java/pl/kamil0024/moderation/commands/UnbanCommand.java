@@ -19,7 +19,6 @@
 
 package pl.kamil0024.moderation.commands;
 
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
 import pl.kamil0024.core.command.Command;
@@ -34,9 +33,7 @@ import pl.kamil0024.core.util.kary.KaryEnum;
 import pl.kamil0024.moderation.listeners.ModLog;
 
 import java.util.Date;
-import java.util.List;
 
-@SuppressWarnings("DuplicatedCode")
 public class UnbanCommand extends Command {
 
     private final CaseDao caseDao;
@@ -65,15 +62,7 @@ public class UnbanCommand extends Command {
         }
 
         try {
-            boolean jest = false;
-            List<Guild.Ban> bans = context.getGuild().retrieveBanList().complete();
-            for (Guild.Ban b : bans) {
-                if (b.getUser().getId().equals(u.getId())) {
-                    jest = true;
-                    break;
-                }
-            }
-            if (!jest) {
+            if (!CheckCommand.hasBan(u.getId(), context.getGuild())) {
                 context.sendTranslate("unban.donthave").queue();
                 return false;
             }

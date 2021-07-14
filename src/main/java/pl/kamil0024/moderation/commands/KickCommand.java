@@ -39,7 +39,6 @@ import java.util.Date;
 
 import static pl.kamil0024.core.util.kary.Kara.check;
 
-@SuppressWarnings("DuplicatedCode")
 public class KickCommand extends Command {
 
     private final CaseDao caseDao;
@@ -95,7 +94,6 @@ public class KickCommand extends Command {
         kara.setTimestamp(new Date().getTime());
         kara.setTypKary(KaryEnum.KICK);
         Kara.put(caseDao, kara, modLog);
-
         return true;
     }
 

@@ -27,7 +27,6 @@ import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.music.MusicModule;
 import pl.kamil0024.musicmanager.entity.GuildMusicManager;
 
-@SuppressWarnings("DuplicatedCode")
 public class LoopCommand extends Command {
 
     private final MusicModule musicModule;
@@ -42,29 +41,17 @@ public class LoopCommand extends Command {
 
     @Override
     public boolean execute(@NotNull CommandContext context) {
-        if (!PlayCommand.isVoice(context.getGuild().getSelfMember())) {
-            context.sendTranslate("leave.nochannel").queue();
-            return false;
-        }
-
-        if (!PlayCommand.isSameChannel(context.getGuild().getSelfMember(), context.getMember())) {
-            context.sendTranslate("leave.samechannel").queue();
-            return false;
-        }
-
-        GuildMusicManager musicManager = musicModule.getGuildAudioPlayer(context.getGuild());
-
+        GuildMusicManager musicManager = SkipCommand.getMusicManager(context, musicModule);
+        if (musicManager == null) return false;
         if (musicManager.getPlayer().getPlayingTrack() == null) {
             context.sendTranslate("resume.noplay").queue();
             return false;
         }
-
         if (musicManager.getScheduler().getLoop()) {
             context.sendTranslate("loop.off").queue();
             musicManager.getScheduler().setLoop(false);
             return true;
         }
-
         context.sendTranslate("loop.on").queue();
         musicManager.getScheduler().setLoop(true);
         return true;

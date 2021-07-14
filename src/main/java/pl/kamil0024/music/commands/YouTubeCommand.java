@@ -30,6 +30,7 @@ import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.core.util.BetterStringBuilder;
 import pl.kamil0024.core.util.EventWaiter;
+import pl.kamil0024.core.util.Tlumaczenia;
 import pl.kamil0024.core.util.UsageException;
 import pl.kamil0024.music.MusicModule;
 
@@ -70,21 +71,7 @@ public class YouTubeCommand extends Command {
             return false;
         }
         HashMap<Integer, AudioTrack> mapa = new HashMap<>();
-
-        BetterStringBuilder bsb = new BetterStringBuilder();
-        bsb.appendLine("```");
-        bsb.appendLine(context.getTranslate("youtube.firstline"));
-        int tracks = 0;
-        for (AudioTrack audioTrack : audioTrackList) {
-            tracks++;
-            AudioTrackInfo info = audioTrack.getInfo();
-            bsb.appendLine(tracks + ". " + info.title + " :: " + info.author);
-            mapa.put(tracks, audioTrack);
-            if (tracks == 10) break;
-        }
-        bsb.appendLine("```");
-
-        Message msg = context.send(bsb.toString()).complete();
+        Message msg = context.send(build(mapa, audioTrackList)).complete();
 
         eventWaiter.waitForEvent(GuildMessageReceivedEvent.class,
                 (event) -> event.getAuthor().getId().equals(context.getUser().getId()) && event.getChannel().getId().equals(context.getChannel().getId()),
@@ -108,5 +95,20 @@ public class YouTubeCommand extends Command {
         return true;
     }
 
+    public static String build(HashMap<Integer, AudioTrack> mapa, List<AudioTrack> audioTrackList) {
+        BetterStringBuilder bsb = new BetterStringBuilder();
+        bsb.appendLine("```");
+        bsb.appendLine(Tlumaczenia.get("youtube.firstline"));
+        int tracks = 0;
+        for (AudioTrack audioTrack : audioTrackList) {
+            tracks++;
+            AudioTrackInfo info = audioTrack.getInfo();
+            bsb.appendLine(tracks + ". " + info.title + " :: " + info.author);
+            mapa.put(tracks, audioTrack);
+            if (tracks == 10) break;
+        }
+        bsb.appendLine("```");
+        return bsb.build();
+    }
 
 }

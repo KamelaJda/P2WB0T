@@ -38,7 +38,6 @@ import java.util.Date;
 
 import static pl.kamil0024.core.util.kary.Kara.check;
 
-@SuppressWarnings("DuplicatedCode")
 public class BanCommand extends Command {
 
     private final CaseDao caseDao;

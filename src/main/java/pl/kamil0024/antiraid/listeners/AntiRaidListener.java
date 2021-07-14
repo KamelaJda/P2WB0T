@@ -62,7 +62,6 @@ public class AntiRaidListener extends ListenerAdapter {
         }
     }
 
-    @SuppressWarnings("DuplicatedCode")
     @Override
     public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent event) {
         if (event.getMember().getUser().isBot() || !event.getGuild().getId().equals(Ustawienia.instance.bot.guildId)
@@ -84,8 +83,7 @@ public class AntiRaidListener extends ListenerAdapter {
 
         try {
             member = event.getGuild().retrieveMemberById(arc.getUserId()).complete();
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) { }
 
         if (member == null) {
             event.getChannel().sendMessage("Użytkownik wyszedł z serwera?").complete();
@@ -114,7 +112,6 @@ public class AntiRaidListener extends ListenerAdapter {
 
         if (tak != null) event.getChannel().sendMessage(tak).complete();
         msg.delete().complete();
-
     }
 
 }

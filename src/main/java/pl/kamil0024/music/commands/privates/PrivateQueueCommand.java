@@ -34,7 +34,6 @@ import java.awt.*;
 
 import static pl.kamil0024.music.commands.QueueCommand.longToTimespan;
 
-@SuppressWarnings("DuplicatedCode")
 public class PrivateQueueCommand extends Command {
 
     private final SocketManager socketManager;
@@ -100,14 +99,12 @@ public class PrivateQueueCommand extends Command {
     @Data
     @AllArgsConstructor
     public static class Track {
-
         private final String identifier;
         private final String author;
         private final String title;
         private final boolean stream;
         private final long length;
         private final long position;
-
     }
 
 }

@@ -27,7 +27,6 @@ import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.music.MusicModule;
 import pl.kamil0024.musicmanager.entity.GuildMusicManager;
 
-@SuppressWarnings("DuplicatedCode")
 public class LeaveCommand extends Command {
 
     private final MusicModule musicModule;
@@ -43,17 +42,8 @@ public class LeaveCommand extends Command {
 
     @Override
     public boolean execute(@NotNull CommandContext context) {
-        if (!PlayCommand.isVoice(context.getGuild().getSelfMember())) {
-            context.sendTranslate("leave.nochannel").queue();
-            return false;
-        }
-
-        if (!PlayCommand.isSameChannel(context.getGuild().getSelfMember(), context.getMember())) {
-            context.sendTranslate("leave.samechannel").queue();
-            return false;
-        }
-
-        GuildMusicManager musicManager = musicModule.getGuildAudioPlayer(context.getGuild());
+        GuildMusicManager musicManager = SkipCommand.getMusicManager(context, musicModule);
+        if (musicManager == null) return false;
         musicManager.getScheduler().destroy();
         context.sendTranslate("leave.succes", "\uD83D\uDC4B").queue();
         return true;

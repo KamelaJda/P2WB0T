@@ -33,7 +33,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@SuppressWarnings("DuplicatedCode")
 public class EmbedPaginator {
 
     public static final Button FIRST_BUTTON = Button.secondary("FIRST", Emoji.fromUnicode("\u23EE"));
@@ -71,7 +70,7 @@ public class EmbedPaginator {
     }
 
     public EmbedPaginator create(MessageChannel channel) {
-        channel.sendMessage(render(1)).setActionRows(getActionRow(1)).queue(msg -> {
+        channel.sendMessageEmbeds(render(1)).setActionRows(getActionRow(1)).queue(msg -> {
             botMsg = msg;
             if (pages.size() != 1) waitForReaction();
         });
@@ -79,7 +78,7 @@ public class EmbedPaginator {
     }
 
     public EmbedPaginator create(MessageChannel channel, Message mes) {
-        channel.sendMessage(render(1)).reference(mes).setActionRows(getActionRow(1)).queue(msg -> {
+        channel.sendMessageEmbeds(render(1)).reference(mes).setActionRows(getActionRow(1)).queue(msg -> {
             botMsg = msg;
             if (pages.size() != 1) waitForReaction();
         });
@@ -87,7 +86,7 @@ public class EmbedPaginator {
     }
 
     private void waitForReaction() {
-        eventWaiter.waitForEvent(ButtonClickEvent.class, this::check,
+        eventWaiter.waitForEvent(ButtonClickEvent.class, (e) -> DynamicEmbedPaginator.check(e, botMsg, userId),
                 this::handle, secound, TimeUnit.SECONDS, this::clear);
     }
 
@@ -110,24 +109,8 @@ public class EmbedPaginator {
                 clear();
                 return;
         }
-        botMsg.editMessage(render(thisPage)).setActionRows(getActionRow(thisPage)).override(true).complete();
+        botMsg.editMessageEmbeds(render(thisPage)).setActionRows(getActionRow(thisPage)).override(true).complete();
         waitForReaction();
-    }
-
-    private boolean check(ButtonClickEvent event) {
-        if (event.getMessageId().equals(botMsg.getId()) && event.getUser().getIdLong() == userId) {
-            switch (event.getComponentId()) {
-                case "FIRST":
-                case "LEFT":
-                case "RIGHT":
-                case "LAST":
-                case "STOP":
-                    return true;
-                default:
-                    return false;
-            }
-        }
-        return false;
     }
 
     private void clear() {

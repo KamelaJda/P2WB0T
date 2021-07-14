@@ -40,7 +40,6 @@ import java.util.List;
 
 import static pl.kamil0024.core.util.kary.Kara.check;
 
-@SuppressWarnings("DuplicatedCode")
 public class TempbanCommand extends Command {
 
     private final CaseDao caseDao;
@@ -62,25 +61,21 @@ public class TempbanCommand extends Command {
             context.sendTranslate("kick.badmember").queue();
             return false;
         }
-        String duration = context.getArgs().get(1);
-        String powod = context.getArgsToString(2);
-        if (duration == null) {
-            context.send(context.getTranslate("tempban.badtime")).queue();
-            return false;
-        }
-        if (powod == null) powod = context.getTranslate("modlog.none");
+
+        String[] basic = getBasic(context);
+        if (basic == null) return false;
 
         String check = check(context, user);
         if (check != null) {
             context.send(check).queue();
             return false;
         }
-        String error = tempban(user, context.getUser(), powod, duration, caseDao, modLog, false, context.getGuild(), UserUtil.getMcNick(member));
+        String error = tempban(user, context.getUser(), basic[1], basic[0], caseDao, modLog, false, context.getGuild(), UserUtil.getMcNick(member));
         if (error != null) {
             context.send("Wysąpił błąd! " + error).queue();
             return false;
         }
-        context.sendTranslate("tempban.succes", UserUtil.getLogName(user), powod, duration).queue();
+        context.sendTranslate("tempban.succes", UserUtil.getLogName(user), basic[1], basic[0]).queue();
         return true;
     }
 
@@ -93,9 +88,8 @@ public class TempbanCommand extends Command {
             return "Poziom uprawnień osoby, którą chcesz ukarać jest wyższy od Twojego!";
         }
         Long dur = new Duration().parseLong(duration);
-        if (dur == null) {
-            return "Duration `" + duration + "` jest zły!";
-        }
+        if (dur == null) return "Duration `" + duration + "` jest zły!";
+
 
         for (Guild.Ban ban : guild.retrieveBanList().complete()) {
             if (ban.getUser().getId().equals(user.getId())) {
@@ -123,6 +117,17 @@ public class TempbanCommand extends Command {
             return e.getLocalizedMessage();
         }
         return null;
+    }
+
+    public static String[] getBasic(CommandContext context) {
+        String duration = context.getArgs().get(1);
+        String powod = context.getArgsToString(2);
+        if (duration == null) {
+            context.send(context.getTranslate("tempban.badtime")).queue();
+            return null;
+        }
+        if (powod == null) powod = context.getTranslate("modlog.none");
+        return new String[] {duration, powod};
     }
 
 }

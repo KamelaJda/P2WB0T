@@ -81,12 +81,9 @@ public class ClearCommand extends Command {
 
         context.getMessage().delete().queue();
         for (Message msg : wiadomosci) {
-            if (wiadomosciWszystkie.size() != liczba) {
-                if (msg.getIdLong() > dwaTygodnieTemu) {
-                    if (user != null && msg.getAuthor().getId().equals(user.getId())) {
-                        wiadomosciWszystkie.add(msg);
-                    } else if (user == null) wiadomosciWszystkie.add(msg);
-                }
+            if (wiadomosciWszystkie.size() != liczba && msg.getIdLong() > dwaTygodnieTemu) {
+                if (user != null && msg.getAuthor().getId().equals(user.getId())) wiadomosciWszystkie.add(msg);
+                else if (user == null) wiadomosciWszystkie.add(msg);
             }
         }
         statsModule.getStatsCache().addUsunietychWiadomosci(context.getUser().getId(), wiadomosciWszystkie.size());

@@ -20,7 +20,6 @@
 package pl.kamil0024.music.commands.privates;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -31,16 +30,15 @@ import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.logger.Log;
 import pl.kamil0024.core.socket.SocketClient;
 import pl.kamil0024.core.socket.SocketManager;
-import pl.kamil0024.core.util.BetterStringBuilder;
 import pl.kamil0024.core.util.EventWaiter;
 import pl.kamil0024.music.MusicModule;
 import pl.kamil0024.music.commands.PlayCommand;
 import pl.kamil0024.music.commands.QueueCommand;
+import pl.kamil0024.music.commands.YouTubeCommand;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-@SuppressWarnings("DuplicatedCode")
 public class PrivateYouTubeCommand extends Command {
 
     private final SocketManager socketManager;
@@ -84,21 +82,8 @@ public class PrivateYouTubeCommand extends Command {
 
         HashMap<Integer, AudioTrack> mapa = new HashMap<>();
 
-        BetterStringBuilder bsb = new BetterStringBuilder();
-        bsb.appendLine("```");
-        bsb.appendLine(context.getTranslate("youtube.firstline"));
-        int tracks = 0;
-        for (AudioTrack audioTrack : audioTrackList) {
-            tracks++;
-            AudioTrackInfo info = audioTrack.getInfo();
-            bsb.appendLine(tracks + ". " + info.title + " :: " + info.author);
-            mapa.put(tracks, audioTrack);
-            if (tracks == 10) break;
-        }
-        bsb.appendLine("```");
-
         try {
-            Message msg = context.send(bsb.toString(), false);
+            Message msg = context.send(YouTubeCommand.build(mapa, audioTrackList), false);
             eventWaiter.waitForEvent(GuildMessageReceivedEvent.class,
                     (event) -> event.getAuthor().getId().equals(context.getUser().getId()) && event.getChannel().getId().equals(context.getChannel().getId()),
                     (event) -> {

@@ -105,10 +105,8 @@ public class MultiCommand extends Command {
                 if (sb.toString().length() >= 1900) {
                     eb.setDescription(sb.toString());
                     pages.add(eb);
-
                     eb = new EmbedBuilder();
                     eb.setColor(UserUtil.getColor(executor));
-
                     sb = new BetterStringBuilder();
                 }
                 index++;

@@ -38,7 +38,6 @@ import pl.kamil0024.stats.StatsModule;
 
 import java.util.Date;
 
-@SuppressWarnings("DuplicatedCode")
 public class MuteCommand extends Command {
 
     private final CaseDao caseDao;

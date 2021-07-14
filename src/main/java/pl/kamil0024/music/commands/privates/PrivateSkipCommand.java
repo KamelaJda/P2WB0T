@@ -25,7 +25,6 @@ import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.socket.SocketClient;
 import pl.kamil0024.core.socket.SocketManager;
 
-@SuppressWarnings("DuplicatedCode")
 public class PrivateSkipCommand extends Command {
 
     private final SocketManager socketManager;

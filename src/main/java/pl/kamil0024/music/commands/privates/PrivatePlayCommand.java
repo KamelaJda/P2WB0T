@@ -43,7 +43,6 @@ import pl.kamil0024.music.utils.SpotifyUtil;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("DuplicatedCode")
 public class PrivatePlayCommand extends Command {
 
     private final SocketManager socketManager;
@@ -69,8 +68,8 @@ public class PrivatePlayCommand extends Command {
         String link = Objects.requireNonNull(context.getEvent().getOption("link")).getAsString();
         List<String> linki = new ArrayList<>();
 
-        context.send(Objects.requireNonNull(context.getShardManager().getEmoteById(Ustawienia.instance.emote.load)).getAsMention() +
-                " Ładuje...");
+        context.send(Objects.requireNonNull(context.getShardManager().getEmoteById(Ustawienia.instance.emote.load))
+                .getAsMention() + " Ładuje...");
 
         if (link.contains("https://open.spotify.com/")) {
             List<String> iteml = new ArrayList<>();

@@ -27,7 +27,6 @@ import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.music.MusicModule;
 import pl.kamil0024.musicmanager.entity.GuildMusicManager;
 
-@SuppressWarnings("DuplicatedCode")
 public class ResumeCommand extends Command {
 
     private final MusicModule musicModule;
@@ -45,17 +44,8 @@ public class ResumeCommand extends Command {
 
     @Override
     public boolean execute(@NotNull CommandContext context) {
-        if (!PlayCommand.isVoice(context.getGuild().getSelfMember())) {
-            context.sendTranslate("leave.nochannel").queue();
-            return false;
-        }
-
-        if (!PlayCommand.isSameChannel(context.getGuild().getSelfMember(), context.getMember())) {
-            context.sendTranslate("leave.samechannel").queue();
-            return false;
-        }
-
-        GuildMusicManager audio = musicModule.getGuildAudioPlayer(context.getGuild());
+        GuildMusicManager audio = SkipCommand.getMusicManager(context, musicModule);
+        if (audio == null) return false;
         if (audio.getPlayer().getPlayingTrack() == null) {
             context.sendTranslate("resume.noplay").queue();
             return false;

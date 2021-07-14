@@ -90,7 +90,6 @@ public class NieobecnoscCommand extends Command {
                     .create(context.getChannel(), context.getMessage());
             return true;
         }
-
         throw new UsageException();
     }
 

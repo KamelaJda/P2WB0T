@@ -27,7 +27,6 @@ import pl.kamil0024.core.command.enums.CommandCategory;
 import pl.kamil0024.core.command.enums.PermLevel;
 import pl.kamil0024.music.MusicModule;
 
-@SuppressWarnings("DuplicatedCode")
 public class VolumeCommand extends Command {
 
     private final MusicModule musicModule;

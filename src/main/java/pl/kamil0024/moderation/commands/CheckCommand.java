@@ -33,6 +33,7 @@ import pl.kamil0024.core.database.config.CaseConfig;
 import pl.kamil0024.core.util.EmbedPaginator;
 import pl.kamil0024.core.util.EventWaiter;
 import pl.kamil0024.core.util.UserUtil;
+import pl.kamil0024.core.util.kary.Dowod;
 import pl.kamil0024.core.util.kary.Kara;
 import pl.kamil0024.moderation.listeners.ModLog;
 
@@ -67,14 +68,6 @@ public class CheckCommand extends Command {
         eb.setFooter("Check");
         eb.setThumbnail(user.getAvatarUrl());
 
-        boolean maBana = false;
-        List<Guild.Ban> bany = context.getGuild().retrieveBanList().complete();
-        for (Guild.Ban ban : bany) {
-            if (ban.getUser().getId().equals(user.getId())) {
-                maBana = true;
-                break;
-            }
-        }
         Member mem = context.getParsed().getMember(user.getId());
 
         Kara kara = null;
@@ -82,19 +75,29 @@ public class CheckCommand extends Command {
         if (!kary.isEmpty()) kara = kary.get(kary.size() - 1).getKara();
 
         eb.addField(context.getTranslate("check.name"), UserUtil.getLogName(user), false);
-        eb.addField(context.getTranslate("check.ban"), maBana ? "Tak" : "Nie", false);
-        if (mem != null) {
+        eb.addField(context.getTranslate("check.ban"), hasBan(user.getId(), context.getGuild()) ? "Tak" : "Nie", false);
+        if (mem != null)
             eb.addField(context.getTranslate("check.mute"), MuteCommand.hasMute(mem) ? "Tak" : "Nie", false);
-        }
         eb.addField(context.getTranslate("check.onserwer"), mem != null ? "Tak" : "Nie", false);
         eb.addField(context.getTranslate("check.lastcase"), "ID: " + (kara == null ? "???" : kara.getKaraId()), false);
 
         List<EmbedBuilder> list = new ArrayList<>();
         list.add(eb);
         if (kara != null) list.add(ModLog.getEmbed(kara, context.getShardManager(), false, true));
+        if (kara != null && kara.getDowody() != null && !kara.getDowody().isEmpty()) {
+            for (Dowod dowod : kara.getDowody()) {
+                list.add(DowodCommand.getEmbed(dowod, context));
+            }
+        }
         new EmbedPaginator(list, context.getUser(), eventWaiter)
                 .create(context.getChannel());
-
         return true;
     }
+
+    public static boolean hasBan(String userId, Guild guild) {
+        return guild.retrieveBanList().complete()
+                .stream().filter(f -> f.getUser().getId().equals(userId))
+                .findFirst().orElse(null) != null;
+    }
+
 }
